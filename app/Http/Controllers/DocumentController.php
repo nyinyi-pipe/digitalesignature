@@ -22,4 +22,14 @@ class DocumentController extends Controller
     {
         return Inertia::render('Documents/Send');
     }
+
+    public function recipients() : Response
+    {
+        return Inertia::render("Documents/Recipient");
+    }
+
+    public function editDocument() : Response
+    {
+        return Inertia::render("Documents/EditDocument");
+    }
 }

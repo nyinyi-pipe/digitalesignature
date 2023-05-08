@@ -1,6 +1,8 @@
 <template >
   <Aside :toggle="toggle" @closeToggle="closeToggle"></Aside>
-  <div class="ml-auto mb-6 lg:w-[82%] xl:w-[82%] 2xl:w-[85%] relative">
+  <div
+    class="ml-auto mb-6 lg:w-[82%] xl:w-[82%] 2xl:w-[85%] relative bg-gray-100"
+  >
     <Navbar :title="title" @toggleAside="toggleAside"></Navbar>
 
     <div class="px-6 pt-6 2xl:container select-none">
