@@ -167,11 +167,14 @@
         </div>
       </div>
     </div>
-    <div class="flex">
+    <div class="flex relative">
       <div
         class="sm:w-[63%] md:w-[70%] lg:w-[76%] mx-auto bg-gray-100 overflow-scroll"
       >
-        <div class="w-full fixed mb-3 bg-white px-5 flex user-select-none">
+        <div
+          class="w-full fixed mb-3 bg-white px-5 flex user-select-none"
+          style="z-index: 550"
+        >
           <div class="border-r flex py-1.5 gap-2 pr-3">
             <div class="flex items-center gap-1 px-1.5 rounded h-7 bg-gray-100">
               <svg
@@ -180,7 +183,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-5 h-5 text-gray-400"
+                class="w-5 h-5 text-gray-500"
               >
                 <path
                   stroke-linecap="round"
@@ -188,7 +191,7 @@
                   d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"
                 />
               </svg>
-              <span class="text-gray-400 text-thin">1</span>
+              <span class="text-gray-500 text-thin">1</span>
             </div>
             <div
               class="flex items-center gap-1 px-1.5 rounded h-7 duration-200 cursor-pointer hover:bg-gray-100"
@@ -199,7 +202,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-5 h-5 text-gray-400"
+                class="w-5 h-5 text-gray-500"
               >
                 <path
                   stroke-linecap="round"
@@ -208,7 +211,7 @@
                 />
               </svg>
 
-              <span class="text-gray-400 font-bold text-sm">Document</span>
+              <span class="text-gray-500 font-bold text-sm">Document</span>
             </div>
           </div>
           <div class="flex items-center gap-1 px-2">
@@ -232,7 +235,7 @@
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-5 h-5 text-gray-400"
+              class="w-5 h-5 text-gray-500"
             >
               <path
                 stroke-linecap="round"
@@ -242,12 +245,201 @@
             </svg>
           </div>
         </div>
-        <div class="px-5 my-5 h-full flex justify-center items-center">
-          <!-- <img
-            class="w-full object-cover"
-            src="https://wallpaperaccess.com/full/249921.jpg"
-            alt=""
-          /> -->
+        <div
+          class="px-5 my-5 h-full relative flex flex-col justify-center items-center"
+          style="z-index: 500"
+        >
+          <div class="w-full">
+            <h1 class="mt-2 font-bold">FotoNewest</h1>
+            <div class="flex justify-between w-full items-center mb-2">
+              <div>
+                <h1 class="text-gray-500 text-xs">1 page</h1>
+              </div>
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-6 h-6 rounded-full hover:bg-gray-300 duration-200 text-gray-500 cursor-pointer"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 6v12m6-6H6"
+                  />
+                </svg>
+              </div>
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-6 h-6 rounded-full hover:bg-gray-300 duration-200 text-gray-500 cursor-pointer"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="relative overflow-hidden" id="main">
+            <img
+              id="image"
+              @drop="onDrop"
+              class="w-full object-cover"
+              :src="uploadedDocument"
+              alt=""
+            />
+          </div>
+
+          <div v-for="(signature, index) of signatures" :key="index">
+            <div
+              draggable="true"
+              @dragstart="editSignature"
+              class="absolute fields hidden signature select-none"
+              name="signature"
+              data-modal-target="signatureModal"
+              data-modal-toggle="signatureModal"
+              :count="index"
+            >
+              <div
+                class="cursor-pointer px-2 py-1.5 m-0 mb-2 text-sm text-white bg-gray-800"
+              >
+                <div class="flex gap-2 items-center">
+                  <div class="flex items-center pr-2 border-r">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 mr-2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                      />
+                    </svg>
+                    <span class="font-bold">Assign</span>
+                  </div>
+                  <div>
+                    <svg
+                      @click="deleteField"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 text-red-600"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="border flex items-center justify-center gap-2 cursor-pointer p-2 border-dashed m-0 font-thin text-sm text-green-600 bg-transparent border-green-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                  />
+                </svg>
+                <span>Signature</span>
+              </div>
+            </div>
+          </div>
+
+          <div v-for="(text, index) of texts" :key="index">
+            <div
+              draggable="true"
+              @dragstart="editText"
+              class="absolute fields hidden text select-none"
+              name="text"
+              :count="index"
+            >
+              <div
+                class="cursor-pointer px-2 py-1.5 m-0 mb-2 text-sm text-white bg-gray-800"
+              >
+                <div class="flex gap-2 items-center">
+                  <div class="flex items-center pr-2 border-r">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 mr-2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                      />
+                    </svg>
+                    <span class="font-bold">Assign</span>
+                  </div>
+                  <div>
+                    <svg
+                      @click="deleteField"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 text-red-600"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="border flex items-center justify-center gap-2 cursor-pointer p-2 border-dashed m-0 font-thin text-sm text-green-600 bg-transparent border-green-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                  />
+                </svg>
+                <span>Text</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div
@@ -260,9 +452,10 @@
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
+              title="Content"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-5 h-5 bg-indigo-500 text-white rounded-full"
+              class="w-5 h-5 bg-blue-500 cursor-pointer text-white rounded-full"
             >
               <path
                 stroke-linecap="round"
@@ -291,11 +484,14 @@
             </svg>
           </div>
           <h3 class="text-xs text-gray-400 mb-3">BLOCKS</h3>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-2 relative">
             <div
-              class="drag-field overflow-hidden user-select-none duration-500 border bg-gray-100 w-[48%] flex justify-between"
+              draggable="true"
+              id="text"
+              @dragstart="increaseText"
+              class="drag-field w-[48%] overflow-hidden user-select-none duration-500 border border-green-200 border-dashed bg-green-50 flex justify-between"
             >
-              <div class="drag-style h-full bg-gray-300"></div>
+              <div class="drag-style h-full bg-green-100"></div>
               <div
                 class="field-container p-3 pb-5 pt-2 flex justify-between w-full"
               >
@@ -318,9 +514,12 @@
             </div>
 
             <div
-              class="drag-field overflow-hidden user-select-none duration-500 border bg-gray-100 w-[48%] flex justify-between"
+              draggable="true"
+              id="signature"
+              @dragstart="increaseSignature"
+              class="drag-field overflow-hidden user-select-none duration-500 border border-green-200 border-dashed bg-green-50 w-[48%] flex justify-between"
             >
-              <div class="drag-style h-full bg-gray-300"></div>
+              <div class="drag-style h-full bg-green-100"></div>
               <div
                 class="field-container p-3 pb-5 pt-2 flex justify-between w-full"
               >
@@ -342,10 +541,10 @@
               </div>
             </div>
 
-            <div
-              class="drag-field overflow-hidden user-select-none duration-500 border bg-gray-100 w-[48%] flex justify-between"
+            <!-- <div
+              class="drag-field overflow-hidden user-select-none duration-500 border border-green-200 border-dashed bg-green-50 w-[48%] flex justify-between"
             >
-              <div class="drag-style h-full bg-gray-300"></div>
+              <div class="drag-style h-full bg-green-100"></div>
               <div
                 class="field-container p-3 pb-5 pt-2 flex justify-between w-full"
               >
@@ -368,9 +567,9 @@
             </div>
 
             <div
-              class="drag-field overflow-hidden user-select-none duration-500 border bg-gray-100 w-[48%] flex justify-between"
+              class="drag-field overflow-hidden user-select-none duration-500 border border-green-200 border-dashed bg-green-50 w-[48%] flex justify-between"
             >
-              <div class="drag-style h-full bg-gray-300"></div>
+              <div class="drag-style h-full bg-green-100"></div>
               <div
                 class="field-container p-3 pb-5 pt-2 flex justify-between w-full"
               >
@@ -390,6 +589,45 @@
                   />
                 </svg>
               </div>
+            </div> -->
+          </div>
+          <div>
+            <h3 class="text-xs text-gray-400 mb-3 my-5">FILLABLE FIELDS FOR</h3>
+            <div class="relative">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5 absolute left-0 bottom-1.5 text-gray-400"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+
+              <input
+                type="text"
+                placeholder="Start typing name or email"
+                class="p-1 text-sm text-gray-400 pl-7 border-0 border-b w-full peer-focus:border-0 focus:ring-0"
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5 absolute right-0 bottom-1.5 text-gray-400"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                />
+              </svg>
             </div>
           </div>
         </aside>
@@ -404,7 +642,14 @@ import { initFlowbite } from "flowbite";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 
 const toggle = ref(false);
-const pdfDataUrl = ref("");
+const uploadedDocument = ref("");
+const signatures = ref([]);
+const texts = ref([]);
+const signatureEdit = ref(null);
+const TextEdit = ref(null);
+const signatureEditStatus = ref(false);
+const TextEditStatus = ref(false);
+const dragText = ref("");
 
 const toggleAside = () => {
   toggle.value = !toggle.value;
@@ -413,7 +658,104 @@ const closeToggle = () => {
   toggle.value = !toggle.value;
 };
 
+const editSignature = (e) => {
+  signatureEdit.value = e.target.getAttribute("count");
+  signatureEditStatus.value = !signatureEditStatus.value;
+};
+
+const editText = (e) => {
+  TextEdit.value = e.target.getAttribute("count");
+  TextEditStatus.value = !TextEditStatus.value;
+};
+
+const increaseSignature = () => {
+  signatures.value.push(signatures.value.length);
+  dragText.value = "signature";
+};
+
+const increaseText = () => {
+  texts.value.push(texts.value.length);
+  dragText.value = "text";
+};
+
+const onDrop = (e) => {
+  e.preventDefault();
+  const documentSignatureFieldsContainer =
+    document.querySelectorAll(".signature");
+  const documentTextFieldsContainer = document.querySelectorAll(".text");
+
+  const documentSignatureField =
+    documentSignatureFieldsContainer[signatures.value.length - 1];
+  const documentTextField = documentTextFieldsContainer[texts.value.length - 1];
+
+  if (
+    !signatureEditStatus.value &&
+    documentSignatureField &&
+    dragText.value == "signature"
+  ) {
+    if (
+      documentSignatureField.getAttribute("count") ==
+      signatures.value[signatures.value.length - 1]
+    ) {
+      documentSignatureField.classList.remove("hidden");
+      documentSignatureField.style.top = `${e.offsetY}px`;
+      documentSignatureField.style.left = `${e.offsetX}px`;
+    }
+  } else if (signatureEditStatus.value && !TextEditStatus.value) {
+    const editSignatureField =
+      documentSignatureFieldsContainer[signatureEdit.value];
+    if (
+      editSignatureField &&
+      editSignatureField.getAttribute("count") == signatureEdit.value
+    ) {
+      editSignatureField.style.top = `${e.offsetY}px`;
+      editSignatureField.style.left = `${e.offsetX}px`;
+    }
+    signatureEditStatus.value = !signatureEditStatus.value;
+  } else if (
+    !TextEditStatus.value &&
+    documentTextField &&
+    dragText.value == "text"
+  ) {
+    if (
+      documentTextField.getAttribute("count") ==
+      texts.value[texts.value.length - 1]
+    ) {
+      documentTextField.classList.remove("hidden");
+      documentTextField.style.top = `${e.offsetY}px`;
+      documentTextField.style.left = `${e.offsetX}px`;
+    }
+  } else if (TextEditStatus.value && !signatureEditStatus.value) {
+    const editTextField = documentTextFieldsContainer[TextEdit.value];
+    if (
+      editTextField &&
+      editTextField.getAttribute("count") == TextEdit.value
+    ) {
+      editTextField.style.top = `${e.offsetY}px`;
+      editTextField.style.left = `${e.offsetX}px`;
+    }
+    TextEditStatus.value = !TextEditStatus.value;
+  }
+};
+const deleteField = (e) => {
+  const name = e.target.closest(".fields").getAttribute("name");
+  const target = e.target.closest(`.${name}`);
+  target.classList.add("hidden");
+  target.style.top = `0px`;
+  target.style.left = `0px`;
+};
 onMounted(() => {
+  uploadedDocument.value = localStorage.getItem("document-name");
+
+  const image = document.querySelector("#image");
+
+  image.addEventListener(
+    "dragover",
+    (e) => {
+      e.preventDefault();
+    },
+    false
+  );
   initFlowbite();
 });
 </script>
@@ -425,6 +767,7 @@ onMounted(() => {
   border-radius: 50%;
   margin-right: 5px;
 }
+
 .drag-field:hover {
   cursor: move;
 }

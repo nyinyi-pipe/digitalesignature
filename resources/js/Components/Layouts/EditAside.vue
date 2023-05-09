@@ -1,7 +1,8 @@
 <template>
   <aside
     :class="[toggle ? 'ml-[0%]' : 'ml-[-100%]']"
-    class="fixed z-20 transition-all top-0 pb-3 px-6 w-[60%] sm:w-[35%] md:w-[25%] lg:w-[20%] flex flex-col justify-between h-screen border-r bg-slate-800 duration-500"
+    style="z-index: 900"
+    class="fixed transition-all top-0 pb-3 px-6 w-[60%] sm:w-[35%] md:w-[25%] lg:w-[20%] flex flex-col justify-between h-screen border-r bg-slate-800 duration-500"
   >
     <div class="mt-3">
       <div class="flex justify-between items-center">

@@ -65,7 +65,8 @@ import { Link, router, Head } from "@inertiajs/vue3";
 const upload = (e) => {
   const reader = new FileReader();
   reader.onload = (evt) => {
-    setTimeout(() => {}, 3000);
+    localStorage.removeItem("document-name");
+    localStorage.setItem("document-name", evt.target.result);
   };
 
   reader.onloadstart = (evt) => {
