@@ -109,7 +109,7 @@
                   </svg>
 
                   <Link
-                    :href="route('document.bulk-import')"
+                    :href="route('document.add-document')"
                     class="text-green-500"
                     >Document</Link
                   >

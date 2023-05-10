@@ -10,13 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->foreignUuid('user_id');
+            $table->foreignUuid('nonuser_id')->nullable();
+            $table->longText('doc_name');
+            $table->json('doc_docs');
+            $table->string('doc_type');
+            $table->string('doc_key')->nullable();
+            $table->integer('doc_status')->default(0);
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('documents');
     }
 };

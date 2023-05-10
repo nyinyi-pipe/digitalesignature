@@ -1,5 +1,6 @@
 <template>
   <AuthLayout title="Add Recipients">
+    <Head title="Add Recipients" />
     <div class="px-28 py-2">
       <div class="mb-5">
         <h1 class="text-xl font-bold">Add Recipients</h1>
@@ -16,20 +17,25 @@
           id="document_name"
           v-model="document_name"
           @keyup="documentInput"
-          class="bg-white border border-red-600 text-gray-900 text-sm rounded-sm focus:ring-red-500 focus:border-red-500 block w-full py-1.5 px-2"
+          :class="[
+            document_validate
+              ? 'border-red-600  focus:ring-red-500 focus:border-red-500'
+              : 'border-green-600 focus:ring-green-500 focus:border-green-500',
+          ]"
+          class="bg-white border text-gray-900 text-sm rounded-sm block w-full py-1.5 px-2"
           placeholder="document name"
           required
         />
         <p
           :class="[document_validate ? 'block' : 'hidden']"
-          class="text-sm font-bold mt-1"
+          class="text-sm text-red-600 font-bold mt-1"
         >
           Document name is required
         </p>
       </div>
       <div class="mt-5 mb-2">
         <h1 class="text-sm font-light">
-          Sender: <span class="font-bold">Ar Kar Lin</span>
+          Sender: <span class="font-bold">{{ currentUser }}</span>
         </h1>
       </div>
       <div class="p-7 bg-white rounded-sm recipientField">
@@ -42,6 +48,7 @@
               <input
                 type="email"
                 id="email"
+                v-model="form.email"
                 class="bg-gray-100 border-0 border-b focus:ring-0 border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-green-500 focus:border-green-500 block w-full py-1.5 px-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
                 placeholder="Search by name or email"
                 required
@@ -54,6 +61,7 @@
               <input
                 type="text"
                 id="first_name"
+                v-model="form.firstName"
                 class="bg-gray-100 border-0 border-b focus:ring-0 border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-green-500 focus:border-green-500 block w-full py-1.5 px-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
                 required
               />
@@ -65,6 +73,7 @@
               <input
                 type="text"
                 id="last_name"
+                v-model="form.lastName"
                 class="bg-gray-100 border-0 border-b focus:ring-0 border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-green-500 focus:border-green-500 block w-full py-1.5 px-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
                 required
               />
@@ -118,11 +127,12 @@
             class="py-1.5 px-2.5 bg-gray-300 hover:bg-gray-400 duration-200 rounded text-sm text-gray-700 font-bold"
             >Skip</Link
           >
-          <Link
-            :href="route('document.edit.document')"
+          <p
+            @click="addRecipients"
             class="py-1.5 px-2.5 bg-green-600 hover:bg-green-500 duration-200 rounded text-sm text-white font-bold"
-            >Continue</Link
           >
+            Continue
+          </p>
         </div>
       </div>
     </div>
@@ -132,15 +142,40 @@
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import SwitchField from "@/Components/SwitchField.vue";
 import { onMounted, ref } from "vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, Head, usePage, router, useForm } from "@inertiajs/vue3";
+
+const documents = defineProps({
+  AddedDocument: Object,
+});
 
 const document_name = ref("");
+const currentUser = ref("");
 const document_validate = ref(false);
 const documentInput = () => {
   if (!document_name.value) {
     document_validate.value = !document_validate.value;
+  } else {
+    document_validate.value = false;
   }
 };
+
+const form = useForm({
+  docId: documents.AddedDocument.id,
+  email: null,
+  firstName: null,
+  lastName: null,
+});
+const addRecipients = () => {
+  form.put(route("document.store-recipients", documents.AddedDocument.id));
+};
+
+onMounted(() => {
+  document_name.value = documents.AddedDocument.doc_name;
+  if (!document_name.value) {
+    document_validate.value = !document_validate.value;
+  }
+  currentUser.value = usePage().props.auth.user.name;
+});
 </script>
 <style scoped>
 .recipientField::before {

@@ -15,9 +15,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
     //document
     Route::get('/documents', [DocumentController::class,'index'])->name('document.index');
-    Route::get('/documents/bulk-import', [DocumentController::class,'bulkImport'])->name('document.bulk-import');
-    Route::get('/documents/add-recipients', [DocumentController::class,'recipients'])->name('document.add-recipients');
-    Route::get('/documents/edit/document', [DocumentController::class,'editDocument'])->name('document.edit.document');
+    Route::get('/documents/add-document', [DocumentController::class,'create'])->name('document.add-document');
+    Route::post('/documents/add-document', [DocumentController::class,'store'])->name('document.add-document');
+    Route::get('/documents/{document}/add-recipients', [DocumentController::class,'recipients'])->name('document.add-recipients');
+    Route::put('/documents/{document}/add-recipients', [DocumentController::class,'storeRecipients'])->name('document.store-recipients');
+    Route::get('/documents/edit/{document}', [DocumentController::class,'editDocument'])->name('document.edit.document');
+    Route::put('/documents/edit/{document}', [DocumentController::class,'newDocumentName'])->name('document.new.document-name');
     Route::get('/documents/send', [DocumentController::class,'send'])->name('document.send');
     //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -3,6 +3,102 @@
   <EditAside :toggle="toggle" @closeToggle="closeToggle"></EditAside>
   <div class="h-screen overflow-hidden">
     <div
+      id="changeDocumentName"
+      tabindex="-1"
+      class="fixed top-0 left-0 right-0 z-[9000] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    >
+      <div class="relative w-full max-w-md max-h-full">
+        <div class="relative bg-white rounded shadow-lg border border-gray-200">
+          <button
+            type="button"
+            @click="closeMailModal"
+            class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+          >
+            <svg
+              aria-hidden="true"
+              class="w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+          <h1 class="text-green-500 px-6 mb-3 mt-5 font-bold">
+            New Document Name
+          </h1>
+          <div class="px-6 mb-4">
+            <input
+              type="text"
+              v-model="form.newDocumentName"
+              class="w-full focus:ring-green-500 focus:border-green-500 p-0 text-sm px-2 py-1.5 border-gray-300 rounded"
+            />
+          </div>
+          <div class="flex gap-4 px-6 pb-6 justify-end">
+            <button
+              type="button"
+              @click="closeMailModal"
+              class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded border border-gray-200 text-sm font-medium px-6 py-1.5 hover:text-gray-900 focus:z-10"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="saveDocumentName"
+              class="text-white duration-200 bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded text-sm inline-flex items-center px-6 py-1.5 text-center mr-2"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- mail modal -->
+    <div
+      id="sendMailModal"
+      tabindex="-1"
+      aria-hidden="true"
+      class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    >
+      <div class="relative w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <button
+            type="button"
+            @click="closeSendMailModal"
+            class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+          >
+            <svg
+              aria-hidden="true"
+              class="w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+          <div class="px-6 py-6 lg:px-8">
+            <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">
+              Coming
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
       class="sticky z-10 top-0 h-14 border-b bg-white flex items-center py-2 lg:py-2.5"
     >
       <div
@@ -27,17 +123,17 @@
 
           <div>
             <h3 class="font-bold text-sm mb-1">
-              Screenshot from 2023-05-04 10-35-26
+              {{ documents.documents.doc_name }}
             </h3>
             <div class="flex items-center gap-3">
-              <div class="flex items-center mr-3">
+              <div class="flex items-center mr-2">
                 <p class="sent"></p>
                 <p class="text-indigo-600 font-thin text-xs">Sent</p>
               </div>
               <ul class="list-disc flex gap-7 items-center">
                 <li class="flex">
                   <h5 class="text-xs font-thin text-gray-500">
-                    Updated May 4, 2023
+                    {{ date }}
                   </h5>
                 </li>
               </ul>
@@ -87,33 +183,14 @@
               </li>
             </ul>
           </div>
-
+          <!-- data-modal-target="popup-modal"
+            data-modal-toggle="popup-modal" -->
           <button
-            id="dropdownDefaultButton"
-            data-dropdown-toggle="dropdown"
+            @click="openEmailModal"
             class="focus:outline-none rounded bg-green-600 text-sm focus:border-0 peer-focus:ring-0 px-5 py-1.5 shadow-md hover:shadow-0 duration-200 text-center inline-flex items-center"
-            type="button"
           >
             <span class="text-white font-bold">Send</span>
           </button>
-          <!-- Actions Dropdown menu -->
-          <div
-            id="dropdown"
-            class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow-lg w-44 dark:bg-gray-700"
-          >
-            <ul
-              class="text-sm text-gray-700 dark:text-gray-200"
-              aria-labelledby="dropdownDefaultButton"
-            >
-              <li>
-                <a
-                  href="#"
-                  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                  >Share via link</a
-                >
-              </li>
-            </ul>
-          </div>
 
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -173,7 +250,7 @@
       >
         <div
           class="w-full fixed mb-3 bg-white px-5 flex user-select-none"
-          style="z-index: 550"
+          style="z-index: 20"
         >
           <div class="border-r flex py-1.5 gap-2 pr-3">
             <div class="flex items-center gap-1 px-1.5 rounded h-7 bg-gray-100">
@@ -247,10 +324,10 @@
         </div>
         <div
           class="px-5 my-5 h-full relative flex flex-col justify-center items-center"
-          style="z-index: 500"
+          style="z-index: 10"
         >
           <div class="w-full">
-            <h1 class="mt-2 font-bold">FotoNewest</h1>
+            <h1 class="mt-2 font-bold">{{ documents.documents.doc_name }}</h1>
             <div class="flex justify-between w-full items-center mb-2">
               <div>
                 <h1 class="text-gray-500 text-xs">1 page</h1>
@@ -444,9 +521,9 @@
       </div>
       <div
         class="sm:w-[37%] md:w-[30%] lg:w-[24%] h-screen flex"
-        style="z-index: 888"
+        style="z-index: 20"
       >
-        <div class="border-r w-[16%] py-3 h-full flex justify-center">
+        <div class="border-r border-l w-[16%] py-3 h-full flex justify-center">
           <div class="">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -540,56 +617,6 @@
                 </svg>
               </div>
             </div>
-
-            <!-- <div
-              class="drag-field overflow-hidden user-select-none duration-500 border border-green-200 border-dashed bg-green-50 w-[48%] flex justify-between"
-            >
-              <div class="drag-style h-full bg-green-100"></div>
-              <div
-                class="field-container p-3 pb-5 pt-2 flex justify-between w-full"
-              >
-                <h5 class="text-xs font-bold">Text field</h5>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-5 h-5 text-gray-500"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <div
-              class="drag-field overflow-hidden user-select-none duration-500 border border-green-200 border-dashed bg-green-50 w-[48%] flex justify-between"
-            >
-              <div class="drag-style h-full bg-green-100"></div>
-              <div
-                class="field-container p-3 pb-5 pt-2 flex justify-between w-full"
-              >
-                <h5 class="text-xs font-bold">Date</h5>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-5 h-5 text-gray-500"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"
-                  />
-                </svg>
-              </div>
-            </div> -->
           </div>
           <div>
             <h3 class="text-xs text-gray-400 mb-3 my-5">FILLABLE FIELDS FOR</h3>
@@ -637,9 +664,19 @@
 </template>
 <script setup>
 import { Link, router, Head } from "@inertiajs/vue3";
-import { onMounted, ref } from "vue";
-import { initFlowbite } from "flowbite";
+import { onMounted, reactive, ref } from "vue";
+import { initFlowbite, Modal } from "flowbite";
 import EditAside from "@/Components/Layouts/EditAside.vue";
+import moment from "moment";
+import axios from "axios";
+
+const documents = defineProps({
+  documents: Object,
+});
+
+const form = reactive({
+  newDocumentName: null,
+});
 
 const toggle = ref(false);
 const uploadedDocument = ref("");
@@ -650,7 +687,35 @@ const TextEdit = ref(null);
 const signatureEditStatus = ref(false);
 const TextEditStatus = ref(false);
 const dragText = ref("");
+const date = ref("");
+const documentNameModal = ref(null);
+const sendModal = ref(null);
 
+const openEmailModal = () => {
+  documentNameModal.value.show();
+};
+
+const openSendMailModal = () => {
+  sendModal.value.show();
+};
+
+const closeMailModal = () => {
+  documentNameModal.value.hide();
+};
+
+const closeSendMailModal = () => {
+  sendModal.value.hide();
+};
+
+const saveDocumentName = async () => {
+  const { data } = await axios.put(
+    route("document.new.document-name", documents.documents.id),
+    form
+  );
+  documents.documents = data.documents;
+  documentNameModal.value.hide();
+  openSendMailModal();
+};
 const toggleAside = () => {
   toggle.value = !toggle.value;
 };
@@ -672,6 +737,7 @@ const increaseSignature = () => {
   signatures.value.push(signatures.value.length);
   dragText.value = "signature";
 };
+moment(documents.documents.updated_at).format("ll");
 
 const increaseText = () => {
   texts.value.push(texts.value.length);
@@ -744,8 +810,16 @@ const deleteField = (e) => {
   target.style.top = `0px`;
   target.style.left = `0px`;
 };
+
 onMounted(() => {
-  uploadedDocument.value = localStorage.getItem("document-name");
+  const modalDocument = document.querySelector("#changeDocumentName");
+  const modalMail = document.querySelector("#sendMailModal");
+  documentNameModal.value = new Modal(modalDocument);
+  sendModal.value = new Modal(modalMail);
+  date.value = `Updated ${moment(documents.documents.updated_at).format("ll")}`;
+  uploadedDocument.value =
+    location.origin + "/storage/documents/" + documents.documents.doc_docs;
+  form.newDocumentName = documents.documents.doc_name;
 
   const image = document.querySelector("#image");
 

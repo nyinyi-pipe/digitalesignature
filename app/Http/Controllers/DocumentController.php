@@ -2,7 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DocumentRequest;
+use App\Http\Requests\RecipientRequest;
+use App\Models\Document;
+use App\Models\NonUser;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -13,9 +20,28 @@ class DocumentController extends Controller
         return Inertia::render('Documents/Index');
     }
 
-    public function bulkImport() : Response
+    public function create() : Response
     {
-        return Inertia::render('Documents/BulkImport');
+        return Inertia::render('Documents/CreateDocument');
+    }
+
+    public function store(DocumentRequest $request) :RedirectResponse
+    {
+        $request->validated();
+        $document = $request->file('document');
+        $doc_name = $document->getClientOriginalName();
+        $doc_type = $document->getClientOriginalExtension();
+        $docs = uniqid().".".$doc_type;
+        $request->file('document')->storeAs('documents', $docs);
+        $newDocument = Document::create([
+            'user_id'=>auth()->user()->id,
+            'doc_name'=> $doc_name,
+            'doc_docs'=> $docs,
+            'doc_type'=> $doc_type,
+            'doc_key'=>'TEST'
+        ]);
+
+        return to_route('document.add-recipients', ['document'=>$newDocument->id]);
     }
 
     public function send() : Response
@@ -23,13 +49,50 @@ class DocumentController extends Controller
         return Inertia::render('Documents/Send');
     }
 
-    public function recipients() : Response
+    public function recipients(Document $document) : Response
     {
-        return Inertia::render("Documents/Recipient");
+        return Inertia::render("Documents/Recipient", [
+            'AddedDocument'=>$document
+        ]);
     }
 
-    public function editDocument() : Response
+    public function storeRecipients(Document $document, RecipientRequest $request) :RedirectResponse
     {
-        return Inertia::render("Documents/EditDocument");
+        $request->validated();
+        try {
+            DB::beginTransaction();
+            $nonUser = NonUser::create([
+                'name'=>$request->firstName." ".$request->lastName,
+                'first_name'=>$request->firstName,
+                'last_name'=>$request->lastName,
+                'email'=>$request->email
+            ]);
+            $document->update([
+                'nonuser_id'=>$nonUser->id
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+        }
+
+        return to_route('document.edit.document', ['document'=>$document->id]);
+
+    }
+
+    public function editDocument(Document $document) : Response
+    {
+        return Inertia::render("Documents/EditDocument", [
+            'documents'=>$document
+        ]);
+    }
+
+    public function newDocumentName(Document $document, Request $request)
+    {
+        $document->update([
+            'doc_name'=>$request->newDocumentName??$document->doc_name
+        ]);
+
+        return response()->json([
+            'documents' => $document
+        ]);
     }
 }

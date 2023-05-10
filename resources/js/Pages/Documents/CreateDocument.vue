@@ -65,8 +65,8 @@ import { Link, router, Head } from "@inertiajs/vue3";
 const upload = (e) => {
   const reader = new FileReader();
   reader.onload = (evt) => {
-    localStorage.removeItem("document-name");
-    localStorage.setItem("document-name", evt.target.result);
+    // localStorage.removeItem("document-name");
+    // localStorage.setItem("document-name", evt.target.result);
   };
 
   reader.onloadstart = (evt) => {
@@ -88,7 +88,10 @@ const upload = (e) => {
 
   reader.onloadend = (evt) => {
     setTimeout(() => {
-      router.get(route("document.add-recipients"));
+      const form = {
+        document: e.target.files[0],
+      };
+      router.post(route("document.add-document"), form);
     }, 4000);
   };
 
