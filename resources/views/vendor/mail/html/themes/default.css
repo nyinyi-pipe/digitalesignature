@@ -1,0 +1,96 @@
+.container {
+    /* display: flex; */
+    /* flex-direction: column; */
+    width: 70%;
+    margin: auto;
+}
+.main-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    background-color: #e5e5e5;
+    display: flex;
+    justify-content: center;
+}
+.company-name {
+    font-weight: 600;
+    margin-bottom: 1.8rem;
+    display: flex;
+    flex-grow: 10;
+    align-items: center;
+    justify-content: center;
+}
+.content-container {
+    padding: 2rem;
+    background-color: white;
+    margin-bottom: 1.8rem;
+}
+.company-name img {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: cover;
+    margin-right: 0.7rem;
+}
+.company-name h2 {
+    margin: 0;
+}
+.sender-img {
+    width: 3rem;
+    height: 3rem;
+    object-fit: cover;
+    margin-right: 0.9rem;
+}
+.sender-main {
+    display: flex;
+    padding-bottom: 0.65rem;
+    border: 0;
+    border-bottom: 0.1rem solid rgb(213, 213, 213);
+}
+
+.sender-container {
+    display: flex;
+}
+.sender-container h4 {
+    margin: 0;
+    margin-right: 0.4rem;
+}
+.sender-container span {
+    margin: 0;
+    margin-right: 0.4rem;
+}
+button {
+    padding: 1.3rem;
+    border: 0;
+    font-size: 0.9rem;
+    width: 49%;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+}
+.content {
+    order: 0;
+    border-bottom: 0.1rem solid rgb(213, 213, 213);
+    margin: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.3rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+.open-document {
+    background-color: #16a34a;
+    color: white;
+    margin-right: 0.7rem;
+}
+.footer-container {
+    display: flex;
+    /* justify-content: space-between; */
+}
+.footer {
+    margin: 0 auto;
+    width: 70%;
+    text-align: center;
+    color: rgb(142, 142, 142);
+    font-size: 0.7rem;
+}

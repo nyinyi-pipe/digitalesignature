@@ -59,23 +59,33 @@ class DocumentController extends Controller
     public function storeRecipients(Document $document, RecipientRequest $request) :RedirectResponse
     {
         $request->validated();
+        $user = User::where('email', $request->email)->first();
         try {
             DB::beginTransaction();
-            $nonUser = NonUser::create([
-                'name'=>$request->firstName." ".$request->lastName,
-                'first_name'=>$request->firstName,
-                'last_name'=>$request->lastName,
-                'email'=>$request->email
-            ]);
-            $document->update([
-                'nonuser_id'=>$nonUser->id
-            ]);
+            if($user == null) {
+                $nonUser = NonUser::create([
+                    'name'=>$request->firstName." ".$request->lastName,
+                    'first_name'=>$request->firstName,
+                    'last_name'=>$request->lastName,
+                    'email'=>$request->email
+                ]);
+                $nonusers = [];
+                //ongoing
+                if($document->nonuser_id) {
+                    $users = json_decode($document->nonuser_id);
+                    $users[] = $nonUser->id;
+                } else {
+                    $nonusers[] = $nonUser->id;
+                }
+                $document->update([
+                    'nonuser_id'=>$document->nonuser_id??$nonusers
+                ]);
+                DB::commit();
+            }
         } catch (\Throwable $th) {
             DB::rollBack();
         }
-
         return to_route('document.edit.document', ['document'=>$document->id]);
-
     }
 
     public function editDocument(Document $document) : Response

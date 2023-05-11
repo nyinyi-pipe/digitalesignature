@@ -19,5 +19,6 @@ class Document extends Model
 
     protected $casts = [
         'doc_docs' => 'array',
+        'nonuser_id'=> 'array'
     ];
 }

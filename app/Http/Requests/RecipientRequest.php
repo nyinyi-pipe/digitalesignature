@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\RecipientNonExist;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RecipientRequest extends FormRequest
@@ -24,7 +23,6 @@ class RecipientRequest extends FormRequest
     {
         return [
             'docId'=>'required',
-            'email'=> new RecipientNonExist()
         ];
     }
 }
