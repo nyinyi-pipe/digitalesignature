@@ -15,10 +15,14 @@ class Document extends Model
     *
     * @var array<int, string>
     */
-    protected $fillable = ['user_id','nonuser_id','doc_name','doc_docs','doc_type','doc_key','doc_status'];
+    protected $fillable = ['user_id','doc_name','doc_docs','doc_type','doc_key','doc_status'];
 
     protected $casts = [
         'doc_docs' => 'array',
-        'nonuser_id'=> 'array'
     ];
+
+    public function documentnonuser()
+    {
+        return $this->belongsToMany(Nonuser::class, 'document_nonuser');
+    }
 }

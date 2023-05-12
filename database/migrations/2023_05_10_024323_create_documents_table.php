@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id');
-            $table->json('nonuser_id')->nullable();
+            // $table->json('nonuser_id')->nullable();
             $table->longText('doc_name');
             $table->json('doc_docs');
             $table->string('doc_type');

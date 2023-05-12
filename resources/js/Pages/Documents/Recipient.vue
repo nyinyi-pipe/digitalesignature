@@ -15,7 +15,7 @@
         <input
           type="text"
           id="document_name"
-          v-model="document_name"
+          v-model="form.docName"
           @keyup="documentInput"
           :class="[
             document_validate
@@ -152,7 +152,7 @@ const document_name = ref("");
 const currentUser = ref("");
 const document_validate = ref(false);
 const documentInput = () => {
-  if (!document_name.value) {
+  if (!form.docName) {
     document_validate.value = !document_validate.value;
   } else {
     document_validate.value = false;
@@ -161,6 +161,7 @@ const documentInput = () => {
 
 const form = useForm({
   docId: documents.AddedDocument.id,
+  docName: documents.AddedDocument.doc_name,
   email: null,
   firstName: null,
   lastName: null,
@@ -170,8 +171,7 @@ const addRecipients = () => {
 };
 
 onMounted(() => {
-  document_name.value = documents.AddedDocument.doc_name;
-  if (!document_name.value) {
+  if (!form.docName) {
     document_validate.value = !document_validate.value;
   }
   currentUser.value = usePage().props.auth.user.name;

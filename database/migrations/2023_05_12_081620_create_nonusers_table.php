@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('non_users', function (Blueprint $table) {
+        Schema::create('nonusers', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('first_name');
@@ -25,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('non_users');
+        Schema::dropIfExists('nonusers');
     }
 };

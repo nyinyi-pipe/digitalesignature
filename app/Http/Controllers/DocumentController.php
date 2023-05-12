@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DocumentRequest;
 use App\Http\Requests\RecipientRequest;
 use App\Models\Document;
-use App\Models\NonUser;
+use App\Models\Nonuser;
 use App\Models\User;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,6 @@ class DocumentController extends Controller
             'doc_type'=> $doc_type,
             'doc_key'=>'TEST'
         ]);
-
         return to_route('document.add-recipients', ['document'=>$newDocument->id]);
     }
 
@@ -60,28 +60,22 @@ class DocumentController extends Controller
     {
         $request->validated();
         $user = User::where('email', $request->email)->first();
+        $nonuser = Nonuser::where('email', $request->email)->first();
         try {
             DB::beginTransaction();
-            if($user == null) {
-                $nonUser = NonUser::create([
+            if($user == null && $nonuser == null) {
+                $nonuser = Nonuser::create([
                     'name'=>$request->firstName." ".$request->lastName,
                     'first_name'=>$request->firstName,
                     'last_name'=>$request->lastName,
                     'email'=>$request->email
                 ]);
-                $nonusers = [];
-                //ongoing
-                if($document->nonuser_id) {
-                    $users = json_decode($document->nonuser_id);
-                    $users[] = $nonUser->id;
-                } else {
-                    $nonusers[] = $nonUser->id;
-                }
-                $document->update([
-                    'nonuser_id'=>$document->nonuser_id??$nonusers
-                ]);
-                DB::commit();
             }
+            $document->documentnonuser()->attach($nonuser->id??$user->id);
+            $document->update([
+                'doc_name'=>$request->docName,
+            ]);
+            DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
         }
@@ -90,6 +84,7 @@ class DocumentController extends Controller
 
     public function editDocument(Document $document) : Response
     {
+        $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
         return Inertia::render("Documents/EditDocument", [
             'documents'=>$document
         ]);
