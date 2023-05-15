@@ -14,6 +14,8 @@ class MailController extends Controller
     {
         $document['subject'] = $request->subject;
         $document['message'] = $request->message;
-        Mail::to($request->toMails['mail'], $request->toMails['name'])->send(new SendDocumentMail($document));
+        foreach ($request->toMails as $mail) {
+            Mail::to($mail)->send(new SendDocumentMail($document));
+        }
     }
 }

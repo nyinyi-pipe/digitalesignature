@@ -13,6 +13,17 @@
       :auth="documents.auth"
       :document="documents.documents"
       @closeSendMailModal="closeSendMailModal"
+      :recipientEmails="recipientEmails"
+    />
+    <!-- signature modal -->
+    <SignatureModal
+      @acceptSignature="acceptSignature"
+      @closeSignatureModal="closeSignatureModal"
+    />
+    <!-- new document modal -->
+    <NewDocumentUpload
+      @closeNewDocumentUpload="closeNewDocumentUpload"
+      :id="documents.documents.id"
     />
 
     <div
@@ -163,10 +174,10 @@
     </div>
     <div class="flex relative">
       <div
-        class="sm:w-[63%] md:w-[70%] lg:w-[76%] mx-auto bg-gray-100 overflow-scroll"
+        class="sm:w-[63%] pb-16 h-screen md:w-[70%] lg:w-[76%] mx-auto bg-gray-100 overflow-scroll"
       >
         <div
-          class="w-full fixed mb-3 bg-white px-5 flex user-select-none"
+          class="w-full fixed bg-white px-5 flex user-select-none"
           style="z-index: 20"
         >
           <div class="border-r flex py-1.5 gap-2 pr-3">
@@ -240,57 +251,107 @@
           </div>
         </div>
         <div
-          class="px-5 my-5 h-full relative flex flex-col justify-center items-center"
+          class="px-5 w-full mt-10 md:w-[87%] lg:w-[86%] mx-auto relative flex flex-col justify-center items-center"
           style="z-index: 10"
         >
-          <div class="w-full">
-            <h1 class="mt-2 font-bold">{{ documents.documents.doc_name }}</h1>
-            <div class="flex justify-between w-full items-center mb-2">
-              <div>
-                <h1 class="text-gray-500 text-xs">1 page</h1>
-              </div>
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-6 h-6 rounded-full hover:bg-gray-300 duration-200 text-gray-500 cursor-pointer"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 6v12m6-6H6"
-                  />
-                </svg>
-              </div>
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-6 h-6 rounded-full hover:bg-gray-300 duration-200 text-gray-500 cursor-pointer"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-                  />
-                </svg>
+          <h1 class="mt-2 -mb-5 font-bold w-full">
+            {{ documents.documents.doc_name }}
+          </h1>
+          <div
+            v-for="(doc, index) of documents.documents.doc_docs"
+            :key="index"
+          >
+            <div class="w-full mt-6">
+              <div class="flex justify-between w-full items-center mb-2">
+                <div>
+                  <h1 class="text-gray-500 text-xs">{{ index + 1 }} page</h1>
+                </div>
+                <div>
+                  <svg
+                    id="addNewDocumentDropDown"
+                    data-dropdown-toggle="dropdown-new-doc"
+                    type="button"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6 rounded-full hover:bg-gray-300 duration-200 text-gray-500 cursor-pointer"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6v12m6-6H6"
+                    />
+                  </svg>
+
+                  <div
+                    id="dropdown-new-doc"
+                    @click="openNewDocumentUpload"
+                    class="z-10 hidden bg-white divide-y divide-gray-100 rounded-xs shadow w-39"
+                  >
+                    <ul
+                      class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                      aria-labelledby="dropdownDefaultButton"
+                    >
+                      <li>
+                        <button
+                          href="#"
+                          class="px-4 py-1 w-full gap-1.5 items-center hover:bg-gray-100 flex"
+                        >
+                          <svg
+                            height="21"
+                            viewBox="0 0 21 21"
+                            width="21"
+                            class="h-5 w-5 font-bold text-gray-500"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fill-rule="evenodd"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              transform="translate(4 3)"
+                            >
+                              <path d="m2.5 4.753 4-4.232 4 4.191" />
+                              <path d="m6.5.5v11" />
+                              <path d="m.5 14.5h12" />
+                            </g>
+                          </svg>
+                          <span class="text-gray-500">Upload File</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6 rounded-full hover:bg-gray-300 duration-200 text-gray-500 cursor-pointer"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                    />
+                  </svg>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="relative overflow-hidden" id="main">
-            <img
-              id="image"
-              @drop="onDrop"
-              class="w-full object-cover"
-              :src="uploadedDocument"
-              alt=""
-            />
+            <div class="relative" id="main">
+              <img
+                id="image"
+                @drop="onDrop"
+                class="w-full object-cover"
+                :src="docs(doc)"
+                alt=""
+              />
+            </div>
           </div>
 
           <div v-for="(signature, index) of signatures" :key="index">
@@ -307,7 +368,34 @@
                 class="cursor-pointer px-2 py-1.5 m-0 mb-2 text-sm text-white bg-gray-800"
               >
                 <div class="flex gap-2 items-center">
-                  <div class="flex items-center pr-2 border-r">
+                  <div
+                    v-if="recipientName == 'Assign' && nameStatus"
+                    @click="assignRecipent"
+                    class="flex items-center pr-2 border-r"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 mr-2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                      />
+                    </svg>
+                    <span class="font-bold" id="recipientName">{{
+                      recipientName
+                    }}</span>
+                  </div>
+                  <div
+                    v-else
+                    class="flex items-center pr-2 border-r"
+                    @click="assignRecipent"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -322,8 +410,14 @@
                         d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    <span class="font-bold">{{ recipientName }}</span>
+                    <span
+                      class="font-bold text-gray-200"
+                      id="recipientName"
+                      recipientEmail="unknown"
+                      >{{ recipientName }}</span
+                    >
                   </div>
+
                   <div>
                     <svg
                       @click="deleteField"
@@ -332,7 +426,7 @@
                       viewBox="0 0 24 24"
                       stroke-width="1.5"
                       stroke="currentColor"
-                      class="w-5 h-5 text-red-600"
+                      class="w-5 h-5 text-gray-200"
                     >
                       <path
                         stroke-linecap="round"
@@ -344,23 +438,94 @@
                 </div>
               </div>
               <div
-                class="border flex items-center justify-center gap-2 cursor-pointer p-2 border-dashed m-0 font-thin text-sm text-green-600 bg-transparent border-green-600"
+                v-if="!signatureResult"
+                @click="openSignatureModal"
+                class="border flex items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
               >
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
+                  height="21"
+                  viewBox="0 0 21 21"
+                  width="21"
                   class="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
+                  <g
+                    fill="none"
+                    fill-rule="evenodd"
+                    stroke="currentColor"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                  />
+                    transform="translate(3 3)"
+                  >
+                    <path
+                      d="m14 1c.8284271.82842712.8284271 2.17157288 0 3l-9.5 9.5-4 1 1-3.9436508 9.5038371-9.55252193c.7829896-.78700064 2.0312313-.82943964 2.864366-.12506788z"
+                    />
+                    <path d="m6.5 14.5h8" />
+                    <path d="m12.5 3.5 1 1" />
+                  </g>
                 </svg>
                 <span>Signature</span>
+              </div>
+              <div
+                v-else
+                @click="openSignatureModal"
+                class="border flex items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
+              >
+                <img :src="signatureResult" alt="" class="h-8 w-8" />
+              </div>
+              <div
+                class="shadow rounded-sm mt-1.5 bg-white hidden"
+                id="recipients"
+              >
+                <div
+                  v-for="(recipient, index) of documents.documents.recipients"
+                  :key="index"
+                >
+                  <div
+                    class="px-2 recipient flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-200"
+                    @click="chooseRecipients"
+                  >
+                    <img
+                      src="https://media.istockphoto.com/id/1393750072/vector/flat-white-icon-man-for-web-design-silhouette-flat-illustration-vector-illustration-stock.jpg?s=612x612&w=0&k=20&c=s9hO4SpyvrDIfELozPpiB_WtzQV9KhoMUP9R9gVohoU="
+                      class="w-6 h-6 rounded-full"
+                      alt=""
+                    />
+                    <div id="recipientContainer">
+                      <h5 class="m-0 text-xs font-bold recipientName">
+                        {{ recipient.name }}
+                      </h5>
+                      <h4
+                        class="m-0 text-xs font-thin text-slate-500 recipientEmail"
+                      >
+                        {{ recipient.email }}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="px-2 flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6 rounded-full text-center text-green-500 bg-green-100 p-1"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                    />
+                  </svg>
+
+                  <div>
+                    <h5 class="m-0 text-xs font-bold text-green-500">
+                      Add recipient
+                    </h5>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -455,11 +620,15 @@
   </div>
 </template>
 <script setup>
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
 import { Link, router, Head } from "@inertiajs/vue3";
 import { onMounted, reactive, ref } from "vue";
 import { initFlowbite, Modal } from "flowbite";
 import MailModal from "@/Components/Modals/MailModal.vue";
+import SignatureModal from "@/Components/Modals/SignatureModal.vue";
 import NewDocumentName from "@/Components/Modals/NewDocumentName.vue";
+import NewDocumentUpload from "@/Components/Modals/NewDocumentModal.vue";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 import Tools from "@/Components/Documents/Tools.vue";
 import ToolBar from "@/Components/Documents/ToolBar.vue";
@@ -472,12 +641,48 @@ const documents = defineProps({
   auth: Object,
 });
 
+const assignRecipent = (e) => {
+  let recipientStatus = e.target
+    .closest(".signature")
+    .querySelector("#recipients");
+  if (recipientStatus.classList.contains("hidden")) {
+    recipientStatus.classList.remove("hidden");
+  } else {
+    recipientStatus.classList.add("hidden");
+  }
+  recipientStatus.classList.add("block");
+};
+
 const form = reactive({
   newDocumentName: null,
 });
 const recipientName = ref("Assign");
+const nameStatus = ref(true);
 const choosedRecipient = (data) => {
   recipientName.value = data;
+};
+
+const chooseRecipients = (e) => {
+  let recipient = e.target
+    .closest(".signature")
+    .querySelector("#recipientName");
+
+  recipient.innerText = e.target
+    .closest("#recipientContainer")
+    .querySelector(".recipientName").innerText;
+  recipient.setAttribute(
+    "recipientEmail",
+    e.target.closest("#recipientContainer").querySelector(".recipientEmail")
+      .innerText
+  );
+  let recipientStatus = e.target.closest("#recipients");
+  if (recipientStatus.classList.contains("hidden")) {
+    recipientStatus.classList.remove("hidden");
+  } else {
+    recipientStatus.classList.add("hidden");
+  }
+  recipientStatus.classList.add("block");
+  nameStatus.value = false;
 };
 
 const sendMailForm = reactive({
@@ -497,9 +702,33 @@ const dragText = ref("");
 const date = ref("");
 const documentNameModal = ref(null);
 const sendModal = ref(null);
+const recipientEmails = ref([]);
+const signatureModal = ref(null);
+const signatureResult = ref(null);
+const newDocumentUpload = ref(null);
 
 const openEmailModal = () => {
   documentNameModal.value.show();
+  let recipientEmail = document.querySelectorAll("#recipientName");
+  recipientEmail.forEach((email) =>
+    recipientEmails.value.push(email.getAttribute("recipientemail"))
+  );
+};
+
+const docs = (doc) => {
+  return location.origin + "/storage/documents/" + doc;
+};
+
+const openNewDocumentUpload = () => {
+  newDocumentUpload.value.show();
+};
+
+const closeNewDocumentUpload = () => {
+  newDocumentUpload.value.hide();
+};
+
+const closeSignatureModal = () => {
+  signatureModal.value.hide();
 };
 
 const openSendMailModal = () => {
@@ -528,6 +757,10 @@ const toggleAside = () => {
 };
 const closeToggle = () => {
   toggle.value = !toggle.value;
+};
+
+const openSignatureModal = () => {
+  signatureModal.value.show();
 };
 
 const editSignature = (e) => {
@@ -619,8 +852,25 @@ const deleteField = (e) => {
 };
 
 onMounted(() => {
+  window.Pusher = Pusher;
+  window.Echo = new Echo({
+    broadcaster: "pusher",
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
+  });
+  window.Echo.channel("channel-name").listen("Test", (para) => {
+    console.log(para);
+  });
+
   const modalDocument = document.querySelector("#changeDocumentName");
   const modalMail = document.querySelector("#sendMailModal");
+  const newDocumentUploadModal = document.querySelector(
+    "#newDocumentUploadModal"
+  );
+  const modalSignature = document.querySelector("#signature-modal");
+  signatureModal.value = new Modal(modalSignature);
+  newDocumentUpload.value = new Modal(newDocumentUploadModal);
   documentNameModal.value = new Modal(modalDocument);
   sendModal.value = new Modal(modalMail);
   date.value = `Updated ${moment(documents.documents.updated_at).format("ll")}`;
@@ -639,6 +889,11 @@ onMounted(() => {
   );
   initFlowbite();
 });
+
+const acceptSignature = (data) => {
+  signatureResult.value = data;
+  signatureModal.value.hide();
+};
 </script>
 <style>
 .sent {

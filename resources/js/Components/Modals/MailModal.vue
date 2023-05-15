@@ -48,12 +48,17 @@
                 </div>
                 <div class="flex gap-9 w-full items-center">
                   <h5 class="text-xs font-thin text-gray-500">TO</h5>
-                  <div class="ml-4">
-                    <h4
-                      class="text-xs m-0 font-thin text-gray-500 py-1 px-1.5 rounded-lg bg-gray-100"
+                  <div class="ml-4 flex gap-1">
+                    <div
+                      v-for="(recipientEmail, index) of recipientEmails"
+                      :key="index"
                     >
-                      {{ auth.user.name.toLowerCase() }}
-                    </h4>
+                      <h4
+                        class="text-xs m-0 font-thin text-gray-500 py-1 px-1.5 rounded-lg bg-gray-100"
+                      >
+                        {{ recipientEmail.toLowerCase() }}
+                      </h4>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -180,17 +185,17 @@ import { onMounted } from "vue";
 const docuements = defineProps({
   auth: Object,
   document: Object,
+  recipientEmails: Array,
 });
 
 const form = useForm({
-  toMails: {
-    name: "Ar Kar Lin",
-    mail: "arkarlin793437@gmail.com",
-  },
+  toMails: [],
   subject: `${docuements.auth.user.name} sent you ${docuements.document.doc_name}`,
   message: "",
 });
 const sendMailSubmit = () => {
+  form.toMails.push(...docuements.recipientEmails);
+  console.log(form);
   form.post(route("document.send.mail", docuements.document.id), {
     onSuccess: () => {
       router.get(route("document.edit.document", docuements.document.id));

@@ -37,7 +37,7 @@ class DocumentController extends Controller
         $newDocument = Document::create([
             'user_id'=>auth()->user()->id,
             'doc_name'=> $doc_name,
-            'doc_docs'=> $docs,
+            'doc_docs'=> [$docs],
             'doc_type'=> $doc_type,
             'doc_key'=>'TEST'
         ]);
@@ -92,12 +92,27 @@ class DocumentController extends Controller
 
     public function newDocumentName(Document $document, Request $request)
     {
+        $doc_docs = $document->doc_docs;
+        $docs = [];
+        if($request->file('newDocument')) {
+            $file = $request->file('newDocument');
+            $doc_type = $file->getClientOriginalExtension();
+            $doc = uniqid().".".$doc_type;
+            $file->storeAs('documents', $doc);
+
+            if(is_array($doc_docs)) {
+                $docs = $doc_docs;
+                $docs[] = $doc;
+            } else {
+                $docs[] = $doc_docs;
+                $docs[] = $doc;
+            }
+        }
         $document->update([
-            'doc_name'=>$request->newDocumentName??$document->doc_name
+            'doc_name'=>$request->newDocumentName??$document->doc_name,
+            'doc_docs'=>$docs??$doc_docs
         ]);
 
-        return response()->json([
-            'documents' => $document
-        ]);
+        return to_route('document.edit.document', $document->id);
     }
 }
