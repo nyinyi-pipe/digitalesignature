@@ -131,7 +131,11 @@ const upload = (e) => {
 
   reader.onloadend = (evt) => {
     setTimeout(() => {
-      form.post(route("document.new.document-name", documents.id));
+      form.post(route("document.new.document-name", documents.id), {
+        onSuccess: () => {
+          location.reload();
+        },
+      });
       emit("closeNewDocumentUpload");
     }, 4000);
   };

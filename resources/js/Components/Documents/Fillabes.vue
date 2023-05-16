@@ -87,13 +87,14 @@
               <h5 class="m-0 text-sm font-bold recipientName">
                 {{ recipient.name }}
               </h5>
-              <h4 class="m-0 text-xs font-thin text-slate-500">
+              <h4 class="m-0 text-xs font-thin recipientEmail text-slate-500">
                 {{ recipient.email }}
               </h4>
             </div>
           </div>
         </div>
         <div
+          @click="$emit('openNewRecipientModal')"
           class="px-3 flex py-1 items-center space-x-1.5 cursor-pointer hover:bg-gray-100"
         >
           <svg
@@ -135,6 +136,7 @@ const recipientStatus = ref(false);
 const choosed = ref(false);
 const form = useForm({
   chooseRecipient: "",
+  chooseRecipientMail: "",
 });
 const focusSearch = () => {
   recipientStatus.value = !recipientStatus.value;
@@ -143,8 +145,14 @@ const chooseRecipients = (e) => {
   form.chooseRecipient = e.target
     .closest(".recipient")
     .querySelector(".recipientName").innerText;
+  form.chooseRecipientMail = e.target
+    .closest(".recipient")
+    .querySelector(".recipientEmail").innerText;
   recipientStatus.value = !recipientStatus.value;
   choosed.value = true;
-  emit("choosedRecipient", form.chooseRecipient);
+  emit("choosedRecipient", {
+    name: form.chooseRecipient,
+    email: form.chooseRecipientMail,
+  });
 };
 </script>

@@ -25,6 +25,11 @@
       @closeNewDocumentUpload="closeNewDocumentUpload"
       :id="documents.documents.id"
     />
+    <!-- new recipient modal -->
+    <NewRecipientModal
+      :documents="documents.documents"
+      @closeNewRecipientModal="closeNewRecipientModal"
+    />
 
     <div
       class="sticky z-10 top-0 h-14 border-b bg-white flex items-center py-2 lg:py-2.5"
@@ -327,6 +332,7 @@
                 </div>
                 <div>
                   <svg
+                    data-dropdown-toggle="dropdown-delete-doc"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -340,13 +346,41 @@
                       d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
                     />
                   </svg>
+                  <div
+                    id="dropdown-delete-doc"
+                    class="z-10 hidden bg-white rounded-sm shadow w-39"
+                  >
+                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+                      <li
+                        @click="deleteDocument(doc)"
+                        :doc="doc"
+                        class="px-2 py-1 flex gap-2 text-gray-500 hover:text-red-500 duration-300 hover:bg-gray-100 items-center cursor-pointer"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-5 h-5"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                          />
+                        </svg>
+                        Delete page
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="relative" id="main">
               <img
                 id="image"
-                @drop="onDrop"
+                :doc="doc"
                 class="w-full object-cover"
                 :src="docs(doc)"
                 alt=""
@@ -356,6 +390,7 @@
 
           <div v-for="(signature, index) of signatures" :key="index">
             <div
+              :doc="signature"
               draggable="true"
               @dragstart="editSignature"
               class="absolute fields hidden signature select-none"
@@ -413,7 +448,7 @@
                     <span
                       class="font-bold text-gray-200"
                       id="recipientName"
-                      recipientEmail="unknown"
+                      :recipientEmail="recipientEmail"
                       >{{ recipientName }}</span
                     >
                   </div>
@@ -503,6 +538,7 @@
                   </div>
                 </div>
                 <div
+                  @click="openNewRecipientModal"
                   class="px-2 flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-100"
                 >
                   <svg
@@ -613,6 +649,7 @@
           <Fillabes
             :documents="documents.documents"
             @choosed-recipient="choosedRecipient"
+            @openNewRecipientModal="openNewRecipientModal"
           />
         </template>
       </ToolBar>
@@ -622,10 +659,11 @@
 <script setup>
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
-import { Link, router, Head } from "@inertiajs/vue3";
+import { Link, router, Head, useForm } from "@inertiajs/vue3";
 import { onMounted, reactive, ref } from "vue";
 import { initFlowbite, Modal } from "flowbite";
 import MailModal from "@/Components/Modals/MailModal.vue";
+import NewRecipientModal from "@/Components/Modals/RecipientModal.vue";
 import SignatureModal from "@/Components/Modals/SignatureModal.vue";
 import NewDocumentName from "@/Components/Modals/NewDocumentName.vue";
 import NewDocumentUpload from "@/Components/Modals/NewDocumentModal.vue";
@@ -635,6 +673,7 @@ import ToolBar from "@/Components/Documents/ToolBar.vue";
 import Fillabes from "@/Components/Documents/Fillabes.vue";
 import moment from "moment";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const documents = defineProps({
   documents: Object,
@@ -653,13 +692,16 @@ const assignRecipent = (e) => {
   recipientStatus.classList.add("block");
 };
 
-const form = reactive({
+const form = useForm({
   newDocumentName: null,
+  _method: "PUT",
 });
 const recipientName = ref("Assign");
+const recipientEmail = ref("Unknown");
 const nameStatus = ref(true);
-const choosedRecipient = (data) => {
-  recipientName.value = data;
+const choosedRecipient = ({ name, email }) => {
+  recipientName.value = name;
+  recipientEmail.value = email;
 };
 
 const chooseRecipients = (e) => {
@@ -670,6 +712,8 @@ const chooseRecipients = (e) => {
   recipient.innerText = e.target
     .closest("#recipientContainer")
     .querySelector(".recipientName").innerText;
+  recipientName.value = recipient.innerText;
+
   recipient.setAttribute(
     "recipientEmail",
     e.target.closest("#recipientContainer").querySelector(".recipientEmail")
@@ -689,7 +733,6 @@ const sendMailForm = reactive({
   sendMail: null,
 });
 const mails = reactive(["list", "of", "options"]);
-
 const toggle = ref(false);
 const uploadedDocument = ref("");
 const signatures = ref([]);
@@ -706,13 +749,17 @@ const recipientEmails = ref([]);
 const signatureModal = ref(null);
 const signatureResult = ref(null);
 const newDocumentUpload = ref(null);
+const newRecipientModal = ref(null);
 
 const openEmailModal = () => {
   documentNameModal.value.show();
   let recipientEmail = document.querySelectorAll("#recipientName");
-  recipientEmail.forEach((email) =>
-    recipientEmails.value.push(email.getAttribute("recipientemail"))
-  );
+  recipientEmail.forEach((email) => {
+    if (recipientEmails.value.includes(email.getAttribute("recipientemail"))) {
+      return;
+    }
+    return recipientEmails.value.push(email.getAttribute("recipientemail"));
+  });
 };
 
 const docs = (doc) => {
@@ -725,6 +772,10 @@ const openNewDocumentUpload = () => {
 
 const closeNewDocumentUpload = () => {
   newDocumentUpload.value.hide();
+};
+
+const closeNewRecipientModal = () => {
+  newRecipientModal.value.hide();
 };
 
 const closeSignatureModal = () => {
@@ -743,12 +794,17 @@ const closeSendMailModal = () => {
   sendModal.value.hide();
 };
 
-const saveDocumentName = async () => {
-  const { data } = await axios.put(
-    route("document.new.document-name", documents.documents.id),
-    form
-  );
-  documents.documents = data.documents;
+const deleteDocument = (doc) => {
+  const form = useForm({
+    id: documents.documents.id,
+    doc: doc,
+    _method: "DELETE",
+  });
+  form.post(route("documents.delete.document", form.id));
+  location.reload();
+};
+const saveDocumentName = () => {
+  form.post(route("document.new.document-name", documents.documents.id));
   documentNameModal.value.hide();
   openSendMailModal();
 };
@@ -758,7 +814,9 @@ const toggleAside = () => {
 const closeToggle = () => {
   toggle.value = !toggle.value;
 };
-
+const openNewRecipientModal = () => {
+  newRecipientModal.value.show();
+};
 const openSignatureModal = () => {
   signatureModal.value.show();
 };
@@ -859,11 +917,11 @@ onMounted(() => {
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
     forceTLS: true,
   });
-  window.Echo.channel("channel-name").listen("Test", (para) => {
-    console.log(para);
+  window.Echo.channel("document").listen("DocumentEvent", ({ document }) => {
+    console.log(document);
   });
-
   const modalDocument = document.querySelector("#changeDocumentName");
+  const newRecipient = document.querySelector("#newRecipient");
   const modalMail = document.querySelector("#sendMailModal");
   const newDocumentUploadModal = document.querySelector(
     "#newDocumentUploadModal"
@@ -872,21 +930,89 @@ onMounted(() => {
   signatureModal.value = new Modal(modalSignature);
   newDocumentUpload.value = new Modal(newDocumentUploadModal);
   documentNameModal.value = new Modal(modalDocument);
+  newRecipientModal.value = new Modal(newRecipient);
   sendModal.value = new Modal(modalMail);
   date.value = `Updated ${moment(documents.documents.updated_at).format("ll")}`;
   uploadedDocument.value =
     location.origin + "/storage/documents/" + documents.documents.doc_docs;
   form.newDocumentName = documents.documents.doc_name;
 
-  const image = document.querySelector("#image");
+  const images = document.querySelectorAll("#image");
 
-  image.addEventListener(
-    "dragover",
-    (e) => {
+  images.forEach((image, index) => {
+    image.addEventListener("drop", (e) => {
       e.preventDefault();
-    },
-    false
-  );
+      const documentSignatureFieldsContainer =
+        document.querySelectorAll(".signature");
+
+      const documentTextFieldsContainer = document.querySelectorAll(".text");
+
+      const documentSignatureField =
+        documentSignatureFieldsContainer[signatures.value.length - 1];
+      const documentTextField =
+        documentTextFieldsContainer[texts.value.length - 1];
+
+      if (
+        !signatureEditStatus.value &&
+        documentSignatureField &&
+        dragText.value == "signature"
+      ) {
+        if (
+          documentSignatureField.getAttribute("count") ==
+          signatures.value[signatures.value.length - 1]
+        ) {
+          documentSignatureField.classList.remove("hidden");
+          documentSignatureField.style.top = `${e.offsetY}px`;
+          documentSignatureField.style.left = `${e.offsetX}px`;
+          documentSignatureField.setAttribute("x", e.offsetX);
+          documentSignatureField.setAttribute("y", e.offsetY);
+        }
+      } else if (signatureEditStatus.value && !TextEditStatus.value) {
+        const editSignatureField =
+          documentSignatureFieldsContainer[signatureEdit.value];
+        if (
+          editSignatureField &&
+          editSignatureField.getAttribute("count") == signatureEdit.value
+        ) {
+          editSignatureField.style.top = `${e.offsetY}px`;
+          editSignatureField.style.left = `${e.offsetX}px`;
+        }
+        signatureEditStatus.value = !signatureEditStatus.value;
+      } else if (
+        !TextEditStatus.value &&
+        documentTextField &&
+        dragText.value == "text"
+      ) {
+        if (
+          documentTextField.getAttribute("count") ==
+          texts.value[texts.value.length - 1]
+        ) {
+          documentTextField.classList.remove("hidden");
+          documentTextField.style.top = `${e.offsetY}px`;
+          documentTextField.style.left = `${e.offsetX}px`;
+        }
+      } else if (TextEditStatus.value && !signatureEditStatus.value) {
+        const editTextField = documentTextFieldsContainer[TextEdit.value];
+        if (
+          editTextField &&
+          editTextField.getAttribute("count") == TextEdit.value
+        ) {
+          editTextField.style.top = `${e.offsetY}px`;
+          editTextField.style.left = `${e.offsetX}px`;
+        }
+        TextEditStatus.value = !TextEditStatus.value;
+      }
+    });
+
+    image.addEventListener(
+      "dragover",
+      (e) => {
+        e.preventDefault();
+      },
+      false
+    );
+  });
+
   initFlowbite();
 });
 

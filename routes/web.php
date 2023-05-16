@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/documents/{document}/add-recipients', [DocumentController::class,'storeRecipients'])->name('document.store-recipients');
     Route::get('/documents/edit/{document}', [DocumentController::class,'editDocument'])->name('document.edit.document');
     Route::post('/documents/edit/{document}', [MailController::class,'sendMail'])->name('document.send.mail');
+    Route::delete('/documents/edit/{document}', [DocumentController::class,'deleteDoc'])->name('documents.delete.document');
     Route::put('/documents/edit/{document}', [DocumentController::class,'newDocumentName'])->name('document.new.document-name');
     Route::get('/documents/send', [DocumentController::class,'send'])->name('document.send');
     //profile

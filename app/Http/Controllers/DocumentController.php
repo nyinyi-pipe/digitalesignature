@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\DocumentEvent;
 use App\Http\Requests\DocumentRequest;
 use App\Http\Requests\RecipientRequest;
 use App\Models\Document;
@@ -10,6 +11,7 @@ use App\Models\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -73,7 +75,7 @@ class DocumentController extends Controller
             }
             $document->documentnonuser()->attach($nonuser->id??$user->id);
             $document->update([
-                'doc_name'=>$request->docName,
+                'doc_name'=>$request->docName??$document->doc_name,
             ]);
             DB::commit();
         } catch (\Throwable $th) {
@@ -110,9 +112,18 @@ class DocumentController extends Controller
         }
         $document->update([
             'doc_name'=>$request->newDocumentName??$document->doc_name,
-            'doc_docs'=>$docs??$doc_docs
+            'doc_docs'=>$request->file('newDocument')?$docs:$doc_docs
         ]);
 
+        return to_route('document.edit.document', $document->id);
+    }
+
+    public function deleteDoc(Document $document, Request $request)
+    {
+        $docs = array_filter($document->doc_docs, fn ($doc) => $doc != $request->doc);
+        $document->update([
+            'doc_docs'=>$docs
+        ]);
         return to_route('document.edit.document', $document->id);
     }
 }
