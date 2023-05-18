@@ -46,7 +46,10 @@
                     </h5>
                   </div>
                 </div>
-                <div class="flex gap-9 w-full items-center">
+                <div
+                  class="flex gap-9 w-full items-center"
+                  v-if="recipientEmails[0]"
+                >
                   <h5 class="text-xs font-thin text-gray-500">To</h5>
                   <div class="ml-4 flex gap-1">
                     <div
@@ -61,6 +64,40 @@
                     </div>
                   </div>
                 </div>
+                <div v-else class="flex gap-9 w-full mt-1.5 items-center">
+                  <h5 class="text-xs font-thin text-gray-500">CC</h5>
+                  <div class="w-full relative items-center flex gap-1">
+                    <div v-for="email of form.ccMails" :key="email">
+                      <p
+                        class="m-0 ccMail flex items-center text-xs p-1 font-thin text-gray-500 bg-gray-100 rounded-lg"
+                      >
+                        {{ email }}
+                        <svg
+                          @click="deleCcMail"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="ml-1 cursor-pointer hover:text-red-500 w-4 h-4"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </p>
+                    </div>
+                    <input
+                      @keypress.enter="newCCMail"
+                      type="text"
+                      placeholder="Start typing CC email"
+                      class="w-full py-1 border-0 focus:ring-0 text-xs font-thin text-gray-500"
+                    />
+                  </div>
+                </div>
+
                 <div v-if="useCc" class="flex gap-9 w-full mt-1.5 items-center">
                   <h5 class="text-xs font-thin text-gray-500">CC</h5>
                   <div class="w-full relative items-center flex gap-1">
@@ -95,7 +132,10 @@
                   </div>
                 </div>
               </div>
-              <div class="w-full self-end flex justify-end" v-if="!useCc">
+              <div
+                class="w-full self-end flex justify-end"
+                v-if="recipientEmails[0]"
+              >
                 <button
                   @click.prevent="addCC"
                   class="py-1 flex items-center text-sm px-1.5 mr-2 hover:bg-gray-100 rounded duration-100"
@@ -199,7 +239,7 @@
                   </div>
                   <button
                     type="submit"
-                    class="inline-flex items-center py-2 px-3 text-xs font-medium text-center text-white bg-green-600 rounded-sm focus:ring-4 focus:ring-green-200 hover:bg-green-700"
+                    class="inline-flex cursor-pointer items-center py-2 px-3 text-xs font-medium text-center text-white bg-green-600 rounded-sm focus:ring-4 focus:ring-green-200 hover:bg-green-700"
                   >
                     Send document
                   </button>
@@ -215,7 +255,8 @@
 
 <script setup>
 import { router, useForm } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import axios from "axios";
+import { ref, onMounted, watch, reactive } from "vue";
 const docuements = defineProps({
   auth: Object,
   document: Object,
@@ -229,18 +270,31 @@ const form = useForm({
   subject: `${docuements.auth.user.name} sent you ${docuements.document.doc_name}`,
   message: "",
 });
+
 const newCCMail = (e) => {
   e.preventDefault();
   form.ccMails.push(e.target.value);
   e.target.value = "";
 };
 const sendMailSubmit = () => {
-  form.toMails.push(...docuements.recipientEmails);
-  console.log(form);
-  form.post(route("document.send.mail", docuements.document.id), {
-    onSuccess: () => {
-      router.get(route("document.view.document", docuements.document.id));
-    },
+  const mainTag = document.querySelectorAll(".fields");
+  mainTag.forEach((main) => {
+    let signDatas = reactive({
+      docId: docuements.document.id,
+      index: main.getAttribute("index"),
+      y: main.style.top,
+      x: main.style.left,
+      email: main.querySelector(".recipientEmail").innerText,
+    });
+    axios
+      .post(route("documents.store.document.result", signDatas))
+      .then((res) => console.log(res.data));
+    form.toMails.push(...docuements.recipientEmails);
+    form.post(route("document.send.mail", docuements.document.id), {
+      onSuccess: () => {
+        router.get(route("document.view.document", docuements.document.id));
+      },
+    });
   });
 };
 

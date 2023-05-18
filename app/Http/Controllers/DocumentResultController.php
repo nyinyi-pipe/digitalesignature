@@ -23,7 +23,8 @@ class DocumentResultController extends Controller
             'x'=>$request->x,
             'y'=>$request->y,
         ]);
-        return to_route('document.edit.document', $request->docId);
+        return response()->json('successfully', 200, );
+        // return to_route('document.edit.document', $request->docId);
     }
 
     public function edit(Document $document, $recipient) : Response

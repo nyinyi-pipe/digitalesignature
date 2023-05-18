@@ -145,6 +145,7 @@ const Upload = () => {
   selectedComponent.value = UploadSign;
 };
 const saveSignature = (data) => {
+  console.log(data);
   signature.value = data;
 };
 </script>

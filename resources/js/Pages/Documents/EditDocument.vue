@@ -691,7 +691,7 @@ const form = useForm({
   _method: "PUT",
 });
 const recipientName = ref("Assign");
-const recipientEmail = ref("Unknown");
+const recipientEmail = ref("unknown");
 const nameStatus = ref(true);
 const choosedRecipient = ({ name, email }) => {
   recipientName.value = name;
@@ -700,15 +700,12 @@ const choosedRecipient = ({ name, email }) => {
 
 const chooseRecipients = (e) => {
   let main = e.target.closest(".fields");
-
   let recipient = e.target
     .closest(".signature")
     .querySelector("#recipientName");
-
   recipient.innerText = e.target
     .closest("#recipientContainer")
     .querySelector(".recipientName").innerText;
-
   recipient.setAttribute(
     "recipientEmail",
     e.target.closest("#recipientContainer").querySelector(".recipientEmail")
@@ -722,17 +719,16 @@ const chooseRecipients = (e) => {
   }
   recipientStatus.classList.add("block");
   nameStatus.value = false;
-
-  let form = useForm({
-    docId: documents.documents.id,
-    index: main.getAttribute("index"),
-    y: main.style.top,
-    x: main.style.left,
-    email: e.target
-      .closest("#recipientContainer")
-      .querySelector(".recipientEmail").innerText,
-  });
-  form.post(route("documents.store.document.result"));
+//   let form = useForm({
+//     docId: documents.documents.id,
+//     index: main.getAttribute("index"),
+//     y: main.style.top,
+//     x: main.style.left,
+//     email: e.target
+//       .closest("#recipientContainer")
+//       .querySelector(".recipientEmail").innerText,
+//   });
+  //   form.post(route("documents.store.document.result"));
 };
 
 const sendMailForm = reactive({
@@ -764,7 +760,9 @@ const openEmailModal = () => {
     if (recipientEmails.value.includes(email.getAttribute("recipientemail"))) {
       return;
     }
-    return recipientEmails.value.push(email.getAttribute("recipientemail"));
+    if (email.getAttribute("recipientemail") != "unknown") {
+      return recipientEmails.value.push(email.getAttribute("recipientemail"));
+    }
   });
 };
 

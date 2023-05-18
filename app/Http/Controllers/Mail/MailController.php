@@ -23,14 +23,9 @@ class MailController extends Controller
                     $to = User::where('email', $mail)->first();
                 }
                 $document['link'] = route('recipient.edit.document', [$document->id,$to->id]);
-                if($request->ccMails) {
-                    Mail::to($to->email)->cc($request->ccMails)->send(new SendDocumentMail($document));
-                } else {
-                    Mail::to($to->email)->send(new SendDocumentMail($document));
-                }
+                Mail::to($to->email)->cc($request->ccMails)->send(new SendDocumentMail($document));
             }
         }
-
-        // Mail::to($request->toMails)->cc($request->ccMails)->send(new SendDocumentMail($document));
+        Mail::to(auth()->user()->email)->cc($request->ccMails)->send(new SendDocumentMail($document));
     }
 }
