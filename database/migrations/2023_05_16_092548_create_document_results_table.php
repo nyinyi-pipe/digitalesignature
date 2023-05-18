@@ -14,10 +14,10 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->foreignUuid('document_id');
             $table->foreignUuid('nonuser_id');
-            $table->integer('x');
-            $table->integer('y');
-            $table->string('type');
-            $table->longText('result');
+            $table->string('x');
+            $table->string('y');
+            $table->string('type')->nullable();
+            $table->longText('result')->nullable();
             $table->timestamps();
         });
     }

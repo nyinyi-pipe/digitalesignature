@@ -30,7 +30,7 @@ class SendDocumentMail extends Mailable
     {
         return new Envelope(
             replyTo: [
-                new Address('arkarlin486@gmail.com', 'Ar Kar Lin'),
+                new Address(auth()->user()->email, auth()->user()->name),
             ],
             subject: $this->document->subject?? $this->document->doc_name,
         );
@@ -45,7 +45,8 @@ class SendDocumentMail extends Mailable
             markdown: 'mails/send-document',
             with: [
                 'subject' => $this->document->subject?? $this->document->doc_name,
-                'message' => $this->document->message??"nothing"
+                'message' => $this->document->message??"Nothing...,",
+                'link'=>$this->document->link
             ],
         );
     }

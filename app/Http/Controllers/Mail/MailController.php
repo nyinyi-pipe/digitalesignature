@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Mail;
 use App\Http\Controllers\Controller;
 use App\Mail\SendDocumentMail;
 use App\Models\Document;
+use App\Models\Nonuser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -14,8 +16,16 @@ class MailController extends Controller
     {
         $document['subject'] = $request->subject;
         $document['message'] = $request->message;
-        foreach ($request->toMails as $mail) {
-            Mail::to($mail)->send(new SendDocumentMail($document));
+        if($request->toMails) {
+            foreach ($request->toMails as $mail) {
+                $to = Nonuser::where('email', $mail)->first();
+                if($to == null) {
+                    $to = User::where('email', $mail)->first();
+                }
+                $document['link'] = route('recipient.edit.document', [$document->id,$to->id]);
+                Mail::to($to->email)->send(new SendDocumentMail($document));
+            }
         }
+        // Mail::to($request->toMails)->cc($request->ccMails)->send(new SendDocumentMail($document));
     }
 }

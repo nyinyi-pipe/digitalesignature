@@ -21,7 +21,7 @@
                     {{$message}}
                 </p>
                 <div class="button-container">
-                    <button class="open-document">OPEN THE DOCUMENT</button>
+                    <a type="button" target="_blank" href="{{$link}}" class="open-document">OPEN THE DOCUMENT</a>
                     <button>FORWARD</button>
                 </div>
             </div>

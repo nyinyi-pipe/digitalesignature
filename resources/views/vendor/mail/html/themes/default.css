@@ -82,6 +82,10 @@ button {
     background-color: #16a34a;
     color: white;
     margin-right: 0.7rem;
+    text-align: center;
+    text-decoration: none;
+    width: 48%;
+    padding: 23px 20px;
 }
 .footer-container {
     display: flex;
@@ -93,4 +97,9 @@ button {
     text-align: center;
     color: rgb(142, 142, 142);
     font-size: 0.7rem;
+}
+@media screen and (max-width: 600px) {
+    .open-document {
+        padding-top: 10px;
+    }
 }

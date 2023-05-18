@@ -6,6 +6,7 @@ use App\Events\DocumentEvent;
 use App\Http\Requests\DocumentRequest;
 use App\Http\Requests\RecipientRequest;
 use App\Models\Document;
+use App\Models\DocumentResult;
 use App\Models\Nonuser;
 use App\Models\User;
 use Illuminate\Database\Query\Builder;
@@ -125,5 +126,19 @@ class DocumentController extends Controller
             'doc_docs'=>$docs
         ]);
         return to_route('document.edit.document', $document->id);
+    }
+
+    public function view(Document $document) : Response
+    {
+        $ress = DocumentResult::where('document_id', $document->id)->get();
+        $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
+        $signments = $ress->map(function ($res) {
+            return array('id'=>$res->id,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
+        });
+        $document['signatures'] = $signments;
+        return Inertia::render("Documents/ViewDocument", [
+            'documents'=>$document
+        ]);
+
     }
 }

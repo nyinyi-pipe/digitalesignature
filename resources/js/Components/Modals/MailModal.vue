@@ -3,7 +3,7 @@
     id="sendMailModal"
     tabindex="-1"
     aria-hidden="true"
-    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%)] max-h-full"
+    class="fixed top-0 hidden left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%)] max-h-full"
   >
     <div class="relative w-full max-w-4xl max-h-full">
       <!-- Modal content -->
@@ -47,7 +47,7 @@
                   </div>
                 </div>
                 <div class="flex gap-9 w-full items-center">
-                  <h5 class="text-xs font-thin text-gray-500">TO</h5>
+                  <h5 class="text-xs font-thin text-gray-500">To</h5>
                   <div class="ml-4 flex gap-1">
                     <div
                       v-for="(recipientEmail, index) of recipientEmails"
@@ -61,9 +61,43 @@
                     </div>
                   </div>
                 </div>
+                <div v-if="useCc" class="flex gap-9 w-full mt-1.5 items-center">
+                  <h5 class="text-xs font-thin text-gray-500">CC</h5>
+                  <div class="w-full relative items-center flex gap-1">
+                    <div v-for="email of form.ccMails" :key="email">
+                      <p
+                        class="m-0 ccMail flex items-center text-xs p-1 font-thin text-gray-500 bg-gray-100 rounded-lg"
+                      >
+                        {{ email }}
+                        <svg
+                          @click="deleCcMail"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="ml-1 cursor-pointer hover:text-red-500 w-4 h-4"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </p>
+                    </div>
+                    <input
+                      @keypress.enter="newCCMail"
+                      type="text"
+                      placeholder="Start typing CC email"
+                      class="w-full py-1 border-0 focus:ring-0 text-xs font-thin text-gray-500"
+                    />
+                  </div>
+                </div>
               </div>
-              <div class="w-full self-end flex justify-end">
+              <div class="w-full self-end flex justify-end" v-if="!useCc">
                 <button
+                  @click.prevent="addCC"
                   class="py-1 flex items-center text-sm px-1.5 mr-2 hover:bg-gray-100 rounded duration-100"
                 >
                   <svg
@@ -181,25 +215,44 @@
 
 <script setup>
 import { router, useForm } from "@inertiajs/vue3";
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 const docuements = defineProps({
   auth: Object,
   document: Object,
   recipientEmails: Array,
 });
+const useCc = ref(false);
 
 const form = useForm({
   toMails: [],
+  ccMails: [],
   subject: `${docuements.auth.user.name} sent you ${docuements.document.doc_name}`,
   message: "",
 });
+const newCCMail = (e) => {
+  e.preventDefault();
+  form.ccMails.push(e.target.value);
+  e.target.value = "";
+};
 const sendMailSubmit = () => {
   form.toMails.push(...docuements.recipientEmails);
   console.log(form);
   form.post(route("document.send.mail", docuements.document.id), {
     onSuccess: () => {
-      router.get(route("document.edit.document", docuements.document.id));
+      router.get(route("document.view.document", docuements.document.id));
     },
   });
+};
+
+const addCC = () => {
+  useCc.value = true;
+};
+
+const deleCcMail = (e) => {
+  e.target.closest(".ccMail").remove();
+  const datas = document.querySelectorAll(".ccMail");
+  const res = [];
+  datas.forEach((data) => [res.push(data.innerText)]);
+  form.ccMails = res;
 };
 </script>

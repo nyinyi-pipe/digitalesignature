@@ -404,11 +404,11 @@
               >
                 <div class="flex gap-2 items-center">
                   <div
-                    v-if="recipientName == 'Assign' && nameStatus"
                     @click="assignRecipent"
                     class="flex items-center pr-2 border-r"
                   >
                     <svg
+                      v-if="recipientName == 'Assign' && nameStatus"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -422,16 +422,8 @@
                         d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
                       />
                     </svg>
-                    <span class="font-bold" id="recipientName">{{
-                      recipientName
-                    }}</span>
-                  </div>
-                  <div
-                    v-else
-                    class="flex items-center pr-2 border-r"
-                    @click="assignRecipent"
-                  >
                     <svg
+                      v-else
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -705,6 +697,8 @@ const choosedRecipient = ({ name, email }) => {
 };
 
 const chooseRecipients = (e) => {
+  let main = e.target.closest(".fields");
+
   let recipient = e.target
     .closest(".signature")
     .querySelector("#recipientName");
@@ -712,7 +706,6 @@ const chooseRecipients = (e) => {
   recipient.innerText = e.target
     .closest("#recipientContainer")
     .querySelector(".recipientName").innerText;
-  recipientName.value = recipient.innerText;
 
   recipient.setAttribute(
     "recipientEmail",
@@ -727,6 +720,16 @@ const chooseRecipients = (e) => {
   }
   recipientStatus.classList.add("block");
   nameStatus.value = false;
+
+  let form = useForm({
+    docId: documents.documents.id,
+    y: main.style.top,
+    x: main.style.left,
+    email: e.target
+      .closest("#recipientContainer")
+      .querySelector(".recipientEmail").innerText,
+  });
+  form.post(route("documents.store.document.result"));
 };
 
 const sendMailForm = reactive({
