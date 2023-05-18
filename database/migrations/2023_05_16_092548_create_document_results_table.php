@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->foreignUuid('document_id');
             $table->foreignUuid('nonuser_id');
+            $table->string('index');
             $table->string('x');
             $table->string('y');
             $table->string('type')->nullable();

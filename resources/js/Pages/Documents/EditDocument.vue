@@ -380,6 +380,7 @@
             <div class="relative" id="main">
               <img
                 id="image"
+                :index="index"
                 :doc="doc"
                 class="w-full object-cover"
                 :src="docs(doc)"
@@ -391,6 +392,7 @@
           <div v-for="(signature, index) of signatures" :key="index">
             <div
               :doc="signature"
+              :index="index"
               draggable="true"
               @dragstart="editSignature"
               class="absolute fields hidden signature select-none"
@@ -723,6 +725,7 @@ const chooseRecipients = (e) => {
 
   let form = useForm({
     docId: documents.documents.id,
+    index: main.getAttribute("index"),
     y: main.style.top,
     x: main.style.left,
     email: e.target
@@ -945,6 +948,8 @@ onMounted(() => {
   images.forEach((image, index) => {
     image.addEventListener("drop", (e) => {
       e.preventDefault();
+      let mainTag = e.target.closest("#main");
+
       const documentSignatureFieldsContainer =
         document.querySelectorAll(".signature");
 
@@ -952,6 +957,7 @@ onMounted(() => {
 
       const documentSignatureField =
         documentSignatureFieldsContainer[signatures.value.length - 1];
+
       const documentTextField =
         documentTextFieldsContainer[texts.value.length - 1];
 
@@ -965,10 +971,11 @@ onMounted(() => {
           signatures.value[signatures.value.length - 1]
         ) {
           documentSignatureField.classList.remove("hidden");
-          documentSignatureField.style.top = `${e.offsetY}px`;
-          documentSignatureField.style.left = `${e.offsetX}px`;
-          documentSignatureField.setAttribute("x", e.offsetX);
-          documentSignatureField.setAttribute("y", e.offsetY);
+          documentSignatureField.style.top = `${e.offsetY - 40}px`;
+          documentSignatureField.style.left = `${e.offsetX - 40}px`;
+          documentSignatureField.setAttribute("x", e.offsetX - 40);
+          documentSignatureField.setAttribute("y", e.offsetY - 40);
+          mainTag.append(documentSignatureField);
         }
       } else if (signatureEditStatus.value && !TextEditStatus.value) {
         const editSignatureField =
@@ -977,8 +984,8 @@ onMounted(() => {
           editSignatureField &&
           editSignatureField.getAttribute("count") == signatureEdit.value
         ) {
-          editSignatureField.style.top = `${e.offsetY}px`;
-          editSignatureField.style.left = `${e.offsetX}px`;
+          editSignatureField.style.top = `${e.offsetY - 40}px`;
+          editSignatureField.style.left = `${e.offsetX - 40}px`;
         }
         signatureEditStatus.value = !signatureEditStatus.value;
       } else if (

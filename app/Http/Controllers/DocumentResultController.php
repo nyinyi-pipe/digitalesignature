@@ -19,6 +19,7 @@ class DocumentResultController extends Controller
         DocumentResult::create([
             'document_id'=>$request->docId,
             'nonuser_id'=>$recipient->id,
+            'index'=>$request->index,
             'x'=>$request->x,
             'y'=>$request->y,
         ]);
@@ -29,7 +30,7 @@ class DocumentResultController extends Controller
     {
         $ress = DocumentResult::where('document_id', $document->id)->where('nonuser_id', $recipient)->get();
         $signments = $ress->map(function ($res) {
-            return array('id'=>$res->id,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
+            return array('id'=>$res->id,'index'=>$res->index,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
         });
         $document['signatures'] = $signments;
         return Inertia::render("Recipients/Documents/EditDocument", [
@@ -39,16 +40,17 @@ class DocumentResultController extends Controller
 
     public function update(DocumentResult $document, $recipient, Request $request) : RedirectResponse
     {
-        // $documents = Document::where('id', $document->document_id)->first();
-        // $ress = DocumentResult::where('document_id', $document->document_id)->get();
-        // $signments = $ress->map(function ($res) {
-        //     return array('id'=>$res->id,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
-        // });
-        // $documents['signatures'] = $signments;
-        broadcast(new DocumentEvent('text'));
         $document->update([
             'result'=>$request->signature
         ]);
+        $documents = Document::where('id', $document->document_id)->first();
+        $ress = DocumentResult::where('document_id', $document->document_id)->get();
+        $signments = $ress->map(function ($res) {
+            return array('id'=>$res->id,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
+        });
+        $documents['signatures'] = $signments;
+        broadcast(new DocumentEvent('text'));
+
         return to_route('recipient.edit.document', [$request->doc_id,$recipient]);
     }
 }

@@ -216,11 +216,14 @@ onMounted(() => {
   const modalSignature = document.querySelector("#signature-modal");
   signatureModal.value = new Modal(modalSignature);
 
+  const mainTag = document.querySelectorAll("#main");
+
   const signatures = document.querySelectorAll(".signature");
   signatures.forEach((signature, index) => {
     signature.style.top = documents.documents.signatures[index].y;
     signature.style.left = documents.documents.signatures[index].x;
     signatureResult.value = documents.documents.signatures[index].result;
+    mainTag[documents.documents.signatures[index].index].append(signature);
   });
 
   initFlowbite();

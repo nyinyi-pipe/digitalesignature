@@ -17,15 +17,20 @@ class MailController extends Controller
         $document['subject'] = $request->subject;
         $document['message'] = $request->message;
         if($request->toMails) {
-            foreach ($request->toMails as $mail) {
+            foreach ($request->toMails as $index=>$mail) {
                 $to = Nonuser::where('email', $mail)->first();
                 if($to == null) {
                     $to = User::where('email', $mail)->first();
                 }
                 $document['link'] = route('recipient.edit.document', [$document->id,$to->id]);
-                Mail::to($to->email)->send(new SendDocumentMail($document));
+                if($request->ccMails) {
+                    Mail::to($to->email)->cc($request->ccMails)->send(new SendDocumentMail($document));
+                } else {
+                    Mail::to($to->email)->send(new SendDocumentMail($document));
+                }
             }
         }
+
         // Mail::to($request->toMails)->cc($request->ccMails)->send(new SendDocumentMail($document));
     }
 }

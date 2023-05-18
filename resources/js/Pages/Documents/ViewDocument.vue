@@ -2,35 +2,6 @@
   <Head title="Document" />
   <EditAside :toggle="toggle" @closeToggle="closeToggle"></EditAside>
   <div class="h-screen overflow-hidden">
-    <!-- new document modal -->
-    <NewDocumentName
-      :form="form"
-      @closeMailModal="closeMailModal"
-      @saveDocumentName="saveDocumentName"
-    />
-    <!-- mail modal -->
-    <MailModal
-      :auth="documents.auth"
-      :document="documents.documents"
-      @closeSendMailModal="closeSendMailModal"
-      :recipientEmails="recipientEmails"
-    />
-    <!-- signature modal -->
-    <SignatureModal
-      @acceptSignature="acceptSignature"
-      @closeSignatureModal="closeSignatureModal"
-    />
-    <!-- new document modal -->
-    <NewDocumentUpload
-      @closeNewDocumentUpload="closeNewDocumentUpload"
-      :id="documents.documents.id"
-    />
-    <!-- new recipient modal -->
-    <NewRecipientModal
-      :documents="documents.documents"
-      @closeNewRecipientModal="closeNewRecipientModal"
-    />
-
     <div
       class="sticky z-10 top-0 h-14 border-b bg-white flex items-center py-2 lg:py-2.5"
     >
@@ -182,18 +153,18 @@
         class="sm:w-[63%] pb-16 h-screen md:w-[70%] lg:w-[76%] mx-auto bg-gray-100 overflow-scroll"
       >
         <div
-          class="w-full fixed bg-white px-5 flex flex-wrap items-center user-select-none"
+          class="w-full fixed bg-white px-5 flex user-select-none"
           style="z-index: 20"
         >
-          <div class="flex py-1.5 gap-2 pr-3 items-center md-[50%] lg:w-[80%]">
-            <div class="flex items-center gap-1 px-1.5 rounded h-7 bg-gray-100">
+          <div class="flex py-1.5 gap-2 pr-3">
+            <div class="flex items-center gap-1 px-1.5 rounded h-6 bg-gray-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-4 h-4 text-gray-500"
+                class="w-5 h-5 text-gray-500"
               >
                 <path
                   stroke-linecap="round"
@@ -203,31 +174,30 @@
               </svg>
               <span class="text-gray-500 text-thin">1</span>
             </div>
-            <p class="m-0 text-xs md:text-sm font-thin text-gray-500 mx-auto">
-              Once the document is completed by all signers, you will be able to
-              download a signed copy.
-            </p>
           </div>
         </div>
         <div
-          class="px-5 w-full mt-10 md:w-[87%] lg:w-[85%] mx-auto relative flex flex-col justify-center items-center"
+          class="px-5 w-full mt-10 md:w-[87%] lg:w-[86%] mx-auto relative flex flex-col justify-center items-center"
           style="z-index: 10"
         >
-          <div class="mt-4 -mb-7 w-full flex justify-between">
-            <h1 class="font-bold">
-              {{ documents.documents.doc_name }}
-            </h1>
-            <h4 class="text-gray-400">
-              {{ documents.documents.doc_docs.length }} of 1 document
-            </h4>
-          </div>
+          <h1 class="mt-2 -mb-5 font-bold w-full">
+            {{ documents.documents.doc_name }}
+          </h1>
           <div
             v-for="(doc, index) of documents.documents.doc_docs"
             :key="index"
           >
-            <div class="relative mt-12" id="main">
+            <div class="w-full mt-6">
+              <div class="flex justify-between w-full items-center mb-2">
+                <div>
+                  <h1 class="text-gray-500 text-xs">{{ index + 1 }} page</h1>
+                </div>
+              </div>
+            </div>
+            <div class="relative" id="main">
               <img
                 id="image"
+                :index="index"
                 :doc="doc"
                 class="w-full object-cover"
                 :src="docs(doc)"
@@ -235,6 +205,7 @@
               />
             </div>
           </div>
+
           <div
             v-for="(sign, index) of documents.documents.signatures"
             :key="index"
@@ -245,9 +216,8 @@
               :index="index"
             >
               <div
-                @click="openSignatureModal"
                 :class="[sign.result ? 'hidden' : 'flex']"
-                class="border items-center fieldStatus justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
+                class="border items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
               >
                 <svg
                   height="21"
@@ -274,10 +244,14 @@
                 <span>Signature</span>
               </div>
               <div
-                @click="openSignatureModal"
                 :class="[sign.result ? 'flex' : 'hidden']"
-                class="border items-center field-container justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
+                class="border items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
               >
+                <!-- <img
+                  :src="[sign.result ?? signatureResult]"
+                  alt=""
+                  class="h-8 w-8"
+                /> -->
                 <img
                   :src="[sign.result ?? signatureResult]"
                   alt=""
@@ -300,263 +274,32 @@ import Pusher from "pusher-js";
 import { Link, router, Head, useForm } from "@inertiajs/vue3";
 import { onMounted, reactive, ref } from "vue";
 import { initFlowbite, Modal } from "flowbite";
-import MailModal from "@/Components/Modals/MailModal.vue";
-import NewRecipientModal from "@/Components/Modals/RecipientModal.vue";
-import SignatureModal from "@/Components/Modals/SignatureModal.vue";
-import NewDocumentName from "@/Components/Modals/NewDocumentName.vue";
-import NewDocumentUpload from "@/Components/Modals/NewDocumentModal.vue";
 import EditAside from "@/Components/Layouts/EditAside.vue";
-import Tools from "@/Components/Documents/Tools.vue";
 import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
-import Fillabes from "@/Components/Documents/Fillabes.vue";
 import moment from "moment";
-import axios from "axios";
-import Cookies from "js-cookie";
 
 const documents = defineProps({
   documents: Object,
   auth: Object,
 });
 
-const assignRecipent = (e) => {
-  let recipientStatus = e.target
-    .closest(".signature")
-    .querySelector("#recipients");
-  if (recipientStatus.classList.contains("hidden")) {
-    recipientStatus.classList.remove("hidden");
-  } else {
-    recipientStatus.classList.add("hidden");
-  }
-  recipientStatus.classList.add("block");
-};
-
-const form = useForm({
-  newDocumentName: null,
-  _method: "PUT",
-});
-const recipientName = ref("Assign");
-const recipientEmail = ref("Unknown");
-const nameStatus = ref(true);
-const choosedRecipient = ({ name, email }) => {
-  recipientName.value = name;
-  recipientEmail.value = email;
-};
-
-const chooseRecipients = (e) => {
-  let main = e.target.closest(".fields");
-
-  let recipient = e.target
-    .closest(".signature")
-    .querySelector("#recipientName");
-
-  recipient.innerText = e.target
-    .closest("#recipientContainer")
-    .querySelector(".recipientName").innerText;
-
-  recipient.setAttribute(
-    "recipientEmail",
-    e.target.closest("#recipientContainer").querySelector(".recipientEmail")
-      .innerText
-  );
-  let recipientStatus = e.target.closest("#recipients");
-  if (recipientStatus.classList.contains("hidden")) {
-    recipientStatus.classList.remove("hidden");
-  } else {
-    recipientStatus.classList.add("hidden");
-  }
-  recipientStatus.classList.add("block");
-  nameStatus.value = false;
-
-  let form = useForm({
-    docId: documents.documents.id,
-    y: main.style.top,
-    x: main.style.left,
-    email: e.target
-      .closest("#recipientContainer")
-      .querySelector(".recipientEmail").innerText,
-  });
-  form.post(route("documents.store.document.result"));
-};
-
-const sendMailForm = reactive({
-  sendMail: null,
-});
-const mails = reactive(["list", "of", "options"]);
 const toggle = ref(false);
 const uploadedDocument = ref("");
-const signatures = ref([]);
-const texts = ref([]);
-const signatureEdit = ref(null);
-const TextEdit = ref(null);
-const signatureEditStatus = ref(false);
-const TextEditStatus = ref(false);
-const dragText = ref("");
 const date = ref("");
-const documentNameModal = ref(null);
-const sendModal = ref(null);
-const recipientEmails = ref([]);
-const signatureModal = ref(null);
 const signatureResult = ref(null);
-const newDocumentUpload = ref(null);
-const newRecipientModal = ref(null);
-
-const openEmailModal = () => {
-  documentNameModal.value.show();
-  let recipientEmail = document.querySelectorAll("#recipientName");
-  recipientEmail.forEach((email) => {
-    if (recipientEmails.value.includes(email.getAttribute("recipientemail"))) {
-      return;
-    }
-    return recipientEmails.value.push(email.getAttribute("recipientemail"));
-  });
-};
 
 const docs = (doc) => {
   return location.origin + "/storage/documents/" + doc;
 };
 
-const openNewDocumentUpload = () => {
-  newDocumentUpload.value.show();
-};
-
-const closeNewDocumentUpload = () => {
-  newDocumentUpload.value.hide();
-};
-
-const closeNewRecipientModal = () => {
-  newRecipientModal.value.hide();
-};
-
-const closeSignatureModal = () => {
-  signatureModal.value.hide();
-};
-
-const openSendMailModal = () => {
-  sendModal.value.show();
-};
-
-const closeMailModal = () => {
-  documentNameModal.value.hide();
-};
-
-const closeSendMailModal = () => {
-  sendModal.value.hide();
-};
-
-const deleteDocument = (doc) => {
-  const form = useForm({
-    id: documents.documents.id,
-    doc: doc,
-    _method: "DELETE",
-  });
-  form.post(route("documents.delete.document", form.id));
-  location.reload();
-};
-const saveDocumentName = () => {
-  form.post(route("document.new.document-name", documents.documents.id));
-  documentNameModal.value.hide();
-  openSendMailModal();
-};
 const toggleAside = () => {
   toggle.value = !toggle.value;
 };
 const closeToggle = () => {
   toggle.value = !toggle.value;
 };
-const openNewRecipientModal = () => {
-  newRecipientModal.value.show();
-};
-const openSignatureModal = () => {
-  signatureModal.value.show();
-};
 
-const editSignature = (e) => {
-  signatureEdit.value = e.target.getAttribute("count");
-  signatureEditStatus.value = !signatureEditStatus.value;
-};
-
-const editText = (e) => {
-  TextEdit.value = e.target.getAttribute("count");
-  TextEditStatus.value = !TextEditStatus.value;
-};
-
-const increaseSignature = () => {
-  signatures.value.push(signatures.value.length);
-  dragText.value = "signature";
-};
 moment(documents.documents.updated_at).format("ll");
-
-const increaseText = () => {
-  texts.value.push(texts.value.length);
-  dragText.value = "text";
-};
-
-const onDrop = (e) => {
-  e.preventDefault();
-  const documentSignatureFieldsContainer =
-    document.querySelectorAll(".signature");
-  const documentTextFieldsContainer = document.querySelectorAll(".text");
-
-  const documentSignatureField =
-    documentSignatureFieldsContainer[signatures.value.length - 1];
-  const documentTextField = documentTextFieldsContainer[texts.value.length - 1];
-
-  if (
-    !signatureEditStatus.value &&
-    documentSignatureField &&
-    dragText.value == "signature"
-  ) {
-    if (
-      documentSignatureField.getAttribute("count") ==
-      signatures.value[signatures.value.length - 1]
-    ) {
-      documentSignatureField.classList.remove("hidden");
-      documentSignatureField.style.top = `${e.offsetY}px`;
-      documentSignatureField.style.left = `${e.offsetX}px`;
-    }
-  } else if (signatureEditStatus.value && !TextEditStatus.value) {
-    const editSignatureField =
-      documentSignatureFieldsContainer[signatureEdit.value];
-    if (
-      editSignatureField &&
-      editSignatureField.getAttribute("count") == signatureEdit.value
-    ) {
-      editSignatureField.style.top = `${e.offsetY}px`;
-      editSignatureField.style.left = `${e.offsetX}px`;
-    }
-    signatureEditStatus.value = !signatureEditStatus.value;
-  } else if (
-    !TextEditStatus.value &&
-    documentTextField &&
-    dragText.value == "text"
-  ) {
-    if (
-      documentTextField.getAttribute("count") ==
-      texts.value[texts.value.length - 1]
-    ) {
-      documentTextField.classList.remove("hidden");
-      documentTextField.style.top = `${e.offsetY}px`;
-      documentTextField.style.left = `${e.offsetX}px`;
-    }
-  } else if (TextEditStatus.value && !signatureEditStatus.value) {
-    const editTextField = documentTextFieldsContainer[TextEdit.value];
-    if (
-      editTextField &&
-      editTextField.getAttribute("count") == TextEdit.value
-    ) {
-      editTextField.style.top = `${e.offsetY}px`;
-      editTextField.style.left = `${e.offsetX}px`;
-    }
-    TextEditStatus.value = !TextEditStatus.value;
-  }
-};
-const deleteField = (e) => {
-  const name = e.target.closest(".fields").getAttribute("name");
-  const target = e.target.closest(`.${name}`);
-  target.classList.add("hidden");
-  target.style.top = `0px`;
-  target.style.left = `0px`;
-};
 
 onMounted(() => {
   window.Pusher = Pusher;
@@ -567,24 +310,25 @@ onMounted(() => {
     forceTLS: true,
   });
   window.Echo.channel("document").listen("DocumentEvent", ({ document }) => {
-    if (document) {
-      location.reload();
-    }
+    document && location.reload();
+    console.log(document);
   });
+  const mainTag = document.querySelectorAll("#main");
 
   const signatures = document.querySelectorAll(".signature");
   signatures.forEach((signature, index) => {
     signature.style.top = documents.documents.signatures[index].y;
     signature.style.left = documents.documents.signatures[index].x;
     signatureResult.value = documents.documents.signatures[index].result;
+    mainTag[documents.documents.signatures[index].index].append(signature);
   });
+
+  date.value = `Updated ${moment(documents.documents.updated_at).format("ll")}`;
+  uploadedDocument.value =
+    location.origin + "/storage/documents/" + documents.documents.doc_docs;
+
   initFlowbite();
 });
-
-const acceptSignature = (data) => {
-  signatureResult.value = data;
-  signatureModal.value.hide();
-};
 </script>
   <style>
 .sent {

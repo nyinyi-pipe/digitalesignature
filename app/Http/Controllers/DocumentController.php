@@ -133,7 +133,7 @@ class DocumentController extends Controller
         $ress = DocumentResult::where('document_id', $document->id)->get();
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
         $signments = $ress->map(function ($res) {
-            return array('id'=>$res->id,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
+            return array('id'=>$res->id,'index'=>$res->index,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
         });
         $document['signatures'] = $signments;
         return Inertia::render("Documents/ViewDocument", [

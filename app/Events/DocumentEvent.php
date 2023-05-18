@@ -19,6 +19,7 @@ class DocumentEvent implements ShouldBroadcast
      */
 
     public $document;
+
     public function __construct($document)
     {
         $this->document = $document;
@@ -34,5 +35,15 @@ class DocumentEvent implements ShouldBroadcast
         return [
             new Channel('document'),
         ];
+    }
+
+    /**
+     * Get the data to broadcast.
+     *
+     * @return array<string, mixed>
+     */
+    public function broadcastWith(): array
+    {
+        return ['document' => $this->document];
     }
 }
