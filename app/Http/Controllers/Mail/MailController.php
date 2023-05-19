@@ -25,6 +25,7 @@ class MailController extends Controller
                 $document['link'] = route('recipient.edit.document', [$document->id,$to->id]);
                 Mail::to($to->email)->cc($request->ccMails)->send(new SendDocumentMail($document));
             }
+            return;
         }
         Mail::to(auth()->user()->email)->cc($request->ccMails)->send(new SendDocumentMail($document));
     }

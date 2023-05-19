@@ -13,8 +13,10 @@
               alt=""
             />
             <div class="self-end mb-4">
-              <h1 class="text-2xl text-slate-100 font-bold">Arkar</h1>
-              <p class="text-lg text-slate-200">Thanlyin</p>
+              <h1 class="text-2xl text-slate-100 font-bold">
+                {{ auth.user.name }}
+              </h1>
+              <p class="text-lg text-slate-200">Yangon,Myanmar</p>
             </div>
           </div>
           <div class="mb-5 self-end">
@@ -126,4 +128,7 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
 import AuthLayout from "@/Layouts/AuthLayout.vue";
+defineProps({
+  auth: Object,
+});
 </script>
