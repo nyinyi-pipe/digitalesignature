@@ -153,7 +153,7 @@
             >
               <div
                 :class="[sign.result ? 'hidden' : 'flex']"
-                class="border items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
+                class="border signImg items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
               >
                 <svg
                   height="21"
@@ -181,13 +181,8 @@
               </div>
               <div
                 :class="[sign.result ? 'flex' : 'hidden']"
-                class="border items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
+                class="border imgSign items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
               >
-                <!-- <img
-                  :src="[sign.result ?? signatureResult]"
-                  alt=""
-                  class="h-8 w-8"
-                /> -->
                 <img
                   :src="[sign.result ?? signatureResult]"
                   alt=""
@@ -195,6 +190,63 @@
                   :id="sign.id"
                   :user_id="sign.user_id"
                 />
+              </div>
+            </div>
+          </div>
+
+          <div v-for="(text, index) of documents.documents.texts" :key="index">
+            <div class="absolute fields w-[140px] text select-none">
+              <div
+                @click="changeWriteStatus"
+                :class="[text.result ? 'hidden' : 'flex']"
+                class="border signText items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-yellow-600 bg-transparent border-yellow-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                  />
+                </svg>
+                <span>Text</span>
+              </div>
+              <div
+                :class="[text.result ? 'flex' : 'hidden']"
+                class="border-yellow-500 p-1.5 border textField justify-center items-center"
+              >
+                <h1 class="m-0 text-yellow-500">{{ text.result }}</h1>
+              </div>
+            </div>
+          </div>
+
+          <div v-for="(date, index) of documents.documents.dates" :key="index">
+            <div class="absolute fields date select-none">
+              <div>
+                <div
+                  :class="[date.result ? 'hidden' : 'flex']"
+                  class="signDate"
+                >
+                  <input
+                    @change="saveDate"
+                    :user_id="date.nonuser_id"
+                    type="date"
+                    disabled
+                    class="border-pink-600 text-sm text-pink-600 bg-transparent"
+                  />
+                </div>
+                <div
+                  :class="[date.result ? 'flex' : 'hidden']"
+                  class="border-pink-500 p-1.5 border dateSign justify-center items-center"
+                >
+                  <h1 class="m-0 text-pink-500">{{ date.result }}</h1>
+                </div>
               </div>
             </div>
           </div>
@@ -208,17 +260,18 @@
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 import { Link, router, Head, useForm } from "@inertiajs/vue3";
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, onUpdated, reactive, ref, watch } from "vue";
 import { initFlowbite, Modal } from "flowbite";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
 import moment from "moment";
+import axios from "axios";
 
 const documents = defineProps({
   documents: Object,
   auth: Object,
 });
-const noti = ref(true);
+const noti = ref(false);
 const toggle = ref(false);
 const uploadedDocument = ref("");
 const date = ref("");
@@ -241,7 +294,12 @@ watch(noti, (newnoti, oldnoti) => {
   console.log(newnoti.value, oldnoti.value);
 });
 
-onMounted(() => {
+onUpdated(() => {
+  const mainTag = document.querySelectorAll("#main");
+
+  const texts = document.querySelectorAll(".text");
+  const signatures = document.querySelectorAll(".signature");
+  const dates = document.querySelectorAll(".date");
   window.Pusher = Pusher;
   window.Echo = new Echo({
     broadcaster: "pusher",
@@ -249,19 +307,95 @@ onMounted(() => {
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
     forceTLS: true,
   });
-  window.Echo.channel("document").listen("DocumentEvent", ({ document }) => {
-    document && location.reload();
-    // noti.value = !noti.value;
-    console.log(document);
+  window.Echo.channel("document").listen("DocumentEvent", ({ res }) => {
+    axios
+      .get(route("document.view.update.document", documents.documents.id))
+      .then((data) => {
+        noti.value = true;
+        texts.forEach((text, index) => {
+          if (text.style.top == data.data.document.texts[index].y) {
+            text.querySelector(".signText").classList.add("hidden");
+            text.querySelector(".textField").classList.remove("hidden");
+            text.querySelector("h1").innerText =
+              data.data.document.texts[index].result;
+          }
+        });
+
+        signatures?.forEach((signature, index) => {
+          if (signature.style.top == data.data.document.signatures[index].y) {
+            signature.querySelector(".signImg").classList.add("hidden");
+            signature.querySelector(".imgSign").classList.remove("hidden");
+            signature.querySelector(".img").src =
+              data.data.document.signatures[index].result;
+          }
+        });
+
+        dates?.forEach((date, index) => {
+          if (date.style.top == data.data.document.dates[index].y) {
+            date.querySelector(".signDate").classList.add("hidden");
+            date.querySelector(".dateSign").classList.remove("hidden");
+            date.querySelector("h1").innerText =
+              data.data.document.dates[index].result;
+          }
+        });
+      });
   });
+});
+
+onMounted(() => {
   const mainTag = document.querySelectorAll("#main");
 
+  const texts = document.querySelectorAll(".text");
   const signatures = document.querySelectorAll(".signature");
-  signatures.forEach((signature, index) => {
-    signature.style.top = documents.documents.signatures[index].y;
-    signature.style.left = documents.documents.signatures[index].x;
-    signatureResult.value = documents.documents.signatures[index].result;
+  const dates = document.querySelectorAll(".date");
+  window.Pusher = Pusher;
+  window.Echo = new Echo({
+    broadcaster: "pusher",
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
+  });
+  window.Echo.channel("document").listen("DocumentEvent", (res) => {
+    axios
+      .get(route("document.view.update.document", documents.documents.id))
+      .then((data) => {
+        const texts = document.querySelectorAll(".text");
+        const signatures = document.querySelectorAll(".signature");
+        const dates = document.querySelectorAll(".date");
+
+        texts.forEach((text, index) => {
+          signatureResult.value = data.data.document.texts[index].result;
+        });
+
+        signatures?.forEach((signature, index) => {
+          signatureResult.value = data.data.document.signatures[index]?.result;
+        });
+
+        dates?.forEach((date, index) => {
+          signatureResult.value = data.data.document.dates[index]?.result;
+        });
+      });
+  });
+
+  texts.forEach((text, index) => {
+    text.style.top = documents.documents.texts[index].y;
+    text.style.left = documents.documents.texts[index].x;
+    signatureResult.value = documents.documents.texts[index].result;
+    mainTag[documents.documents.texts[index].index].append(text);
+  });
+
+  signatures?.forEach((signature, index) => {
+    signature.style.top = documents.documents.signatures[index]?.y;
+    signature.style.left = documents.documents.signatures[index]?.x;
+    signatureResult.value = documents.documents.signatures[index]?.result;
     mainTag[documents.documents.signatures[index].index].append(signature);
+  });
+
+  dates?.forEach((date, index) => {
+    date.style.top = documents.documents.dates[index]?.y;
+    date.style.left = documents.documents.dates[index]?.x;
+    signatureResult.value = documents.documents.dates[index]?.result;
+    mainTag[documents.documents.dates[index].index].append(date);
   });
 
   date.value = `Updated ${moment(documents.documents.updated_at).format("ll")}`;

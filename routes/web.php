@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/documents/{document}/add-recipients', [DocumentController::class,'storeRecipients'])->name('document.store-recipients');
     Route::get('/documents/edit/{document}', [DocumentController::class,'editDocument'])->name('document.edit.document');
     Route::get('/documents/v/{document}', [DocumentController::class,'view'])->name('document.view.document');
+    Route::get('/document/v/{document}', [DocumentController::class,'viewUpdate'])->name('document.view.update.document');
     Route::post('/documents/edit/{document}', [MailController::class,'sendMail'])->name('document.send.mail');
     Route::delete('/documents/edit/{document}', [DocumentController::class,'deleteDoc'])->name('documents.delete.document');
     Route::post('/documents/document/result', [DocumentResultController::class,'store'])->name('documents.store.document.result');
@@ -37,6 +38,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/u/{document}/{recipient}', [DocumentResultController::class,'edit'])->name('recipient.edit.document');
 Route::put('/u/{document}/{recipient}', [DocumentResultController::class,'update'])->name('recipient.update.document');
+Route::put('/u/{document}', [DocumentResultController::class,'updateStatus'])->name('recipient.update.status.document');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';

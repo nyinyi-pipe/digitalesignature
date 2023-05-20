@@ -128,14 +128,49 @@ class DocumentController extends Controller
         return to_route('document.edit.document', $document->id);
     }
 
+    public function signments($data, $type)
+    {
+        $array =  $data->filter(function ($res) use ($type) {
+            return $res->type == $type;
+        });
+        $datas = [];
+        foreach ($array as $key => $value) {
+            $datas[] = $value;
+        }
+        return ($datas);
+    }
+
+    public function viewUpdate(Document $document)
+    {
+        $data = DocumentResult::where('document_id', $document->id)->get();
+        $signatures = $this->signments($data, "signature");
+        $texts = $this->signments($data, "text");
+        $dates = $this->signments($data, "date");
+        $document['user'] = $document->user->name;
+        $document['signatures'] = $signatures;
+        $document['texts'] = $texts;
+        $document['dates'] = $dates;
+        $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
+
+        return response()->json([
+            'document'=>$document
+        ]);
+    }
+
+
     public function view(Document $document) : Response
     {
-        $ress = DocumentResult::where('document_id', $document->id)->get();
+        $data = DocumentResult::where('document_id', $document->id)->get();
+        $signatures = $this->signments($data, "signature");
+        $texts = $this->signments($data, "text");
+        $dates = $this->signments($data, "date");
+        $document['user'] = $document->user->name;
+        $document['signatures'] = $signatures;
+        $document['texts'] = $texts;
+        $document['dates'] = $dates;
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
-        $signments = $ress->map(function ($res) {
-            return array('id'=>$res->id,'index'=>$res->index,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
-        });
-        $document['signatures'] = $signments;
+
+
         return Inertia::render("Documents/ViewDocument", [
             'documents'=>$document
         ]);

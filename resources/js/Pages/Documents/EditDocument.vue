@@ -393,6 +393,7 @@
             <div
               :doc="signature"
               :index="index"
+              types="signature"
               draggable="true"
               @dragstart="editSignature"
               class="absolute fields hidden signature select-none"
@@ -466,6 +467,7 @@
                   </div>
                 </div>
               </div>
+
               <div
                 v-if="!signatureResult"
                 @click="openSignatureModal"
@@ -564,16 +566,23 @@
             <div
               draggable="true"
               @dragstart="editText"
-              class="absolute fields hidden text select-none"
+              class="absolute fields hidden w-[140px] text select-none"
               name="text"
+              types="text"
               :count="index"
+              :doc="text"
+              :index="index"
             >
               <div
                 class="cursor-pointer px-2 py-1.5 m-0 mb-2 text-sm text-white bg-gray-800"
               >
                 <div class="flex gap-2 items-center">
-                  <div class="flex items-center pr-2 border-r">
+                  <div
+                    @click="textAssignRecipent"
+                    class="flex items-center pr-2 border-r"
+                  >
                     <svg
+                      v-if="recipientName == 'Assign' && nameStatus"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -587,8 +596,29 @@
                         d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
                       />
                     </svg>
-                    <span class="font-bold">Assign</span>
+                    <svg
+                      v-else
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-3.5 h-3.5 mr-1.5 mb-0.5 text-blue-500 bg-blue-500 rounded-full"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span
+                      class="font-bold text-gray-200"
+                      id="recipientName"
+                      :recipientEmail="recipientEmail"
+                      >{{ recipientName }}</span
+                    >
                   </div>
+
                   <div>
                     <svg
                       @click="deleteField"
@@ -597,7 +627,7 @@
                       viewBox="0 0 24 24"
                       stroke-width="1.5"
                       stroke="currentColor"
-                      class="w-5 h-5 text-red-600"
+                      class="w-5 h-5 text-gray-200"
                     >
                       <path
                         stroke-linecap="round"
@@ -609,7 +639,8 @@
                 </div>
               </div>
               <div
-                class="border flex items-center justify-center gap-2 cursor-pointer p-2 border-dashed m-0 font-thin text-sm text-green-600 bg-transparent border-green-600"
+                @click="changeWriteStatus"
+                class="border signText flex items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-yellow-600 bg-transparent border-yellow-600"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -627,6 +658,209 @@
                 </svg>
                 <span>Text</span>
               </div>
+              <div class="textInput hidden">
+                <input
+                  type="text"
+                  placeholder="something..."
+                  class="p-0 py-1.5 px-2 w-full focus:ring-yellow-600 border-yellow-600 hover:border-yellow-600 focus:border-yellow-600 focus:outline-none"
+                />
+              </div>
+              <div
+                class="shadow rounded-sm mt-1.5 bg-white hidden"
+                id="recipients"
+              >
+                <div
+                  v-for="(recipient, index) of documents.documents.recipients"
+                  :key="index"
+                >
+                  <div
+                    class="px-2 recipient flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-200"
+                    @click="chooseTextRecipients"
+                  >
+                    <img
+                      src="https://media.istockphoto.com/id/1393750072/vector/flat-white-icon-man-for-web-design-silhouette-flat-illustration-vector-illustration-stock.jpg?s=612x612&w=0&k=20&c=s9hO4SpyvrDIfELozPpiB_WtzQV9KhoMUP9R9gVohoU="
+                      class="w-6 h-6 rounded-full"
+                      alt=""
+                    />
+                    <div id="recipientContainer">
+                      <h5 class="m-0 text-xs font-bold recipientName">
+                        {{ recipient.name }}
+                      </h5>
+                      <h4
+                        class="m-0 text-xs font-thin text-slate-500 recipientEmail"
+                      >
+                        {{ recipient.email }}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  @click="openNewRecipientModal"
+                  class="px-2 flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6 rounded-full text-center text-green-500 bg-green-100 p-1"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                    />
+                  </svg>
+
+                  <div>
+                    <h5 class="m-0 text-xs font-bold text-green-500">
+                      Add recipient
+                    </h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-for="(date, index) of dates" :key="index">
+            <div
+              draggable="true"
+              @dragstart="editDate"
+              class="absolute fields date select-none"
+              name="date"
+              types="date"
+              :count="index"
+              :doc="date"
+              :index="index"
+            >
+              <div
+                class="cursor-pointer px-2 py-1.5 m-0 mb-2 text-sm text-white bg-gray-800"
+              >
+                <div class="flex gap-2 items-center">
+                  <div
+                    @click="dateAssignRecipent"
+                    class="flex items-center pr-2 border-r"
+                  >
+                    <svg
+                      v-if="recipientName == 'Assign' && nameStatus"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 mr-2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                      />
+                    </svg>
+                    <svg
+                      v-else
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-3.5 h-3.5 mr-1.5 mb-0.5 text-blue-500 bg-blue-500 rounded-full"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span
+                      class="font-bold text-gray-200"
+                      id="recipientName"
+                      :recipientEmail="recipientEmail"
+                      >{{ recipientName }}</span
+                    >
+                  </div>
+
+                  <div>
+                    <svg
+                      @click="deleteField"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 text-gray-200"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="">
+                <input
+                  type="date"
+                  class="border-pink-600 text-sm text-pink-600 bg-transparent"
+                />
+              </div>
+              <div></div>
+              <div
+                class="shadow rounded-sm mt-1.5 bg-white hidden"
+                id="recipients"
+              >
+                <div
+                  v-for="(recipient, index) of documents.documents.recipients"
+                  :key="index"
+                >
+                  <div
+                    class="px-2 recipient flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-200"
+                    @click="chooseDateRecipients"
+                  >
+                    <img
+                      src="https://media.istockphoto.com/id/1393750072/vector/flat-white-icon-man-for-web-design-silhouette-flat-illustration-vector-illustration-stock.jpg?s=612x612&w=0&k=20&c=s9hO4SpyvrDIfELozPpiB_WtzQV9KhoMUP9R9gVohoU="
+                      class="w-6 h-6 rounded-full"
+                      alt=""
+                    />
+                    <div id="recipientContainer">
+                      <h5 class="m-0 text-xs font-bold recipientName">
+                        {{ recipient.name }}
+                      </h5>
+                      <h4
+                        class="m-0 text-xs font-thin text-slate-500 recipientEmail"
+                      >
+                        {{ recipient.email }}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  @click="openNewRecipientModal"
+                  class="px-2 flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6 rounded-full text-center text-green-500 bg-green-100 p-1"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                    />
+                  </svg>
+
+                  <div>
+                    <h5 class="m-0 text-xs font-bold text-green-500">
+                      Add recipient
+                    </h5>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -636,6 +870,7 @@
           <Tools
             @increaseText="increaseText"
             @increaseSignature="increaseSignature"
+            @increaseDate="increaseDate"
             :recipientName="recipientName"
           />
         </template>
@@ -686,6 +921,35 @@ const assignRecipent = (e) => {
   recipientStatus.classList.add("block");
 };
 
+const textAssignRecipent = (e) => {
+  let recipientStatus = e.target.closest(".text").querySelector("#recipients");
+  if (recipientStatus.classList.contains("hidden")) {
+    recipientStatus.classList.remove("hidden");
+  } else {
+    recipientStatus.classList.add("hidden");
+  }
+  recipientStatus.classList.add("block");
+};
+
+const changeWriteStatus = (e) => {
+  const main = e.target.closest(".fields");
+  if (main.querySelector(".signText").classList.contains("flex")) {
+    main.querySelector(".signText").classList.remove("flex");
+    main.querySelector(".signText").classList.add("hidden");
+    main.querySelector(".textInput").classList.remove("hidden");
+    main.querySelector(".textInput").classList.add("flex");
+  }
+};
+
+const dateAssignRecipent = (e) => {
+  let recipientStatus = e.target.closest(".date").querySelector("#recipients");
+  if (recipientStatus.classList.contains("hidden")) {
+    recipientStatus.classList.remove("hidden");
+  } else {
+    recipientStatus.classList.add("hidden");
+  }
+  recipientStatus.classList.add("block");
+};
 const form = useForm({
   newDocumentName: null,
   _method: "PUT",
@@ -719,16 +983,58 @@ const chooseRecipients = (e) => {
   }
   recipientStatus.classList.add("block");
   nameStatus.value = false;
-//   let form = useForm({
-//     docId: documents.documents.id,
-//     index: main.getAttribute("index"),
-//     y: main.style.top,
-//     x: main.style.left,
-//     email: e.target
-//       .closest("#recipientContainer")
-//       .querySelector(".recipientEmail").innerText,
-//   });
+  //   let form = useForm({
+  //     docId: documents.documents.id,
+  //     index: main.getAttribute("index"),
+  //     y: main.style.top,
+  //     x: main.style.left,
+  //     email: e.target
+  //       .closest("#recipientContainer")
+  //       .querySelector(".recipientEmail").innerText,
+  //   });
   //   form.post(route("documents.store.document.result"));
+};
+
+const chooseTextRecipients = (e) => {
+  let main = e.target.closest(".fields");
+  let recipient = e.target.closest(".text").querySelector("#recipientName");
+  recipient.innerText = e.target
+    .closest("#recipientContainer")
+    .querySelector(".recipientName").innerText;
+  recipient.setAttribute(
+    "recipientEmail",
+    e.target.closest("#recipientContainer").querySelector(".recipientEmail")
+      .innerText
+  );
+  let recipientStatus = e.target.closest("#recipients");
+  if (recipientStatus.classList.contains("hidden")) {
+    recipientStatus.classList.remove("hidden");
+  } else {
+    recipientStatus.classList.add("hidden");
+  }
+  recipientStatus.classList.add("block");
+  nameStatus.value = false;
+};
+
+const chooseDateRecipients = (e) => {
+  let main = e.target.closest(".fields");
+  let recipient = e.target.closest(".date").querySelector("#recipientName");
+  recipient.innerText = e.target
+    .closest("#recipientContainer")
+    .querySelector(".recipientName").innerText;
+  recipient.setAttribute(
+    "recipientEmail",
+    e.target.closest("#recipientContainer").querySelector(".recipientEmail")
+      .innerText
+  );
+  let recipientStatus = e.target.closest("#recipients");
+  if (recipientStatus.classList.contains("hidden")) {
+    recipientStatus.classList.remove("hidden");
+  } else {
+    recipientStatus.classList.add("hidden");
+  }
+  recipientStatus.classList.add("block");
+  nameStatus.value = false;
 };
 
 const sendMailForm = reactive({
@@ -739,10 +1045,14 @@ const toggle = ref(false);
 const uploadedDocument = ref("");
 const signatures = ref([]);
 const texts = ref([]);
+const dates = ref([]);
+const WriteStatus = ref(true);
 const signatureEdit = ref(null);
 const TextEdit = ref(null);
+const editDate = ref(null);
 const signatureEditStatus = ref(false);
 const TextEditStatus = ref(false);
+const DateEditStatus = ref(false);
 const dragText = ref("");
 const date = ref("");
 const documentNameModal = ref(null);
@@ -839,6 +1149,11 @@ const increaseSignature = () => {
   signatures.value.push(signatures.value.length);
   dragText.value = "signature";
 };
+
+const increaseDate = () => {
+  dates.value.push(dates.value.length);
+  dragText.value = "date";
+};
 moment(documents.documents.updated_at).format("ll");
 
 const increaseText = () => {
@@ -846,65 +1161,6 @@ const increaseText = () => {
   dragText.value = "text";
 };
 
-const onDrop = (e) => {
-  e.preventDefault();
-  const documentSignatureFieldsContainer =
-    document.querySelectorAll(".signature");
-  const documentTextFieldsContainer = document.querySelectorAll(".text");
-
-  const documentSignatureField =
-    documentSignatureFieldsContainer[signatures.value.length - 1];
-  const documentTextField = documentTextFieldsContainer[texts.value.length - 1];
-
-  if (
-    !signatureEditStatus.value &&
-    documentSignatureField &&
-    dragText.value == "signature"
-  ) {
-    if (
-      documentSignatureField.getAttribute("count") ==
-      signatures.value[signatures.value.length - 1]
-    ) {
-      documentSignatureField.classList.remove("hidden");
-      documentSignatureField.style.top = `${e.offsetY}px`;
-      documentSignatureField.style.left = `${e.offsetX}px`;
-    }
-  } else if (signatureEditStatus.value && !TextEditStatus.value) {
-    const editSignatureField =
-      documentSignatureFieldsContainer[signatureEdit.value];
-    if (
-      editSignatureField &&
-      editSignatureField.getAttribute("count") == signatureEdit.value
-    ) {
-      editSignatureField.style.top = `${e.offsetY}px`;
-      editSignatureField.style.left = `${e.offsetX}px`;
-    }
-    signatureEditStatus.value = !signatureEditStatus.value;
-  } else if (
-    !TextEditStatus.value &&
-    documentTextField &&
-    dragText.value == "text"
-  ) {
-    if (
-      documentTextField.getAttribute("count") ==
-      texts.value[texts.value.length - 1]
-    ) {
-      documentTextField.classList.remove("hidden");
-      documentTextField.style.top = `${e.offsetY}px`;
-      documentTextField.style.left = `${e.offsetX}px`;
-    }
-  } else if (TextEditStatus.value && !signatureEditStatus.value) {
-    const editTextField = documentTextFieldsContainer[TextEdit.value];
-    if (
-      editTextField &&
-      editTextField.getAttribute("count") == TextEdit.value
-    ) {
-      editTextField.style.top = `${e.offsetY}px`;
-      editTextField.style.left = `${e.offsetX}px`;
-    }
-    TextEditStatus.value = !TextEditStatus.value;
-  }
-};
 const deleteField = (e) => {
   const name = e.target.closest(".fields").getAttribute("name");
   const target = e.target.closest(`.${name}`);
@@ -914,16 +1170,6 @@ const deleteField = (e) => {
 };
 
 onMounted(() => {
-  window.Pusher = Pusher;
-  window.Echo = new Echo({
-    broadcaster: "pusher",
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    forceTLS: true,
-  });
-  window.Echo.channel("document").listen("DocumentEvent", ({ document }) => {
-    console.log(document);
-  });
   const modalDocument = document.querySelector("#changeDocumentName");
   const newRecipient = document.querySelector("#newRecipient");
   const modalMail = document.querySelector("#sendMailModal");
@@ -952,12 +1198,16 @@ onMounted(() => {
         document.querySelectorAll(".signature");
 
       const documentTextFieldsContainer = document.querySelectorAll(".text");
+      const documentDateFieldsContainer = document.querySelectorAll(".date");
 
       const documentSignatureField =
         documentSignatureFieldsContainer[signatures.value.length - 1];
 
       const documentTextField =
         documentTextFieldsContainer[texts.value.length - 1];
+
+      const documentDateField =
+        documentDateFieldsContainer[dates.value.length - 1];
 
       if (
         !signatureEditStatus.value &&
@@ -995,9 +1245,13 @@ onMounted(() => {
           documentTextField.getAttribute("count") ==
           texts.value[texts.value.length - 1]
         ) {
+          console.log(mainTag);
           documentTextField.classList.remove("hidden");
-          documentTextField.style.top = `${e.offsetY}px`;
-          documentTextField.style.left = `${e.offsetX}px`;
+          documentTextField.style.top = `${e.offsetY - 40}px`;
+          documentTextField.style.left = `${e.offsetX - 40}px`;
+          documentTextField.setAttribute("x", e.offsetX - 40);
+          documentTextField.setAttribute("y", e.offsetY - 40);
+          mainTag.append(documentTextField);
         }
       } else if (TextEditStatus.value && !signatureEditStatus.value) {
         const editTextField = documentTextFieldsContainer[TextEdit.value];
@@ -1005,10 +1259,41 @@ onMounted(() => {
           editTextField &&
           editTextField.getAttribute("count") == TextEdit.value
         ) {
-          editTextField.style.top = `${e.offsetY}px`;
-          editTextField.style.left = `${e.offsetX}px`;
+          editTextField.style.top = `${e.offsetY - 40}px`;
+          editTextField.style.left = `${e.offsetX - 40}px`;
         }
         TextEditStatus.value = !TextEditStatus.value;
+      } else if (
+        !DateEditStatus.value &&
+        documentDateField &&
+        dragText.value == "date"
+      ) {
+        if (
+          documentDateField.getAttribute("count") ==
+          dates.value[dates.value.length - 1]
+        ) {
+          console.log(mainTag);
+          documentDateField.classList.remove("hidden");
+          documentDateField.style.top = `${e.offsetY - 40}px`;
+          documentDateField.style.left = `${e.offsetX - 40}px`;
+          documentDateField.setAttribute("x", e.offsetX - 40);
+          documentDateField.setAttribute("y", e.offsetY - 40);
+          mainTag.append(documentDateField);
+        }
+      } else if (
+        DateEditStatus.value &&
+        !signatureEditStatus.value &&
+        !TextEditStatus.value
+      ) {
+        const editDateField = documentDateFieldsContainer[editEdit.value];
+        if (
+          editDateField &&
+          editDateField.getAttribute("count") == TextEdit.value
+        ) {
+          editDateField.style.top = `${e.offsetY - 40}px`;
+          editDateField.style.left = `${e.offsetX - 40}px`;
+        }
+        DateEditStatus.value = !DateEditStatus.value;
       }
     });
 

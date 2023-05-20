@@ -44,6 +44,6 @@ class DocumentEvent implements ShouldBroadcast
      */
     public function broadcastWith(): array
     {
-        return ['document' => $this->document];
+        return ['res' => $this->document];
     }
 }

@@ -25,4 +25,14 @@ class Document extends Model
     {
         return $this->belongsToMany(Nonuser::class, 'document_nonuser');
     }
+
+    public function results()
+    {
+        return $this->hasMany(DocumentResult::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

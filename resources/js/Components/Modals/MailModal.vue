@@ -281,20 +281,26 @@ const sendMailSubmit = () => {
   mainTag.forEach((main) => {
     let signDatas = reactive({
       docId: docuements.document.id,
-      index: main.getAttribute("index"),
+      index: main
+        .closest("#main")
+        .querySelector("#image")
+        .getAttribute("index"),
+      type: main.getAttribute("types"),
       y: main.style.top,
       x: main.style.left,
-      email: main.querySelector(".recipientEmail").innerText,
+      email: main
+        .querySelector("#recipientName")
+        .getAttribute("recipientEmail"),
     });
     axios
       .post(route("documents.store.document.result", signDatas))
       .then((res) => console.log(res.data));
-    form.toMails.push(...docuements.recipientEmails);
-    form.post(route("document.send.mail", docuements.document.id), {
-      onSuccess: () => {
-        router.get(route("document.view.document", docuements.document.id));
-      },
-    });
+  });
+  form.toMails.push(...docuements.recipientEmails);
+  form.post(route("document.send.mail", docuements.document.id), {
+    onSuccess: () => {
+      router.get(route("document.view.document", docuements.document.id));
+    },
   });
 };
 
