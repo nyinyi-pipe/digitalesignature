@@ -16,11 +16,7 @@
       >
         <div class="flex gap-3 items-center justify-center">
           <div>
-            <img
-              src="https://s3.amazonaws.com/pd-static-content/logos/logo-pandadoc-ev2.png"
-              class="h-7 w-28"
-              alt=""
-            />
+            <h1 class="text-2xl font-bold text-green-500">E-signature</h1>
           </div>
           <div>
             <h3 class="font-semibold text-sm">
@@ -115,7 +111,7 @@
                 id="image"
                 :doc="doc"
                 class="w-full object-cover"
-                :src="docs(doc)"
+                :src="doc"
                 alt=""
               />
             </div>
@@ -266,11 +262,12 @@ import { initFlowbite, Modal } from "flowbite";
 import SignatureModal from "@/Components/Modals/SignatureModal.vue";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 import EditToolBar from "@/Components/Documents/EditToolBar.vue";
-
+import Swal from "sweetalert2";
 const finish = ref(false);
 const toggle = ref(false);
 const signatureModal = ref(null);
 const signatureResult = ref(false);
+
 const form = useForm({
   _method: "PUT",
   signature: "",
@@ -289,7 +286,27 @@ const finished = () => {
     user_id: documents.documents.doc_user_id,
   });
   formStatus.post(
-    route("recipient.update.status.document", documents.documents.doc_res_id)
+    route("recipient.update.status.document", documents.documents.doc_res_id),
+    {
+      onSuccess: () => {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+
+        Toast.fire({
+          icon: "success",
+          title: "This Doc is finished",
+        });
+      },
+    }
   );
 };
 const docs = (doc) => {
@@ -361,7 +378,6 @@ onMounted(() => {
   signatureModal.value = new Modal(modalSignature);
 
   const mainTag = document.querySelectorAll("#main");
-
   const texts = document.querySelectorAll(".text");
   const signatures = document.querySelectorAll(".signature");
   const dates = document.querySelectorAll(".date");

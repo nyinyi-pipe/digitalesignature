@@ -383,7 +383,7 @@
                 :index="index"
                 :doc="doc"
                 class="w-full object-cover"
-                :src="docs(doc)"
+                :src="doc"
                 alt=""
               />
             </div>
@@ -726,7 +726,7 @@
           <div v-for="(date, index) of dates" :key="index">
             <div
               draggable="true"
-              @dragstart="editDate"
+              @dragstart="dateEdit"
               class="absolute fields date select-none"
               name="date"
               types="date"
@@ -1137,12 +1137,17 @@ const openSignatureModal = () => {
 
 const editSignature = (e) => {
   signatureEdit.value = e.target.getAttribute("count");
-  signatureEditStatus.value = !signatureEditStatus.value;
+  signatureEditStatus.value = true;
 };
 
 const editText = (e) => {
   TextEdit.value = e.target.getAttribute("count");
-  TextEditStatus.value = !TextEditStatus.value;
+  TextEditStatus.value = true;
+};
+
+const dateEdit = (e) => {
+  editDate.value = e.target.getAttribute("count");
+  DateEditStatus.value = true;
 };
 
 const increaseSignature = () => {
@@ -1225,7 +1230,11 @@ onMounted(() => {
           documentSignatureField.setAttribute("y", e.offsetY - 40);
           mainTag.append(documentSignatureField);
         }
-      } else if (signatureEditStatus.value && !TextEditStatus.value) {
+      } else if (
+        signatureEditStatus.value &&
+        !TextEditStatus.value &&
+        !DateEditStatus.value
+      ) {
         const editSignatureField =
           documentSignatureFieldsContainer[signatureEdit.value];
         if (
@@ -1253,7 +1262,11 @@ onMounted(() => {
           documentTextField.setAttribute("y", e.offsetY - 40);
           mainTag.append(documentTextField);
         }
-      } else if (TextEditStatus.value && !signatureEditStatus.value) {
+      } else if (
+        TextEditStatus.value &&
+        !signatureEditStatus.value &&
+        !DateEditStatus.value
+      ) {
         const editTextField = documentTextFieldsContainer[TextEdit.value];
         if (
           editTextField &&
@@ -1285,10 +1298,10 @@ onMounted(() => {
         !signatureEditStatus.value &&
         !TextEditStatus.value
       ) {
-        const editDateField = documentDateFieldsContainer[editEdit.value];
+        const editDateField = documentDateFieldsContainer[editDate.value];
         if (
           editDateField &&
-          editDateField.getAttribute("count") == TextEdit.value
+          editDateField.getAttribute("count") == editDate.value
         ) {
           editDateField.style.top = `${e.offsetY - 40}px`;
           editDateField.style.left = `${e.offsetX - 40}px`;

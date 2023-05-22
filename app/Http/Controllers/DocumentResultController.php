@@ -49,6 +49,7 @@ class DocumentResultController extends Controller
         $document['user'] = $document->user->name;
         $document['signatures'] = $signatures;
         $document['texts'] = $texts;
+        $document['dates'] = $dates;
         $document['doc_res_id'] = $data->first()->id;
         $document['doc_user_id'] = $data->first()->nonuser_id;
         $document['status'] = $data->first()->status;

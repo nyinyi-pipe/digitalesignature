@@ -61,40 +61,91 @@
 <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { Link, router, Head } from "@inertiajs/vue3";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
+import { onMounted } from "vue";
 
-const upload = (e) => {
+const upload = async (event) => {
+  const file = event.target.files[0];
   const reader = new FileReader();
-  reader.onload = (evt) => {
-    // localStorage.removeItem("document-name");
-    // localStorage.setItem("document-name", evt.target.result);
-  };
+  if (file.type == "application/pdf") {
+    // Create a file reader
+    // Read the file as ArrayBuffer
+    reader.readAsArrayBuffer(file);
 
-  reader.onloadstart = (evt) => {
-    document.querySelector("#upload-text").innerHTML = `
+    // Wait for the file to be loaded
+    await new Promise((resolve) => {
+      reader.onload = resolve;
+    });
+
+    // Get the array buffer of the file
+    const arrayBuffer = reader.result;
+
+    // Load the PDF file using pdf.js
+    const loadingTask = getDocument(arrayBuffer);
+    const pdf = await loadingTask.promise;
+
+    const numPages = pdf.numPages;
+    let imageDataList = [];
+
+    for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+      // Convert each page of the PDF to an image
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 1.0 });
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      const renderTask = page.render({
+        canvasContext: context,
+        viewport: viewport,
+      });
+
+      await renderTask.promise;
+
+      // Convert the canvas to base64 image data
+      const imageDataURL = canvas.toDataURL();
+      imageDataList.push(imageDataURL);
+    }
+    const form = {
+      document: imageDataList,
+      type: "pdf",
+      name: file.name,
+    };
+    router.post(route("document.add-document"), form);
+  } else {
+    reader.onloadstart = (evt) => {
+      document.querySelector("#upload-text").innerHTML = `
         <h1 class="mb-1">Uploading...</h1>
-        <p>${e.target.files[0].name}</p>
+        <p>${file.name}</p>
         <p class="py-1.5 hover:bg-slate-100 hover:shadow-md duration-300 px-2 bg-white rounded text-sm shadow-xl mt-3 flex items-center gap-1 justify-center">Cancel</p>
     `;
-  };
+    };
 
-  reader.onprogress = () => {
-    setTimeout(() => {
-      document.querySelector("#upload-text").innerHTML = `
+    reader.onprogress = () => {
+      setTimeout(() => {
+        document.querySelector("#upload-text").innerHTML = `
         <h1 class="mb-1">Progress...</h1>
-        <p>${e.target.files[0].name}</p>
+        <p>${file.name}</p>
     `;
-    }, 2000);
-  };
+      }, 2000);
+    };
 
-  reader.onloadend = (evt) => {
-    setTimeout(() => {
-      const form = {
-        document: e.target.files[0],
-      };
-      router.post(route("document.add-document"), form);
-    }, 4000);
-  };
+    reader.onloadend = (evt) => {
+      setTimeout(() => {
+        const form = {
+          document: [evt.target.result],
+          type: "png",
+          name: file.name,
+        };
+        router.post(route("document.add-document"), form);
+      }, 4000);
+    };
 
-  reader.readAsDataURL(e.target.files[0]);
+    reader.readAsDataURL(file);
+  }
 };
+onMounted(() => {
+  GlobalWorkerOptions.workerSrc = import("pdfjs-dist/build/pdf.worker.entry");
+});
 </script>

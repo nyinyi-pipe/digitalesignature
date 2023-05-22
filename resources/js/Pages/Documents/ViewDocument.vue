@@ -1,6 +1,7 @@
 <template>
   <Head title="Document" />
   <EditAside :toggle="toggle" @closeToggle="closeToggle"></EditAside>
+
   <div class="h-screen overflow-hidden">
     <div
       class="sticky z-10 top-0 h-14 border-b bg-white flex items-center py-2 lg:py-2.5"
@@ -84,6 +85,57 @@
         </div>
       </div>
     </div>
+    <div
+      :class="[noti ? 'block transition-opacity  duration-500' : 'hidden']"
+      class="w-full fixed z-50 top-12 right-2 max-w-xs p-4 pb-3 text-gray-500 bg-white rounded-sm shadow"
+      role="alert"
+    >
+      <div class="flex">
+        <div
+          class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          <span class="sr-only">Refresh icon</span>
+        </div>
+        <div class="ml-3 text-sm font-normal">
+          <span class="mb-1 text-sm font-semibold text-gray-900">Updated</span>
+          <div class="text-sm mt-2 font-normal">Field Updated</div>
+        </div>
+        <button
+          type="button"
+          @click="closeAlert"
+          class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+        >
+          <span class="sr-only">Close</span>
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
     <div class="flex relative">
       <div
         class="sm:w-[63%] pb-16 h-screen md:w-[70%] lg:w-[76%] mx-auto bg-gray-100 overflow-scroll"
@@ -136,7 +188,7 @@
                 :index="index"
                 :doc="doc"
                 class="w-full object-cover"
-                :src="docs(doc)"
+                :src="doc"
                 alt=""
               />
             </div>
@@ -261,7 +313,7 @@ import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 import { Link, router, Head, useForm } from "@inertiajs/vue3";
 import { onMounted, onUpdated, reactive, ref, watch } from "vue";
-import { initFlowbite, Modal } from "flowbite";
+import { initFlowbite, Dismiss } from "flowbite";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
 import moment from "moment";
@@ -280,6 +332,9 @@ const signatureResult = ref(null);
 const docs = (doc) => {
   return location.origin + "/storage/documents/" + doc;
 };
+const closeAlert = () => {
+  noti.value = false;
+};
 
 const toggleAside = () => {
   toggle.value = !toggle.value;
@@ -290,13 +345,8 @@ const closeToggle = () => {
 
 moment(documents.documents.updated_at).format("ll");
 
-watch(noti, (newnoti, oldnoti) => {
-  console.log(newnoti.value, oldnoti.value);
-});
-
 onUpdated(() => {
   const mainTag = document.querySelectorAll("#main");
-
   const texts = document.querySelectorAll(".text");
   const signatures = document.querySelectorAll(".signature");
   const dates = document.querySelectorAll(".date");
@@ -314,28 +364,34 @@ onUpdated(() => {
         noti.value = true;
         texts.forEach((text, index) => {
           if (text.style.top == data.data.document.texts[index].y) {
-            text.querySelector(".signText").classList.add("hidden");
-            text.querySelector(".textField").classList.remove("hidden");
-            text.querySelector("h1").innerText =
-              data.data.document.texts[index].result;
+            if (data.data.document.texts[index].result) {
+              text.querySelector(".signText").classList.add("hidden");
+              text.querySelector(".textField").classList.remove("hidden");
+              text.querySelector("h1").innerText =
+                data.data.document.texts[index].result;
+            }
           }
         });
 
         signatures?.forEach((signature, index) => {
           if (signature.style.top == data.data.document.signatures[index].y) {
-            signature.querySelector(".signImg").classList.add("hidden");
-            signature.querySelector(".imgSign").classList.remove("hidden");
-            signature.querySelector(".img").src =
-              data.data.document.signatures[index].result;
+            if (data.data.document.signatures[index].result) {
+              signature.querySelector(".signImg").classList.add("hidden");
+              signature.querySelector(".imgSign").classList.remove("hidden");
+              signature.querySelector(".img").src =
+                data.data.document.signatures[index].result;
+            }
           }
         });
 
         dates?.forEach((date, index) => {
           if (date.style.top == data.data.document.dates[index].y) {
-            date.querySelector(".signDate").classList.add("hidden");
-            date.querySelector(".dateSign").classList.remove("hidden");
-            date.querySelector("h1").innerText =
-              data.data.document.dates[index].result;
+            if (data.data.document.dates[index].result) {
+              date.querySelector(".signDate").classList.add("hidden");
+              date.querySelector(".dateSign").classList.remove("hidden");
+              date.querySelector("h1").innerText =
+                data.data.document.dates[index].result;
+            }
           }
         });
       });
@@ -344,10 +400,10 @@ onUpdated(() => {
 
 onMounted(() => {
   const mainTag = document.querySelectorAll("#main");
-
   const texts = document.querySelectorAll(".text");
   const signatures = document.querySelectorAll(".signature");
   const dates = document.querySelectorAll(".date");
+
   window.Pusher = Pusher;
   window.Echo = new Echo({
     broadcaster: "pusher",
@@ -405,7 +461,7 @@ onMounted(() => {
   initFlowbite();
 });
 </script>
-  <style>
+<style>
 .view {
   width: 10px;
   height: 10px;

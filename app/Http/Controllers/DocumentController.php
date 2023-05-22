@@ -32,18 +32,15 @@ class DocumentController extends Controller
     public function store(DocumentRequest $request) :RedirectResponse
     {
         $request->validated();
-        $document = $request->file('document');
-        $doc_name = $document->getClientOriginalName();
-        $doc_type = $document->getClientOriginalExtension();
-        $docs = uniqid().".".$doc_type;
-        $request->file('document')->storeAs('documents', $docs);
+        $doc_type = $request->type;
         $newDocument = Document::create([
             'user_id'=>auth()->user()->id,
-            'doc_name'=> $doc_name,
-            'doc_docs'=> [$docs],
+            'doc_name'=> $request->name,
+            'doc_docs'=> $request->document,
             'doc_type'=> $doc_type,
             'doc_key'=>'TEST'
         ]);
+        $request->session()->put('editDoc', $newDocument);
         return to_route('document.add-recipients', ['document'=>$newDocument->id]);
     }
 
@@ -85,7 +82,7 @@ class DocumentController extends Controller
         return to_route('document.edit.document', ['document'=>$document->id]);
     }
 
-    public function editDocument(Document $document) : Response
+    public function editDocument(Document $document, Request $request) : Response
     {
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
         return Inertia::render("Documents/EditDocument", [
@@ -158,7 +155,7 @@ class DocumentController extends Controller
     }
 
 
-    public function view(Document $document) : Response
+    public function view(Document $document, Request $request) : Response
     {
         $data = DocumentResult::where('document_id', $document->id)->get();
         $signatures = $this->signments($data, "signature");
@@ -169,7 +166,7 @@ class DocumentController extends Controller
         $document['texts'] = $texts;
         $document['dates'] = $dates;
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
-
+        $request->session()->forget('editDoc');
 
         return Inertia::render("Documents/ViewDocument", [
             'documents'=>$document

@@ -3,7 +3,7 @@
     class="sm:w-[32%] md:w-[22%] lg:w-[18%] border-r h-screen flex"
     style="z-index: 20"
   >
-    <aside class="h-full w-full">
+    <aside class="h-full w-full pb-16">
       <div
         class="flex items-center justify-between border-b p-3 pb-2 pl-4 mb-3"
       >
@@ -23,18 +23,14 @@
           />
         </svg>
       </div>
-      <div class="p-3 pl-4">
+      <div class="p-3 pl-4 overflow-scroll h-full">
         <div
           class="flex gap-4"
           v-for="(document, index) of documents.documents"
           :key="index"
         >
           <h1 class="text-sm">{{ index + 1 }}</h1>
-          <img
-            :src="docs(document)"
-            class="w-[75%] mb-6 shadow"
-            alt="document"
-          />
+          <img :src="document" class="w-[75%] mb-6 shadow" alt="document" />
         </div>
       </div>
     </aside>

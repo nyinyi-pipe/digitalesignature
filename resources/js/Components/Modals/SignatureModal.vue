@@ -106,6 +106,7 @@
                 <component
                   :is="selectedComponent"
                   @saveSignature="saveSignature"
+                  @uploadFile="uploadFile"
                 ></component>
               </keep-alive>
             </transition>
@@ -145,6 +146,9 @@ const Upload = () => {
   selectedComponent.value = UploadSign;
 };
 const saveSignature = (data) => {
+  signature.value = data;
+};
+const uploadFile = (data) => {
   signature.value = data;
 };
 </script>
