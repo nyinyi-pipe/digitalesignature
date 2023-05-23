@@ -208,7 +208,7 @@
               ></canvas> -->
             </div>
           </div>
-          <div class="mt-5 bg-blue-200 p-10 py-20" id="certificate">
+          <div class="mt-5 bg-blue-200 p-10 py-20 hidden" id="certificate">
             <h1 class="text-xl font-bold">Signature Certificate</h1>
 
             <div class="relative overflow-x-auto mt-3">
@@ -390,7 +390,8 @@ const download = () => {
   main.forEach((c) => {
     cer.append(c.cloneNode(true));
   });
-  cer.append(certificate.cloneNode(true));
+  certificate.classList.remove("hidden");
+  cer.append(certificate);
   html2pdf().from(cer).save();
 };
 const height = (doc) => {
