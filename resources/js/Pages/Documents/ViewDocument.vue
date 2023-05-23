@@ -364,16 +364,16 @@
   </div>
 </template>
   <script setup>
-import Echo from "laravel-echo";
-import Pusher from "pusher-js";
 import { Link, router, Head, useForm } from "@inertiajs/vue3";
-import { onMounted, onUpdated, reactive, ref, watch } from "vue";
+import { onMounted, onUpdated, reactive, ref } from "vue";
 import { initFlowbite, Dismiss } from "flowbite";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
 import moment from "moment";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
 
 const documents = defineProps({
   documents: Object,
