@@ -374,10 +374,6 @@ import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
 import moment from "moment";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const documents = defineProps({
   documents: Object,
