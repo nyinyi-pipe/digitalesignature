@@ -94,26 +94,29 @@ class DocumentController extends Controller
     {
         $doc_docs = $document->doc_docs;
         $docs = [];
-        if($request->file('newDocument')) {
-            $file = $request->file('newDocument');
-            $doc_type = $file->getClientOriginalExtension();
-            $doc = uniqid().".".$doc_type;
-            $file->storeAs('documents', $doc);
+        if($request->newDocument != null) {
 
             if(is_array($doc_docs)) {
                 $docs = $doc_docs;
-                $docs[] = $doc;
+                foreach ($request->newDocument as $doc) {
+                    $docs[] = $doc;
+                }
             } else {
                 $docs[] = $doc_docs;
-                $docs[] = $doc;
+                foreach ($request->newDocument as $doc) {
+                    $docs[] = $doc;
+                }
             }
         }
+
         $document->update([
             'doc_name'=>$request->newDocumentName??$document->doc_name,
-            'doc_docs'=>$request->file('newDocument')?$docs:$doc_docs
+            'doc_docs'=>$request->newDocument != null?$docs:$doc_docs
+        ]);
+        return response()->json([
+            'document'=>$document
         ]);
 
-        return to_route('document.edit.document', $document->id);
     }
 
     public function deleteDoc(Document $document, Request $request)

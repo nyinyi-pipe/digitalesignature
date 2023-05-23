@@ -147,6 +147,7 @@
           <div class="flex py-1.5 gap-2 pr-3">
             <div class="flex items-center gap-1 px-1.5 rounded h-6 bg-gray-100">
               <svg
+                @click="download"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -191,6 +192,14 @@
                 :src="doc"
                 alt=""
               />
+              <!-- <canvas
+                id="image"
+                :index="index"
+                :doc="doc"
+                class="mt-3 w-full object-cover"
+                :height="height(doc)"
+                :width="width(doc)"
+              ></canvas> -->
             </div>
           </div>
 
@@ -318,11 +327,26 @@ import EditAside from "@/Components/Layouts/EditAside.vue";
 import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
 import moment from "moment";
 import axios from "axios";
+import html2pdf from "html2pdf.js";
 
 const documents = defineProps({
   documents: Object,
   auth: Object,
 });
+const download = () => {
+  const e = document.querySelector("#image");
+  html2pdf().from(e).save();
+};
+const height = (doc) => {
+  const img = new Image();
+  img.src = doc;
+  return img.naturalHeight;
+};
+const width = (doc) => {
+  const img = new Image();
+  img.src = doc;
+  return img.naturalWidth;
+};
 const noti = ref(false);
 const toggle = ref(false);
 const uploadedDocument = ref("");
@@ -344,7 +368,6 @@ const closeToggle = () => {
 };
 
 moment(documents.documents.updated_at).format("ll");
-
 onUpdated(() => {
   const mainTag = document.querySelectorAll("#main");
   const texts = document.querySelectorAll(".text");
@@ -459,6 +482,24 @@ onMounted(() => {
     location.origin + "/storage/documents/" + documents.documents.doc_docs;
 
   initFlowbite();
+
+  // let canvases = document.querySelectorAll("#image");
+  // canvases.forEach((canvas, index) => {
+  //   let ctx = canvas.getContext("2d");
+  //   let img = new Image();
+  //   img.onload = () => {
+  //     ctx.drawImage(img, 0, 0);
+  //     ctx.font = "45px serif";
+  //     ctx.fillText(
+  //       documents.documents.texts[index].result,
+  //       canvas.getBoundingClientRect().width,
+  //       282
+  //     );
+  //     console.log(documents.documents.texts[index].result);
+  //     console.log(canvas.getBoundingClientRect().width);
+  //   };
+  //   img.src = documents.documents.doc_docs[index];
+  // });
 });
 </script>
 <style>

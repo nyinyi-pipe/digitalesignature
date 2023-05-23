@@ -67,7 +67,15 @@ import { onMounted } from "vue";
 const upload = async (event) => {
   const file = event.target.files[0];
   const reader = new FileReader();
+
   if (file.type == "application/pdf") {
+    reader.onloadstart = (evt) => {
+      document.querySelector("#upload-text").innerHTML = `
+        <h1 class="mb-1">Uploading...</h1>
+        <p>${file.name}</p>
+        <p class="py-1.5 hover:bg-slate-100 hover:shadow-md duration-300 px-2 bg-white rounded text-sm shadow-xl mt-3 flex items-center gap-1 justify-center">Cancel</p>
+    `;
+    };
     // Create a file reader
     // Read the file as ArrayBuffer
     reader.readAsArrayBuffer(file);
@@ -107,6 +115,16 @@ const upload = async (event) => {
       const imageDataURL = canvas.toDataURL();
       imageDataList.push(imageDataURL);
     }
+
+    reader.onprogress = () => {
+      setTimeout(() => {
+        document.querySelector("#upload-text").innerHTML = `
+        <h1 class="mb-1">Progress...</h1>
+        <p>${file.name}</p>
+    `;
+      }, 2000);
+    };
+
     const form = {
       document: imageDataList,
       type: "pdf",

@@ -950,9 +950,8 @@ const dateAssignRecipent = (e) => {
   }
   recipientStatus.classList.add("block");
 };
-const form = useForm({
+const form = reactive({
   newDocumentName: null,
-  _method: "PUT",
 });
 const recipientName = ref("Assign");
 const recipientEmail = ref("unknown");
@@ -1084,7 +1083,8 @@ const openNewDocumentUpload = () => {
   newDocumentUpload.value.show();
 };
 
-const closeNewDocumentUpload = () => {
+const closeNewDocumentUpload = (data) => {
+  documents.documents.doc_docs = data.doc_docs;
   newDocumentUpload.value.hide();
 };
 
@@ -1118,9 +1118,13 @@ const deleteDocument = (doc) => {
   location.reload();
 };
 const saveDocumentName = () => {
-  form.post(route("document.new.document-name", documents.documents.id));
-  documentNameModal.value.hide();
-  openSendMailModal();
+  axios
+    .put(route("document.new.document-name", documents.documents.id), form)
+    .then(({ data }) => {
+      documents.documents.doc_name = data.document.doc_name;
+      documentNameModal.value.hide();
+      openSendMailModal();
+    });
 };
 const toggleAside = () => {
   toggle.value = !toggle.value;
