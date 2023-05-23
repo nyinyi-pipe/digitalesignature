@@ -144,10 +144,9 @@
           class="w-full fixed bg-white px-5 flex user-select-none"
           style="z-index: 20"
         >
-          <div class="flex py-1.5 gap-2 pr-3">
+          <div class="flex justify-between w-full py-1.5 gap-2 pr-3">
             <div class="flex items-center gap-1 px-1.5 rounded h-6 bg-gray-100">
               <svg
-                @click="download"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -163,6 +162,12 @@
               </svg>
               <span class="text-gray-500 text-thin">1</span>
             </div>
+            <button
+              @click="download"
+              class="py-0.5 px-4 mr-72 rounded bg-yellow-500"
+            >
+              Print
+            </button>
           </div>
         </div>
         <div
@@ -183,7 +188,7 @@
                 </div>
               </div>
             </div>
-            <div class="relative" id="main">
+            <div class="relative main" id="main">
               <img
                 id="image"
                 :index="index"
@@ -192,6 +197,7 @@
                 :src="doc"
                 alt=""
               />
+
               <!-- <canvas
                 id="image"
                 :index="index"
@@ -200,6 +206,46 @@
                 :height="height(doc)"
                 :width="width(doc)"
               ></canvas> -->
+            </div>
+          </div>
+          <div class="mt-5 bg-blue-200 p-10 py-20" id="certificate">
+            <h1 class="text-xl font-bold">Signature Certificate</h1>
+
+            <div class="relative overflow-x-auto mt-3">
+              <table
+                class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+              >
+                <thead
+                  class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+                >
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Signer</th>
+                    <th scope="col" class="px-6 py-3">Timestamp</th>
+                    <th scope="col" class="px-6 py-3">Signature</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="signature of documents.documents.signatures"
+                    :key="signature.id"
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                  >
+                    <th
+                      scope="row"
+                      class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    >
+                      {{ signature.name }} <br />Email:
+                      {{ signature.email }}
+                    </th>
+                    <td class="px-6 py-4">
+                      {{ moment(signature.created_at).format("ll") }}
+                    </td>
+                    <td class="px-6 py-4">
+                      <img :src="signature.result" width="120" alt="" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -328,14 +374,24 @@ import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
 import moment from "moment";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const documents = defineProps({
   documents: Object,
   auth: Object,
 });
 const download = () => {
-  const e = document.querySelector("#image");
-  html2pdf().from(e).save();
+  const main = document.querySelectorAll("#main");
+  const certificate = document.querySelector("#certificate");
+  const cer = document.createElement("div");
+  main.forEach((c) => {
+    cer.append(c.cloneNode(true));
+  });
+  cer.append(certificate.cloneNode(true));
+  html2pdf().from(cer).save();
 };
 const height = (doc) => {
   const img = new Image();
@@ -482,24 +538,8 @@ onMounted(() => {
     location.origin + "/storage/documents/" + documents.documents.doc_docs;
 
   initFlowbite();
-
-  // let canvases = document.querySelectorAll("#image");
-  // canvases.forEach((canvas, index) => {
-  //   let ctx = canvas.getContext("2d");
-  //   let img = new Image();
-  //   img.onload = () => {
-  //     ctx.drawImage(img, 0, 0);
-  //     ctx.font = "45px serif";
-  //     ctx.fillText(
-  //       documents.documents.texts[index].result,
-  //       canvas.getBoundingClientRect().width,
-  //       282
-  //     );
-  //     console.log(documents.documents.texts[index].result);
-  //     console.log(canvas.getBoundingClientRect().width);
-  //   };
-  //   img.src = documents.documents.doc_docs[index];
-  // });
+  const certificate = document.querySelector("#certificate");
+  mainTag.innerHTML += certificate;
 });
 </script>
 <style>

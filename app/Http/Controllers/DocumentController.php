@@ -135,6 +135,8 @@ class DocumentController extends Controller
         });
         $datas = [];
         foreach ($array as $key => $value) {
+            $value['name'] = $value->recipient->name;
+            $value['email'] = $value->recipient->email;
             $datas[] = $value;
         }
         return ($datas);
