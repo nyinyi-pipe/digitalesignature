@@ -138,7 +138,7 @@
 
     <div class="flex relative">
       <div
-        class="sm:w-[63%] pb-16 h-screen md:w-[70%] lg:w-[76%] mx-auto bg-gray-100 overflow-scroll"
+        class="sm:w-[63%] pb-16 h-screen md:w-[70%] lg:w-[75%] mx-auto bg-gray-100 overflow-scroll"
       >
         <div
           class="w-full fixed bg-white px-5 flex user-select-none"
@@ -198,17 +198,20 @@
                 alt=""
               />
 
-              <!-- <canvas
-                id="image"
-                :index="index"
-                :doc="doc"
-                class="mt-3 w-full object-cover"
-                :height="height(doc)"
-                :width="width(doc)"
-              ></canvas> -->
+              <div id="mainCanvas" class="hidden">
+                <canvas
+                  id="canvas"
+                  class="mt-3 w-full object-cover"
+                  :height="height(doc)"
+                  :width="width(doc)"
+                ></canvas>
+              </div>
             </div>
           </div>
-          <div class="mt-5 bg-blue-200 p-10 py-20 hidden" id="certificate">
+          <div
+            class="mt-5 w-full hidden bg-blue-200 p-10 py-20"
+            id="certificate"
+          >
             <h1 class="text-xl font-bold">Signature Certificate</h1>
 
             <div class="relative overflow-x-auto mt-3">
@@ -248,6 +251,7 @@
               </table>
             </div>
           </div>
+          <div id="certi"></div>
 
           <div
             v-for="(sign, index) of documents.documents.signatures"
@@ -374,21 +378,56 @@ import axios from "axios";
 import html2pdf from "html2pdf.js";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const documents = defineProps({
   documents: Object,
   auth: Object,
 });
 const download = () => {
-  const main = document.querySelectorAll("#main");
+  const main = document.querySelectorAll("#mainCanvas");
   const certificate = document.querySelector("#certificate");
-  const cer = document.createElement("div");
-  main.forEach((c) => {
-    cer.append(c.cloneNode(true));
-  });
   certificate.classList.remove("hidden");
-  cer.append(certificate);
-  html2pdf().from(cer).save();
+
+  let pdf = new jsPDF("p", "pt", "a4");
+  html2canvas(certificate).then(function (canvas) {
+    document.querySelector("#certi").appendChild(canvas);
+  });
+  setTimeout(() => {
+    main.forEach((c) => {
+      c.classList.remove("hidden");
+      const canvas = c.querySelector("#canvas");
+      const img = canvas.toDataURL("image/jpeg");
+      pdf.addImage(
+        img,
+        "JPEG",
+        0,
+        0,
+        pdf.internal.pageSize.width,
+        canvas.getBoundingClientRect().height
+      );
+      pdf.addPage();
+    });
+    main.forEach((c) => {
+      c.classList.add("hidden");
+    });
+
+    const certi = document.querySelector("#certi");
+    const vas = certi.querySelector("canvas");
+    const img = vas.toDataURL("image/jpeg");
+    pdf.addImage(
+      img,
+      "JPEG",
+      0,
+      0,
+      pdf.internal.pageSize.width,
+      vas.getBoundingClientRect().height
+    );
+    pdf.save();
+    certificate.classList.add("hidden");
+    certi.removeChild(vas);
+  }, 500);
 };
 const height = (doc) => {
   const img = new Image();
@@ -537,6 +576,61 @@ onMounted(() => {
   initFlowbite();
   const certificate = document.querySelector("#certificate");
   mainTag.innerHTML += certificate;
+
+  const canvas = document.querySelectorAll("#canvas");
+  canvas.forEach((img, index) => {
+    const ctx = img.getContext("2d");
+    const image = new Image();
+    image.onload = () => {
+      ctx.drawImage(image, 0, 0);
+      if (documents.documents.signatures) {
+        documents.documents.signatures.forEach((sign, i) => {
+          if (sign.index == index) {
+            const ig = new Image();
+            ig.onload = () => {
+              ctx.drawImage(
+                ig,
+                documents.documents.signatures[i].x.replace("px", ""),
+                documents.documents.signatures[i].y.replace("px", ""),
+                75,
+                75
+              );
+            };
+            ig.src = sign.result;
+          }
+        });
+      }
+
+      if (documents.documents.texts) {
+        documents.documents.texts.forEach((text, i) => {
+          if (text.index == index) {
+            ctx.font = "16px serif";
+            text.result &&
+              ctx.fillText(
+                text.result,
+                documents.documents.texts[i].x.replace("px", ""),
+                documents.documents.texts[i].y.replace("px", "")
+              );
+          }
+        });
+      }
+
+      if (documents.documents.dates) {
+        documents.documents.dates.forEach((date, i) => {
+          if (date.index == index) {
+            ctx.font = "16px serif";
+            date.result &&
+              ctx.fillText(
+                date.result,
+                documents.documents.dates[i].x.replace("px", ""),
+                documents.documents.dates[i].y.replace("px", "")
+              );
+          }
+        });
+      }
+    };
+    image.src = documents.documents.doc_docs[index];
+  });
 });
 </script>
 <style>

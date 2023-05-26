@@ -6,6 +6,7 @@ use App\Events\DocumentEvent;
 use App\Models\Document;
 use App\Models\DocumentResult;
 use App\Models\Nonuser;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -60,6 +61,7 @@ class DocumentResultController extends Controller
 
     public function update(Document $document, $recipient, Request $request) : RedirectResponse
     {
+        $user = (User::where('id', $recipient)->first() ?? Nonuser::where('id', $recipient)->first());
         $document = $document->results()->where('type', $request->type)->where('id', $request->id)->first();
         $document->update([
             'result'=>$request->signature
