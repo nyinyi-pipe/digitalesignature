@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Events\DocumentEvent;
+use App\Mail\EditDocumentMail;
+use App\Mail\SendDocumentMail;
 use App\Models\Document;
 use App\Models\DocumentResult;
 use App\Models\Nonuser;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -44,6 +48,14 @@ class DocumentResultController extends Controller
     public function edit(Document $document, $recipient) : Response
     {
         $data = DocumentResult::where('document_id', $document->id)->where('nonuser_id', $recipient)->get();
+        foreach($data as $key) {
+            if($key->view == null) {
+                $view = Carbon::now();
+                $key->update([
+                    'view' => $view->toDateTimeString()
+                ]);
+            }
+        }
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");
         $dates = $this->signments($data, "date");
@@ -62,6 +74,9 @@ class DocumentResultController extends Controller
     public function update(Document $document, $recipient, Request $request) : RedirectResponse
     {
         $user = (User::where('id', $recipient)->first() ?? Nonuser::where('id', $recipient)->first());
+        $requester = $document->user->email;
+        $view = $document->id;
+        $doc_name = $document->doc_name;
         $document = $document->results()->where('type', $request->type)->where('id', $request->id)->first();
         $document->update([
             'result'=>$request->signature
@@ -72,7 +87,14 @@ class DocumentResultController extends Controller
             return array('id'=>$res->id,'user_id'=>$res->nonuser_id,'email'=>$res->recipient->email,'x'=>$res->x,'y'=>$res->y,'result'=>$res->result);
         });
         $documents['signatures'] = $signments;
-        broadcast(new DocumentEvent('text'));
+        $res['name'] = $user->name;
+        $res['type'] = $request->type;
+        broadcast(new DocumentEvent($res));
+        $document['link'] = route('document.view.document', $view);
+        $document['email'] = $user->email;
+        $document['name'] = $user->name;
+        $document['doc_name'] = $doc_name;
+        Mail::to($requester)->send(new EditDocumentMail($document));
 
         return to_route('recipient.edit.document', [$request->doc_id,$recipient]);
     }

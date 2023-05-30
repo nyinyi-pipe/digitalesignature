@@ -40,6 +40,7 @@ Route::middleware(['auth','editdoc'])->group(function () {
 
 Route::get('/documents/v/{document}', [DocumentController::class,'view'])->name('document.view.document');
 Route::get('/document/v/{document}', [DocumentController::class,'viewUpdate'])->name('document.view.update.document');
+Route::put('/document/v/{document}', [DocumentController::class,'finishUpdate'])->name('document.finish.update.document');
 
 Route::get('/u/{document}/{recipient}', [DocumentResultController::class,'edit'])->name('recipient.edit.document');
 Route::put('/u/{document}/{recipient}', [DocumentResultController::class,'update'])->name('recipient.update.document');

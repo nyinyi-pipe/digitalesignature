@@ -19,13 +19,13 @@
         "vue": "^3.2.41"
     },
     "dependencies": {
+        "downloadjs": "^1.4.7",
         "flowbite": "^1.6.5",
-        "html2canvas": "^1.4.1",
-        "html2pdf.js": "^0.10.1",
         "js-cookie": "^3.0.5",
         "jspdf": "^2.5.1",
         "laravel-echo": "^1.15.1",
         "moment": "^2.29.4",
+        "pdf-lib": "^1.17.1",
         "pdfjs-dist": "^3.6.172",
         "pusher-js": "^8.0.2",
         "sweetalert2": "^11.7.5",

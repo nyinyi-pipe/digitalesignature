@@ -9,6 +9,7 @@ use App\Models\Document;
 use App\Models\DocumentResult;
 use App\Models\Nonuser;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -177,5 +178,14 @@ class DocumentController extends Controller
             'documents'=>$document
         ]);
 
+    }
+
+    public function finishUpdate(Document $document, Request $request)
+    {
+        $document->update([
+            'doc_status'=>$request->doc_status,
+            'finish_datetime'=>Carbon::now()->toDateTimeString()
+        ]);
+        return redirect()->back();
     }
 }

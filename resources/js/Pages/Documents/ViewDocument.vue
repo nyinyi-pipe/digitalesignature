@@ -90,9 +90,9 @@
       class="w-full fixed z-50 top-12 right-2 max-w-xs p-4 pb-3 text-gray-500 bg-white rounded-sm shadow"
       role="alert"
     >
-      <div class="flex">
+      <div class="flex items-center">
         <div
-          class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg"
+          class="inline-flex items-center justify-center flex-shrink-0 w-7 h-7 text-blue-500 bg-blue-100 rounded-lg"
         >
           <svg
             aria-hidden="true"
@@ -110,8 +110,9 @@
           <span class="sr-only">Refresh icon</span>
         </div>
         <div class="ml-3 text-sm font-normal">
-          <span class="mb-1 text-sm font-semibold text-gray-900">Updated</span>
-          <div class="text-sm mt-2 font-normal">Field Updated</div>
+          <span class="mb-1 text-sm font-semibold text-gray-900"
+            >{{ res_name }} Updated</span
+          >
         </div>
         <button
           type="button"
@@ -144,7 +145,7 @@
           class="w-full fixed bg-white px-5 flex user-select-none"
           style="z-index: 20"
         >
-          <div class="flex justify-between w-full py-1.5 gap-2 pr-3">
+          <div class="flex justify-between w-full py-1.5 gap-2 pr-5">
             <div class="flex items-center gap-1 px-1.5 rounded h-6 bg-gray-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -162,12 +163,22 @@
               </svg>
               <span class="text-gray-500 text-thin">1</span>
             </div>
-            <button
-              @click="download"
-              class="py-0.5 px-4 mr-72 rounded bg-yellow-500"
-            >
-              Print
-            </button>
+            <div>
+              <button
+                @click="createPdf"
+                v-if="finished"
+                class="py-0.5 px-4 mr-72 rounded bg-yellow-500 text-white"
+              >
+                Print
+              </button>
+              <button
+                v-else
+                @click="finishPdf"
+                class="py-0.5 px-4 mr-72 rounded bg-green-500 text-white"
+              >
+                Finish
+              </button>
+            </div>
           </div>
         </div>
         <div
@@ -208,50 +219,6 @@
               </div>
             </div>
           </div>
-          <div
-            class="mt-5 w-full hidden bg-blue-200 p-10 py-20"
-            id="certificate"
-          >
-            <h1 class="text-xl font-bold">Signature Certificate</h1>
-
-            <div class="relative overflow-x-auto mt-3">
-              <table
-                class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
-              >
-                <thead
-                  class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  <tr>
-                    <th scope="col" class="px-6 py-3">Signer</th>
-                    <th scope="col" class="px-6 py-3">Timestamp</th>
-                    <th scope="col" class="px-6 py-3">Signature</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="signature of documents.documents.signatures"
-                    :key="signature.id"
-                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                  >
-                    <th
-                      scope="row"
-                      class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                    >
-                      {{ signature.name }} <br />Email:
-                      {{ signature.email }}
-                    </th>
-                    <td class="px-6 py-4">
-                      {{ moment(signature.created_at).format("ll") }}
-                    </td>
-                    <td class="px-6 py-4">
-                      <img :src="signature.result" width="120" alt="" />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div id="certi"></div>
 
           <div
             v-for="(sign, index) of documents.documents.signatures"
@@ -375,59 +342,344 @@ import EditAside from "@/Components/Layouts/EditAside.vue";
 import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
 import moment from "moment";
 import axios from "axios";
-import html2pdf from "html2pdf.js";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+// import download from "@/composables/download";
+import { PDFDocument, StandardFonts, degrees, rgb } from "pdf-lib";
+import download from "downloadjs";
 
 const documents = defineProps({
   documents: Object,
   auth: Object,
 });
-const download = () => {
+const finished = ref(false);
+const ipAdd = ref();
+const res_name = ref("");
+
+const createPdf = async () => {
   const main = document.querySelectorAll("#mainCanvas");
-  const certificate = document.querySelector("#certificate");
-  certificate.classList.remove("hidden");
 
-  let pdf = new jsPDF("p", "pt", "a4");
-  html2canvas(certificate).then(function (canvas) {
-    document.querySelector("#certi").appendChild(canvas);
+  // Create a new PDFDocument
+  const pdfDoc = await PDFDocument.create();
+
+  // Embed the Times Roman font
+  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
+  // Add a blank page to the document
+
+  // Get the width and height of the page
+  let pdfBytes = null;
+  main.forEach(async (c, i) => {
+    const page = pdfDoc.addPage();
+
+    c.classList.remove("hidden");
+    const canvas = c.querySelector("#canvas");
+    const img = canvas.toDataURL("image/jpeg");
+    const jpgUrl = img;
+    const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
+    const jpgImage = await pdfDoc.embedJpg(jpgImageBytes);
+    const jpgDims = jpgImage.scale(1);
+
+    // Add a blank page to the document
+
+    // Get the width and height of the page
+    page.drawImage(jpgImage, {
+      x: 0,
+      y: 0,
+      width: c.width,
+      height: c.height,
+    });
+    // pdfBytes = await pdfDoc.save();
   });
-  setTimeout(() => {
-    main.forEach((c) => {
-      c.classList.remove("hidden");
-      const canvas = c.querySelector("#canvas");
-      const img = canvas.toDataURL("image/jpeg");
-      pdf.addImage(
-        img,
-        "JPEG",
-        0,
-        0,
-        pdf.internal.pageSize.width,
-        canvas.getBoundingClientRect().height
-      );
-      pdf.addPage();
+  main.forEach((c) => {
+    c.classList.add("hidden");
+  });
+
+  // Draw a string of text toward the top of the page
+  const page = pdfDoc.addPage();
+  const { width, height } = page.getSize();
+
+  const fontSize = 30;
+  page.drawText("Signature Certificate", {
+    x: 30,
+    y: height - 4 * 13,
+    size: fontSize,
+    font: timesRomanFont,
+    color: rgb(0, 0, 0),
+  });
+
+  page.drawText("Reference number: VM3HM-YUYA8-MQTJV-SPK3K", {
+    x: 30,
+    y: height - 4 * 20,
+    size: 10,
+    font: timesRomanFont,
+    color: rgb(0, 0, 0),
+  });
+
+  page.drawText("Signer", { x: 30, y: height - 4 * 35, size: 10 });
+  page.drawText("Timestamp", { x: 220, y: height - 4 * 35, size: 10 });
+  page.drawText("Signature", { x: 430, y: height - 4 * 35, size: 10 });
+
+  let lineHeight = 8;
+  let signer = 12;
+  let signerEmail = 15;
+  let sent = 19;
+  let view = 22;
+  let sign = 25;
+  let signature = 26;
+  let recipientVer = 30;
+  let emailVer = 33;
+  let watermask = 5;
+  for (let index = 0; index < 20; index++) {
+    watermask += 45;
+
+    page.drawText("SecureSign", {
+      x: 5,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
     });
-    main.forEach((c) => {
-      c.classList.add("hidden");
+    page.drawText("SecureSign", {
+      x: 65,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+    page.drawText("SecureSign", {
+      x: 125,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+    page.drawText("SecureSign", {
+      x: 185,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+    page.drawText("SecureSign", {
+      x: 245,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+    page.drawText("SecureSign", {
+      x: 305,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+    page.drawText("SecureSign", {
+      x: 365,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+    page.drawText("SecureSign", {
+      x: 425,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+    page.drawText("SecureSign", {
+      x: 485,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+    page.drawText("SecureSign", {
+      x: 545,
+      y: watermask,
+      size: 10,
+      color: rgb(0.95, 0.1, 0.1),
+      opacity: 0.2,
+      rotate: degrees(-45),
+    });
+  }
+  let requestOptions = {
+    method: "GET",
+  };
+
+  const response = await fetch(
+    "https://api.geoapify.com/v1/ipinfo?&apiKey=9a20e6a383e843beb518602b73291485",
+    requestOptions
+  );
+  const { city, country, ip } = await response.json();
+
+  for (let index = 0; index < documents.documents.signatures.length; index++) {
+    const jpgUrl = documents.documents.signatures[index].result;
+    const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
+    const jpgImage = await pdfDoc.embedPng(jpgImageBytes);
+    const jpgDims = jpgImage.scale(0.5);
+    lineHeight += 30;
+    signer += 30;
+    signerEmail += 30;
+    sent += 30;
+    view += 30;
+    sign += 30;
+    signature += 30;
+    recipientVer += 30;
+    emailVer += 30;
+
+    page.drawLine({
+      start: { x: 25, y: height - 4 * lineHeight },
+      end: { x: 570, y: height - 4 * lineHeight },
+      thickness: 0.3,
+      color: rgb(0, 0, 0),
+      opacity: 0.55,
     });
 
-    const certi = document.querySelector("#certi");
-    const vas = certi.querySelector("canvas");
-    const img = vas.toDataURL("image/jpeg");
-    pdf.addImage(
-      img,
-      "JPEG",
-      0,
-      0,
-      pdf.internal.pageSize.width,
-      vas.getBoundingClientRect().height
+    page.drawText(`${documents.documents.signatures[index].name}`, {
+      x: 30,
+      y: height - 4 * signer,
+      size: 11,
+    });
+    page.drawText(`Email: ${documents.documents.signatures[index].email}`, {
+      x: 30,
+      y: height - 4 * signerEmail,
+      size: 9,
+    });
+
+    page.drawText("Sent:", {
+      x: 30,
+      y: height - 4 * sent,
+      size: 8,
+    });
+    page.drawText("Viewed:", {
+      x: 30,
+      y: height - 4 * view,
+      size: 8,
+    });
+    page.drawText("Signed:", {
+      x: 30,
+      y: height - 4 * sign,
+      size: 8,
+    });
+
+    page.drawText(
+      `${moment(documents.documents.signatures[index].created_at).format(
+        "lll"
+      )}`,
+      {
+        x: 220,
+        y: height - 4 * sent,
+        size: 8,
+      }
     );
-    pdf.save();
-    certificate.classList.add("hidden");
-    certi.removeChild(vas);
-  }, 500);
+    page.drawText(
+      `${moment(documents.documents.signatures[index].view).format("lll")}`,
+      {
+        x: 220,
+        y: height - 4 * view,
+        size: 8,
+      }
+    );
+    page.drawText(
+      `${moment(documents.documents.signatures[index].updated_at).format(
+        "lll"
+      )}`,
+      {
+        x: 220,
+        y: height - 4 * sign,
+        size: 8,
+      }
+    );
+
+    page.drawImage(jpgImage, {
+      x: 430,
+      y: height - 4 * signature,
+      width: 130,
+      height: 65,
+      opacity: 0.75,
+    });
+
+    page.drawText("Recipient Verification:", {
+      x: 30,
+      y: height - 4 * recipientVer,
+      size: 10,
+    });
+
+    page.drawText(`IP address: ${ip}`, {
+      x: 430,
+      y: height - 4 * recipientVer,
+      size: 8,
+    });
+
+    page.drawText("Email verified ", {
+      x: 30,
+      y: height - 4 * emailVer,
+      size: 8,
+    });
+
+    page.drawText(
+      `${moment(documents.documents.signatures[index].created_at).format(
+        "lll"
+      )}`,
+      {
+        x: 220,
+        y: height - 4 * emailVer,
+        size: 8,
+      }
+    );
+
+    page.drawText(`Location: ${city.name} ${country.name}`, {
+      x: 430,
+      y: height - 4 * emailVer,
+      size: 8,
+    });
+  }
+
+  page.drawText("Document completed by all parties on:", {
+    x: 30,
+    y: height - 4 * (lineHeight + 35),
+    size: 10,
+    font: timesRomanFont,
+    color: rgb(0, 0, 0),
+  });
+  page.drawText(
+    `${moment(documents.documents.finish_datetime).format("lll")}`,
+    {
+      x: 30,
+      y: height - 4 * (lineHeight + 39),
+      size: 11,
+      font: timesRomanFont,
+      color: rgb(0, 0, 0),
+    }
+  );
+  // Serialize the PDFDocument to bytes (a Uint8Array)
+  pdfBytes = await pdfDoc.save();
+
+  // Trigger the browser to download the PDF document
+  download(pdfBytes, `${documents.documents.doc_name}.pdf`, "application/pdf");
+};
+
+const finishPdf = () => {
+  finished.value = true;
+  const formStatus = useForm({
+    doc_status: 3,
+    _method: "PUT",
+  });
+  formStatus.post(
+    route("document.finish.update.document", documents.documents.id)
+  );
 };
 const height = (doc) => {
   const img = new Image();
@@ -477,6 +729,7 @@ onUpdated(() => {
       .get(route("document.view.update.document", documents.documents.id))
       .then((data) => {
         noti.value = true;
+        res_name.value = res.name + " " + res.type;
         texts.forEach((text, index) => {
           if (text.style.top == data.data.document.texts[index].y) {
             if (data.data.document.texts[index].result) {
@@ -514,6 +767,7 @@ onUpdated(() => {
 });
 
 onMounted(() => {
+  if (documents.documents.doc_status == 3) finished.value = true;
   const mainTag = document.querySelectorAll("#main");
   const texts = document.querySelectorAll(".text");
   const signatures = document.querySelectorAll(".signature");
