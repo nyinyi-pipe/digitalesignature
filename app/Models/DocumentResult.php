@@ -15,4 +15,12 @@ class DocumentResult extends Model
     {
         return $this->belongsTo(Nonuser::class, 'nonuser_id');
     }
+
+    public function getResultAttribute($value)
+    {
+        if($this->type == 'date' && $value) {
+            return date('d/m/Y', strtotime($value));
+        }
+        return $value;
+    }
 }

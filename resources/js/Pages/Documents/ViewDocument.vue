@@ -163,20 +163,25 @@
               </svg>
               <span class="text-gray-500 text-thin">1</span>
             </div>
-            <div>
+            <div
+              v-if="
+                documents.auth.user &&
+                documents.auth.user.id == documents.documents.user_id
+              "
+            >
               <button
-                @click="createPdf"
-                v-if="finished"
-                class="py-0.5 px-4 mr-72 rounded bg-yellow-500 text-white"
-              >
-                Print
-              </button>
-              <button
-                v-else
+                v-if="!finished"
                 @click="finishPdf"
                 class="py-0.5 px-4 mr-72 rounded bg-green-500 text-white"
               >
                 Finish
+              </button>
+              <button
+                v-else
+                @click="createPdf"
+                class="py-0.5 px-4 mr-72 rounded bg-yellow-500 text-white"
+              >
+                Print
               </button>
             </div>
           </div>
@@ -226,7 +231,7 @@
           >
             <div
               draggable="true"
-              class="fields absolute signature select-none"
+              class="fields absolute signature select-none userSign"
               :index="index"
             >
               <div
@@ -269,11 +274,18 @@
                   :user_id="sign.user_id"
                 />
               </div>
+              <div class="w-full user hidden items-center mt-3 justify-center">
+                <h1
+                  class="text-blue-500 m-0 w-auto px-3 shadow-lg rounded-xl text-sm"
+                >
+                  {{ sign.name }}
+                </h1>
+              </div>
             </div>
           </div>
 
           <div v-for="(text, index) of documents.documents.texts" :key="index">
-            <div class="absolute fields w-[140px] text select-none">
+            <div class="absolute fields w-[140px] text select-none userSign">
               <div
                 @click="changeWriteStatus"
                 :class="[text.result ? 'hidden' : 'flex']"
@@ -297,15 +309,25 @@
               </div>
               <div
                 :class="[text.result ? 'flex' : 'hidden']"
-                class="border-yellow-500 p-1.5 border textField justify-center items-center"
+                class="border-yellow-500 p-1 overflow-hidden border textField justify-center items-center"
               >
-                <h1 class="m-0 text-yellow-500">{{ text.result }}</h1>
+                <h1 class="w-full m-0 text-yellow-500 break-words">
+                  {{ text.result }}
+                </h1>
+              </div>
+
+              <div class="w-full user hidden items-center mt-3 justify-center">
+                <h1
+                  class="text-yellow-500 m-0 w-auto px-3 shadow-lg rounded-xl text-sm"
+                >
+                  {{ text.name }}
+                </h1>
               </div>
             </div>
           </div>
 
           <div v-for="(date, index) of documents.documents.dates" :key="index">
-            <div class="absolute fields date select-none">
+            <div class="absolute fields date select-none userSign">
               <div>
                 <div
                   :class="[date.result ? 'hidden' : 'flex']"
@@ -325,6 +347,13 @@
                 >
                   <h1 class="m-0 text-pink-500">{{ date.result }}</h1>
                 </div>
+              </div>
+              <div class="w-full user hidden items-center mt-3 justify-center">
+                <h1
+                  class="text-red-500 m-0 w-auto px-3 shadow-lg rounded-xl text-sm"
+                >
+                  {{ date.name }}
+                </h1>
               </div>
             </div>
           </div>
@@ -576,7 +605,7 @@ const createPdf = async () => {
 
     page.drawText(
       `${moment(documents.documents.signatures[index].created_at).format(
-        "lll"
+        "D MMM YYYY, h:mm:ss A"
       )}`,
       {
         x: 220,
@@ -585,7 +614,9 @@ const createPdf = async () => {
       }
     );
     page.drawText(
-      `${moment(documents.documents.signatures[index].view).format("lll")}`,
+      `${moment(documents.documents.signatures[index].view).format(
+        "D MMM YYYY, h:mm:ss A"
+      )}`,
       {
         x: 220,
         y: height - 4 * view,
@@ -594,7 +625,7 @@ const createPdf = async () => {
     );
     page.drawText(
       `${moment(documents.documents.signatures[index].updated_at).format(
-        "lll"
+        "D MMM YYYY, h:mm:ss A"
       )}`,
       {
         x: 220,
@@ -631,7 +662,7 @@ const createPdf = async () => {
 
     page.drawText(
       `${moment(documents.documents.signatures[index].created_at).format(
-        "lll"
+        "D MMM YYYY, h:mm:ss A"
       )}`,
       {
         x: 220,
@@ -655,7 +686,9 @@ const createPdf = async () => {
     color: rgb(0, 0, 0),
   });
   page.drawText(
-    `${moment(documents.documents.finish_datetime).format("lll")}`,
+    `${moment(documents.documents.finish_datetime).format(
+      "D MMM YYYY, h:mm:ss A"
+    )}`,
     {
       x: 30,
       y: height - 4 * (lineHeight + 39),
@@ -884,6 +917,23 @@ onMounted(() => {
       }
     };
     image.src = documents.documents.doc_docs[index];
+  });
+
+  const userSigns = document.querySelectorAll(".userSign");
+  userSigns.forEach((sign) => {
+    let user = sign.querySelector(".user");
+    sign.addEventListener("mousemove", (e) => {
+      if (user.classList.contains("hidden")) {
+        user.classList.remove("hidden");
+        user.classList.add("flex");
+      }
+    });
+    sign.addEventListener("mouseout", (e) => {
+      if (user.classList.contains("flex")) {
+        user.classList.remove("flex");
+        user.classList.add("hidden");
+      }
+    });
   });
 });
 </script>

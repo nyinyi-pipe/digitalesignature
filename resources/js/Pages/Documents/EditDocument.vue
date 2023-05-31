@@ -75,7 +75,7 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <button
+          <!-- <button
             id="invite"
             data-dropdown-toggle="invite-dropdown"
             class="focus:outline-none rounded text-sm border focus:border-0 peer-focus:ring-0 px-4 py-1.5 shadow-md hover:bg-gray-100 hover:shadow-0 duration-200 text-center inline-flex items-center"
@@ -97,7 +97,7 @@
             </svg>
 
             <span class="text-green-600 font-bold">Invite</span>
-          </button>
+          </button> -->
           <!-- Invite Dropdown menu -->
           <div
             id="invite-dropdown"
@@ -204,6 +204,7 @@
               <span class="text-gray-500 text-thin">1</span>
             </div>
             <div
+              @click="openNewDocumentUpload"
               class="flex items-center gap-1 px-1.5 rounded h-7 duration-200 cursor-pointer hover:bg-gray-100"
             >
               <svg
@@ -1084,11 +1085,14 @@ const openNewDocumentUpload = () => {
 };
 
 const closeNewDocumentUpload = (data) => {
-  documents.documents.doc_docs = data.doc_docs;
+  if (data) {
+    documents.documents.doc_docs = data.doc_docs;
+  }
   newDocumentUpload.value.hide();
 };
 
-const closeNewRecipientModal = () => {
+const closeNewRecipientModal = (data) => {
+  documents.documents.recipients = data;
   newRecipientModal.value.hide();
 };
 

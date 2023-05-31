@@ -18,7 +18,7 @@ Route::middleware('auth')->group(function () {
     //document
     Route::get('/documents', [DocumentController::class,'index'])->name('document.index');
     Route::get('/documents/add-document', [DocumentController::class,'create'])->name('document.add-document');
-    Route::post('/documents/add-document', [DocumentController::class,'store'])->name('document.add-document');
+    Route::post('/documents/add-document', [DocumentController::class,'store'])->name('documents.add-document');
 
     //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth','editdoc'])->group(function () {
     Route::get('/documents/{document}/add-recipients', [DocumentController::class,'recipients'])->name('document.add-recipients');
     Route::put('/documents/{document}/add-recipients', [DocumentController::class,'storeRecipients'])->name('document.store-recipients');
+    Route::put('/documents/{document}/add-recipient', [DocumentController::class,'addRecipients'])->name('document.add.recipients');
     Route::get('/documents/edit/{document}', [DocumentController::class,'editDocument'])->name('document.edit.document');
     Route::post('/documents/edit/{document}', [MailController::class,'sendMail'])->name('document.send.mail');
     Route::delete('/documents/edit/{document}', [DocumentController::class,'deleteDoc'])->name('documents.delete.document');

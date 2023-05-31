@@ -60,6 +60,37 @@ class DocumentController extends Controller
     public function storeRecipients(Document $document, RecipientRequest $request) :RedirectResponse
     {
         $request->validated();
+        foreach ($request->email as $key=>$email) {
+            $user = User::where('email', $email)->first();
+            $nonuser = Nonuser::where('email', $email)->first();
+            try {
+                DB::beginTransaction();
+                if($user == null && $nonuser == null) {
+                    $nonuser = Nonuser::create([
+                        'name'=>$request->firstName[$key]." ".$request->lastName[$key],
+                        'first_name'=>$request->firstName[$key],
+                        'last_name'=>$request->lastName[$key],
+                        'email'=>$email
+                    ]);
+                }
+                $document->documentnonuser()->attach($nonuser->id??$user->id);
+                $document->update([
+                    'doc_name'=>$request->docName??$document->doc_name,
+                ]);
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+            }
+        }
+
+        return to_route('document.edit.document', ['document'=>$document->id]);
+    }
+
+    public function addRecipients(Document $document, RecipientRequest $request)
+    {
+        $request->validated();
+        $user = User::where('email', $request->email)->first();
+        $nonuser = Nonuser::where('email', $request->email)->first();
         $user = User::where('email', $request->email)->first();
         $nonuser = Nonuser::where('email', $request->email)->first();
         try {
@@ -80,7 +111,11 @@ class DocumentController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
         }
-        return to_route('document.edit.document', ['document'=>$document->id]);
+        $recipients = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
+
+        return response()->json([
+            'data'=>$recipients
+        ]);
     }
 
     public function editDocument(Document $document, Request $request) : Response

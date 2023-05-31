@@ -220,9 +220,11 @@
               </div>
               <div
                 v-else
-                class="border-yellow-500 p-1.5 border flex justify-center items-center"
+                class="border-yellow-500 p-1 overflow-hidden border flex justify-center items-center"
               >
-                <h1 class="m-0 text-yellow-500">{{ text.result }}</h1>
+                <h1 class="w-full m-0 text-yellow-500 break-words">
+                  {{ text.result }}
+                </h1>
               </div>
             </div>
           </div>
@@ -327,10 +329,7 @@ const saveText = (e) => {
     route("recipient.update.document", [
       documents.documents.id,
       e.target.getAttribute("user_id"),
-    ]),
-    {
-      onSuccess: () => location.reload(),
-    }
+    ])
   );
 };
 
@@ -341,10 +340,7 @@ const saveDate = (e) => {
     route("recipient.update.document", [
       documents.documents.id,
       e.target.getAttribute("user_id"),
-    ]),
-    {
-      onSuccess: () => location.reload(),
-    }
+    ])
   );
 };
 
@@ -421,10 +417,7 @@ const acceptSignature = (data) => {
     route("recipient.update.document", [
       signatures[indexs.value].querySelector(".img").getAttribute("id"),
       signatures[indexs.value].querySelector(".img").getAttribute("user_id"),
-    ]),
-    {
-      onSuccess: () => location.reload(),
-    }
+    ])
   );
 };
 </script>

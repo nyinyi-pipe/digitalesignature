@@ -95,8 +95,8 @@ class DocumentResultController extends Controller
         $document['name'] = $user->name;
         $document['doc_name'] = $doc_name;
         Mail::to($requester)->send(new EditDocumentMail($document));
-
-        return to_route('recipient.edit.document', [$request->doc_id,$recipient]);
+        return redirect()->back();
+        // return to_route('recipient.edit.document', [$request->doc_id,$recipient]);
     }
 
     public function updateStatus(DocumentResult $document, Request $request)

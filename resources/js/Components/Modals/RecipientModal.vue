@@ -98,6 +98,7 @@
 
 <script setup>
 import { useForm } from "@inertiajs/vue3";
+import axios from "axios";
 
 const documents = defineProps({
   documents: Object,
@@ -111,11 +112,11 @@ const form = useForm({
   _method: "PUT",
 });
 const addRecipient = () => {
-  form.post(route("document.store-recipients", documents.documents.id), {
-    onSuccess: () => {
-      location.reload();
-    },
-  });
-  emit("closeNewRecipientModal");
+  axios
+    .put(route("document.add.recipients", documents.documents.id), form)
+    .then(({ data: { data } }) => {
+      emit("closeNewRecipientModal", data);
+    });
+  // form.post(route("document.add.recipients", documents.documents.id));
 };
 </script>
