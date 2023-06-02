@@ -35,4 +35,9 @@ class Document extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function sends()
+    {
+        return $this->hasMany(Send::class);
+    }
 }

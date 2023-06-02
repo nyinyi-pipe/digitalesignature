@@ -25,6 +25,7 @@
         "jspdf": "^2.5.1",
         "laravel-echo": "^1.15.1",
         "moment": "^2.29.4",
+        "moment-timezone": "^0.5.43",
         "pdf-lib": "^1.17.1",
         "pdfjs-dist": "^3.6.172",
         "pusher-js": "^8.0.2",

@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentResultController;
 use App\Http\Controllers\Mail\MailController;
+use App\Http\Controllers\SendController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -38,8 +39,14 @@ Route::middleware(['auth','editdoc'])->group(function () {
     Route::get('/documents/send', [DocumentController::class,'send'])->name('document.send');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/send-documents', [SendController::class,'index'])->name('send-document.index');
+    Route::get('/send-documents/{document}', [SendController::class,'show'])->name('send-document.show');
+});
+
 
 Route::get('/documents/v/{document}', [DocumentController::class,'view'])->name('document.view.document');
+Route::get('/documents/c/v/{document}', [DocumentController::class,'ccview'])->name('document.cc.view.document');
 Route::get('/document/v/{document}', [DocumentController::class,'viewUpdate'])->name('document.view.update.document');
 Route::put('/document/v/{document}', [DocumentController::class,'finishUpdate'])->name('document.finish.update.document');
 
@@ -47,9 +54,7 @@ Route::get('/u/{document}/{recipient}', [DocumentResultController::class,'edit']
 Route::put('/u/{document}/{recipient}', [DocumentResultController::class,'update'])->name('recipient.update.document');
 Route::put('/u/{document}', [DocumentResultController::class,'updateStatus'])->name('recipient.update.status.document');
 
-Route::get('/tester', function () {
-    return Inertia::render('Tester');
-});
+
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';

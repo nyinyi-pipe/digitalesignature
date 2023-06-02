@@ -149,6 +149,7 @@ class DocumentController extends Controller
             'doc_name'=>$request->newDocumentName??$document->doc_name,
             'doc_docs'=>$request->newDocument != null?$docs:$doc_docs
         ]);
+        // return redirect()->back();
         return response()->json([
             'document'=>$document
         ]);
@@ -161,7 +162,7 @@ class DocumentController extends Controller
         $document->update([
             'doc_docs'=>$docs
         ]);
-        return to_route('document.edit.document', $document->id);
+        // return to_route('document.edit.document', $document->id);
     }
 
     public function signments($data, $type)
@@ -215,12 +216,31 @@ class DocumentController extends Controller
 
     }
 
+    public function ccview(Document $document, Request $request) : Response
+    {
+        $data = DocumentResult::where('document_id', $document->id)->get();
+        $signatures = $this->signments($data, "signature");
+        $texts = $this->signments($data, "text");
+        $dates = $this->signments($data, "date");
+        $document['user'] = $document->user->name;
+        $document['signatures'] = $signatures;
+        $document['texts'] = $texts;
+        $document['dates'] = $dates;
+        $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
+        $request->session()->forget('editDoc');
+
+        return Inertia::render("Documents/CCViewDocument", [
+            'documents'=>$document
+        ]);
+
+    }
+
     public function finishUpdate(Document $document, Request $request)
     {
         $document->update([
             'doc_status'=>$request->doc_status,
-            'finish_datetime'=>Carbon::now()->toDateTimeString()
+            'finish_datetime'=>Carbon::now("Asia/Yangon")->toDateTimeString()
         ]);
-        return redirect()->back();
+        // return redirect()->back();
     }
 }

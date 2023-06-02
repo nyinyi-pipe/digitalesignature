@@ -265,6 +265,7 @@ const docuements = defineProps({
 const useCc = ref(false);
 
 const form = useForm({
+  documentId: docuements.document.id,
   toMails: [],
   ccMails: [],
   subject: `${docuements.auth.user.name} sent you ${docuements.document.doc_name}`,

@@ -1,14 +1,14 @@
 <template >
   <Aside :toggle="toggle" @closeToggle="closeToggle"></Aside>
   <div
-    class="ml-auto mb-6 lg:w-[82%] xl:w-[82%] 2xl:w-[85%] relative bg-gray-100"
+    class="ml-auto h-screen lg:w-[82%] xl:w-[82%] 2xl:w-[85%] relative bg-gray-100"
   >
     <Navbar :title="title" @toggleAside="toggleAside"></Navbar>
 
-    <div class="px-6 pt-6 2xl:container select-none">
+    <div class="px-6 pt-6 flex flex-col 2xl:container select-none">
       <slot />
+      <Footer></Footer>
     </div>
-    <Footer></Footer>
   </div>
 </template>
 <script setup>

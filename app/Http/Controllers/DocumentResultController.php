@@ -50,7 +50,7 @@ class DocumentResultController extends Controller
         $data = DocumentResult::where('document_id', $document->id)->where('nonuser_id', $recipient)->get();
         foreach($data as $key) {
             if($key->view == null) {
-                $view = Carbon::now();
+                $view = Carbon::now("Asia/Yangon");
                 $key->update([
                     'view' => $view->toDateTimeString()
                 ]);
@@ -79,7 +79,10 @@ class DocumentResultController extends Controller
         $doc_name = $document->doc_name;
         $document = $document->results()->where('type', $request->type)->where('id', $request->id)->first();
         $document->update([
-            'result'=>$request->signature
+            'result'=>$request->signature,
+            'ip'=>$request->ip,
+            'city'=>$request->city,
+            'country'=>$request->country,
         ]);
         $documents = Document::where('id', $document->document_id)->first();
         $ress = DocumentResult::where('document_id', $document->document_id)->get();

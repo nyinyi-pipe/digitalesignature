@@ -272,9 +272,8 @@
                 <div>
                   <h1 class="text-gray-500 text-xs">{{ index + 1 }} page</h1>
                 </div>
-                <div>
+                <div class="addDocs">
                   <svg
-                    id="addNewDocumentDropDown"
                     data-dropdown-toggle="dropdown-new-doc"
                     type="button"
                     xmlns="http://www.w3.org/2000/svg"
@@ -890,7 +889,7 @@
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 import { Link, router, Head, useForm } from "@inertiajs/vue3";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, onUpdated, reactive, ref } from "vue";
 import { initFlowbite, Modal } from "flowbite";
 import MailModal from "@/Components/Modals/MailModal.vue";
 import NewRecipientModal from "@/Components/Modals/RecipientModal.vue";
@@ -1119,7 +1118,6 @@ const deleteDocument = (doc) => {
     _method: "DELETE",
   });
   form.post(route("documents.delete.document", form.id));
-  location.reload();
 };
 const saveDocumentName = () => {
   axios
@@ -1181,6 +1179,140 @@ const deleteField = (e) => {
   target.style.top = `0px`;
   target.style.left = `0px`;
 };
+onUpdated(() => {
+  const newDocumentUploadModal = document.querySelector(
+    "#newDocumentUploadModal"
+  );
+  newDocumentUpload.value = new Modal(newDocumentUploadModal);
+
+  const images = document.querySelectorAll("#image");
+
+  images.forEach((image, index) => {
+    image.addEventListener("drop", (e) => {
+      e.preventDefault();
+      let mainTag = e.target.closest("#main");
+
+      const documentSignatureFieldsContainer =
+        document.querySelectorAll(".signature");
+
+      const documentTextFieldsContainer = document.querySelectorAll(".text");
+      const documentDateFieldsContainer = document.querySelectorAll(".date");
+
+      const documentSignatureField =
+        documentSignatureFieldsContainer[signatures.value.length - 1];
+
+      const documentTextField =
+        documentTextFieldsContainer[texts.value.length - 1];
+
+      const documentDateField =
+        documentDateFieldsContainer[dates.value.length - 1];
+
+      if (
+        !signatureEditStatus.value &&
+        documentSignatureField &&
+        dragText.value == "signature"
+      ) {
+        if (
+          documentSignatureField.getAttribute("count") ==
+          signatures.value[signatures.value.length - 1]
+        ) {
+          documentSignatureField.classList.remove("hidden");
+          documentSignatureField.style.top = `${e.offsetY - 40}px`;
+          documentSignatureField.style.left = `${e.offsetX - 40}px`;
+          documentSignatureField.setAttribute("x", e.offsetX - 40);
+          documentSignatureField.setAttribute("y", e.offsetY - 40);
+          mainTag.append(documentSignatureField);
+        }
+      } else if (
+        signatureEditStatus.value &&
+        !TextEditStatus.value &&
+        !DateEditStatus.value
+      ) {
+        const editSignatureField =
+          documentSignatureFieldsContainer[signatureEdit.value];
+        if (
+          editSignatureField &&
+          editSignatureField.getAttribute("count") == signatureEdit.value
+        ) {
+          editSignatureField.style.top = `${e.offsetY - 40}px`;
+          editSignatureField.style.left = `${e.offsetX - 40}px`;
+        }
+        signatureEditStatus.value = !signatureEditStatus.value;
+      } else if (
+        !TextEditStatus.value &&
+        documentTextField &&
+        dragText.value == "text"
+      ) {
+        if (
+          documentTextField.getAttribute("count") ==
+          texts.value[texts.value.length - 1]
+        ) {
+          console.log(mainTag);
+          documentTextField.classList.remove("hidden");
+          documentTextField.style.top = `${e.offsetY - 40}px`;
+          documentTextField.style.left = `${e.offsetX - 40}px`;
+          documentTextField.setAttribute("x", e.offsetX - 40);
+          documentTextField.setAttribute("y", e.offsetY - 40);
+          mainTag.append(documentTextField);
+        }
+      } else if (
+        TextEditStatus.value &&
+        !signatureEditStatus.value &&
+        !DateEditStatus.value
+      ) {
+        const editTextField = documentTextFieldsContainer[TextEdit.value];
+        if (
+          editTextField &&
+          editTextField.getAttribute("count") == TextEdit.value
+        ) {
+          editTextField.style.top = `${e.offsetY - 40}px`;
+          editTextField.style.left = `${e.offsetX - 40}px`;
+        }
+        TextEditStatus.value = !TextEditStatus.value;
+      } else if (
+        !DateEditStatus.value &&
+        documentDateField &&
+        dragText.value == "date"
+      ) {
+        if (
+          documentDateField.getAttribute("count") ==
+          dates.value[dates.value.length - 1]
+        ) {
+          console.log(mainTag);
+          documentDateField.classList.remove("hidden");
+          documentDateField.style.top = `${e.offsetY - 40}px`;
+          documentDateField.style.left = `${e.offsetX - 40}px`;
+          documentDateField.setAttribute("x", e.offsetX - 40);
+          documentDateField.setAttribute("y", e.offsetY - 40);
+          mainTag.append(documentDateField);
+        }
+      } else if (
+        DateEditStatus.value &&
+        !signatureEditStatus.value &&
+        !TextEditStatus.value
+      ) {
+        const editDateField = documentDateFieldsContainer[editDate.value];
+        if (
+          editDateField &&
+          editDateField.getAttribute("count") == editDate.value
+        ) {
+          editDateField.style.top = `${e.offsetY - 40}px`;
+          editDateField.style.left = `${e.offsetX - 40}px`;
+        }
+        DateEditStatus.value = !DateEditStatus.value;
+      }
+    });
+
+    image.addEventListener(
+      "dragover",
+      (e) => {
+        e.preventDefault();
+      },
+      false
+    );
+  });
+  initFlowbite();
+});
 
 onMounted(() => {
   const modalDocument = document.querySelector("#changeDocumentName");

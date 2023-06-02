@@ -10,8 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('documents', function (Blueprint $table) {
-            $table->datetime('finish_datetime')->nullable();
+        Schema::table('document_results', function (Blueprint $table) {
+            $table->string("ip")->nullable();
+            $table->string("city")->nullable();
+            $table->string("country")->nullable();
         });
     }
 
@@ -20,8 +22,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('documents', function (Blueprint $table) {
-            $table->dropColumn('finish_datetime');
+        Schema::table('document_results', function (Blueprint $table) {
+            $table->dropColumn(['ip','city','country']);
         });
     }
 };

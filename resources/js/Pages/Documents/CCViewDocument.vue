@@ -163,22 +163,6 @@
               </svg>
               <span class="text-gray-500 text-thin">1</span>
             </div>
-            <div>
-              <button
-                v-if="!finished"
-                @click="finishPdf"
-                class="py-0.5 px-4 mr-72 rounded bg-green-500 text-white"
-              >
-                Finish
-              </button>
-              <button
-                v-else
-                @click="createPdf"
-                class="py-0.5 px-4 mr-72 rounded bg-yellow-500 text-white"
-              >
-                Print
-              </button>
-            </div>
           </div>
         </div>
         <div
@@ -364,13 +348,13 @@ import { onMounted, onUpdated, reactive, ref } from "vue";
 import { initFlowbite, Dismiss } from "flowbite";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
+import moment from "moment";
 import axios from "axios";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 // import download from "@/composables/download";
 import { PDFDocument, StandardFonts, degrees, rgb } from "pdf-lib";
 import download from "downloadjs";
-import moment from "moment-timezone";
 
 const documents = defineProps({
   documents: Object,
@@ -538,6 +522,15 @@ const createPdf = async () => {
       rotate: degrees(-45),
     });
   }
+  let requestOptions = {
+    method: "GET",
+  };
+
+  const response = await fetch(
+    "https://api.geoapify.com/v1/ipinfo?&apiKey=9a20e6a383e843beb518602b73291485",
+    requestOptions
+  );
+  const { city, country, ip } = await response.json();
 
   for (let index = 0; index < documents.documents.signatures.length; index++) {
     const jpgUrl = documents.documents.signatures[index].result;
@@ -634,7 +627,7 @@ const createPdf = async () => {
       size: 10,
     });
 
-    page.drawText(`IP address: ${documents.documents.signatures[index].ip}`, {
+    page.drawText(`IP address: ${ip}`, {
       x: 430,
       y: height - 4 * recipientVer,
       size: 8,
@@ -657,14 +650,11 @@ const createPdf = async () => {
       }
     );
 
-    page.drawText(
-      `Location: ${documents.documents.signatures[index].city} ${documents.documents.signatures[index].country}`,
-      {
-        x: 430,
-        y: height - 4 * emailVer,
-        size: 8,
-      }
-    );
+    page.drawText(`Location: ${city.name} ${country.name}`, {
+      x: 430,
+      y: height - 4 * emailVer,
+      size: 8,
+    });
   }
 
   page.drawText("Document completed by all parties on:", {
@@ -675,9 +665,9 @@ const createPdf = async () => {
     color: rgb(0, 0, 0),
   });
   page.drawText(
-    `${moment(documents.documents.finish_datetime)
-      .tz("Asia/Yangon")
-      .format("D MMM YYYY, h:mm:ss A")}`,
+    `${moment(documents.documents.finish_datetime).format(
+      "D MMM YYYY, h:mm:ss A"
+    )}`,
     {
       x: 30,
       y: height - 4 * (lineHeight + 39),
@@ -699,14 +689,8 @@ const finishPdf = () => {
     doc_status: 3,
     _method: "PUT",
   });
-
   formStatus.post(
-    route("document.finish.update.document", documents.documents.id),
-    {
-      onSuccess: () => {
-        location.reload();
-      },
-    }
+    route("document.finish.update.document", documents.documents.id)
   );
 };
 const height = (doc) => {

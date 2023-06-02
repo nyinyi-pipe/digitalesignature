@@ -369,6 +369,10 @@ const changeWriteStatus = (e) => {
   }
 };
 
+const u_ip = ref("");
+const u_city = ref("");
+const u_country = ref("");
+
 onMounted(() => {
   const modalSignature = document.querySelector("#signature-modal");
   signatureModal.value = new Modal(modalSignature);
@@ -399,7 +403,23 @@ onMounted(() => {
     mainTag[documents.documents.dates[index].index].append(date);
   });
   initFlowbite();
+  getAddress();
 });
+
+const getAddress = async () => {
+  let requestOptions = {
+    method: "GET",
+  };
+
+  const response = await fetch(
+    "https://api.geoapify.com/v1/ipinfo?&apiKey=9a20e6a383e843beb518602b73291485",
+    requestOptions
+  );
+  const { city, country, ip } = await response.json();
+  u_city.value = city.name;
+  u_country.value = country.name;
+  u_ip.value = ip;
+};
 
 const acceptSignature = (data) => {
   //   signatureResult.value = data;
@@ -412,6 +432,9 @@ const acceptSignature = (data) => {
     id: signatures[indexs.value].querySelector(".img").getAttribute("signId"),
     type: "signature",
     _method: "PUT",
+    ip: u_ip.value,
+    city: u_city.value,
+    country: u_country.value,
   });
   form.post(
     route("recipient.update.document", [

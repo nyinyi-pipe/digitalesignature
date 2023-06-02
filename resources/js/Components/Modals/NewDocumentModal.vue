@@ -105,7 +105,7 @@ const documents = defineProps({
   id: Number,
 });
 const emit = defineEmits("closeNewDocumentUpload");
-const form = reactive({
+const form = useForm({
   newDocument: null,
 });
 
@@ -161,12 +161,16 @@ const upload = async (event) => {
     };
 
     form.newDocument = imageDataList;
-
+    // form.put(route("document.new.document-name", documents.id), {
+    //   onSuccess: () => {
+    //     emit("closeNewDocumentUpload");
+    //   },
+    // });
     axios
       .put(route("document.new.document-name", documents.id), form)
       .then(({ data }) => {
         document.querySelector("#upload-text").innerHTML = `
-        <svg
+            <svg
                   aria-hidden="true"
                   class="w-10 h-10 mb-3"
                   fill="none"
@@ -233,11 +237,16 @@ const upload = async (event) => {
     reader.onloadend = (evt) => {
       setTimeout(() => {
         form.newDocument = [evt.target.result];
+        // form.put(route("document.new.document-name", documents.id), {
+        //   onSuccess: () => {
+        //     emit("closeNewDocumentUpload");
+        //   },
+        // });
         axios
           .put(route("document.new.document-name", documents.id), form)
           .then(({ data }) => {
             document.querySelector("#upload-text").innerHTML = `
-        <svg
+                <svg
                   aria-hidden="true"
                   class="w-10 h-10 mb-3"
                   fill="none"
@@ -276,11 +285,9 @@ const upload = async (event) => {
                       stroke-linejoin="round"
                       d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
                     />
-                  </svg>
-
-                  Select files
-                </p>
-    `;
+                    </svg>
+                Select files
+                </p>`;
             emit("closeNewDocumentUpload", data.document);
           });
       }, 4000);

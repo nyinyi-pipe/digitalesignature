@@ -1,101 +1,7 @@
 <template>
-  <AuthLayout title="Documents">
+  <Head title="Send"></Head>
+  <AuthLayout title="Send Documents">
     <div class="p-3 shadow-md py-5 rounded">
-      <div class="px-4">
-        <div class="relative flex">
-          <div
-            class="py-1.5 font-bold cursor-pointer flex items-center gap-2 text-sm lg:text-md px-3 bg-green-500 text-white rounded-md mb-5"
-            data-dropdown-toggle="add-dropdown"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
-
-            New
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-              />
-            </svg>
-          </div>
-
-          <div
-            id="add-dropdown"
-            class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
-          >
-            <ul class="text-sm text-gray-700 dark:text-gray-200">
-              <li class="block py-2 hover:bg-green-100 cursor-pointer">
-                <div class="gap-2 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5 text-green-500"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 4.5v15m7.5-7.5h-15"
-                    />
-                  </svg>
-
-                  <Link
-                    :href="route('document.add-document')"
-                    class="text-green-500"
-                    >Document</Link
-                  >
-                </div>
-              </li>
-              <li class="block py-2 hover:bg-green-100 cursor-pointer">
-                <div class="gap-2 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5 text-green-500"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-                    />
-                  </svg>
-
-                  <Link
-                    :href="route('document.add-document')"
-                    class="text-green-500"
-                    >Upload PDF</Link
-                  >
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
       <Table>
         <template #th>
           <ThCol>
@@ -135,43 +41,59 @@
               </button>
             </div>
           </ThCol>
-          <ThCol>PDF Name</ThCol>
-          <ThCol> Status </ThCol>
-          <ThCol> Date </ThCol>
+          <ThCol>Document Name</ThCol>
+          <ThCol>Recipient Name </ThCol>
+          <ThCol class="text-center">Status</ThCol>
+          <ThCol>Sent Date </ThCol>
           <ThCol> Action </ThCol>
         </template>
         <template #td>
-          <tr>
+          <tr v-for="(sendDoc, index) of sendDocs.documents" :key="sendDoc.id">
             <TdCol
               class="px-4 py-4 text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap"
             >
-              <Link
-                :href="route('dashboard')"
-                class="inline-flex items-center gap-x-3 text-green-500"
-              >
+              <div class="inline-flex items-center gap-x-3">
                 <input
                   type="checkbox"
-                  class="text-green-500 border-gray-300 rounded dark:bg-gray-900 dark:ring-offset-gray-900 dark:border-gray-700"
+                  class="text-green-400 border-gray-300 rounded focus:ring-green-400 duration-300"
                 />
 
-                <span>#0001</span>
+                <span>#000{{ index + 1 }}</span>
+              </div>
+            </TdCol>
+            <TdCol>
+              <Link
+                :href="route('send-document.show', sendDoc.id)"
+                class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-red-500 bg-red-100/60 dark:bg-gray-800"
+              >
+                <h2 class="text-xs font-normal">{{ sendDoc.doc_name }}</h2>
               </Link>
             </TdCol>
             <TdCol>
-              <div
-                class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-green-500 bg-green-100/60 dark:bg-gray-800"
-              >
-                <h2 class="text-sm font-normal">MyWork.pdf</h2>
+              <div class="flex gap-1 flex-wrap">
+                <div
+                  v-for="recipient of sendDoc.sends"
+                  :key="recipient.id"
+                  class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
+                >
+                  <h2 class="text-xs font-normal">
+                    {{ recipient.recipient.name }}
+                  </h2>
+                </div>
               </div>
             </TdCol>
             <TdCol>
-              <div
-                class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-emerald-500 bg-emerald-100/60 dark:bg-gray-800"
-              >
-                <h2 class="text-sm font-normal">Accept</h2>
-              </div>
+              <TdCol>
+                <div
+                  class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-green-500 bg-green-100/60"
+                >
+                  <h2 class="text-xs font-normal">
+                    {{ sendDoc.sends[0].status && "Completed" }}
+                  </h2>
+                </div>
+              </TdCol>
             </TdCol>
-            <TdCol> 24 Apr,2023 </TdCol>
+            <TdCol> {{ sendDoc.sends[0].created_at }} </TdCol>
             <TdCol>
               <div class="relative flex">
                 <svg
@@ -271,20 +193,20 @@
     </div>
   </AuthLayout>
 </template>
-<script setup>
+  <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import Table from "@/Components/Table/Table.vue";
 import ThCol from "@/Components/Table/ThCol.vue";
 import TdCol from "@/Components/Table/TdCol.vue";
 import { Link, Head } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import { initFlowbite } from "flowbite";
+
+const sendDocs = defineProps({
+  documents: Array,
+});
 
 onMounted(() => {
   initFlowbite();
 });
-
-const edit = () => {};
-
-const send = () => {};
 </script>
