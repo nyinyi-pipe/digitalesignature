@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\DocumentEvent;
 use App\Http\Requests\DocumentRequest;
 use App\Http\Requests\RecipientRequest;
+use App\Http\Resources\DocumentResource;
 use App\Models\Document;
 use App\Models\DocumentResult;
 use App\Models\Nonuser;
@@ -20,9 +21,12 @@ use Inertia\Response;
 
 class DocumentController extends Controller
 {
-    public function index() : Response
+    public function index()
     {
-        return Inertia::render('Documents/Index');
+        $documents = Document::with(['sends','sends.recipient'])->paginate(5);
+        return Inertia::render('Documents/Index', [
+            'documents'=> $documents
+        ]);
     }
 
     public function create() : Response
@@ -235,12 +239,16 @@ class DocumentController extends Controller
 
     }
 
-    public function finishUpdate(Document $document, Request $request)
+    public function finishUpdate(Document $document, Request $request) : void
     {
         $document->update([
             'doc_status'=>$request->doc_status,
             'finish_datetime'=>Carbon::now("Asia/Yangon")->toDateTimeString()
         ]);
-        // return redirect()->back();
+    }
+
+    public function destroy(Document $document) :void
+    {
+        $document->delete();
     }
 }

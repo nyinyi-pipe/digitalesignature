@@ -2,7 +2,7 @@
   <Head title="Send"></Head>
   <AuthLayout title="Send Documents">
     <div class="p-3 shadow-md py-5 rounded">
-      <Table>
+      <Table :links="sendDocs.documents.links">
         <template #th>
           <ThCol>
             <div class="flex items-center gap-x-3">
@@ -48,7 +48,10 @@
           <ThCol> Action </ThCol>
         </template>
         <template #td>
-          <tr v-for="(sendDoc, index) of sendDocs.documents" :key="sendDoc.id">
+          <tr
+            v-for="(sendDoc, index) of sendDocs.documents.data"
+            :key="sendDoc.id"
+          >
             <TdCol
               class="px-4 py-4 text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap"
             >
@@ -208,5 +211,6 @@ const sendDocs = defineProps({
 
 onMounted(() => {
   initFlowbite();
+  console.log(sendDocs.documents);
 });
 </script>

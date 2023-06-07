@@ -19,6 +19,7 @@
         "vue": "^3.2.41"
     },
     "dependencies": {
+        "chart.js": "^3.9.1",
         "downloadjs": "^1.4.7",
         "flowbite": "^1.6.5",
         "js-cookie": "^3.0.5",
@@ -29,8 +30,10 @@
         "pdf-lib": "^1.17.1",
         "pdfjs-dist": "^3.6.172",
         "pusher-js": "^8.0.2",
+        "sass": "^1.62.1",
         "sweetalert2": "^11.7.5",
         "tw-elements": "^1.0.0-beta2",
+        "vue-chart-3": "^3.1.8",
         "vue-signature-pad": "^3.0.2"
     }
 }

@@ -1,134 +1,205 @@
 <template>
   <AuthLayout title="Profile">
-    <div class="min-h-screen container flex justify-center">
-      <div class="shadow w-full md:w-2/4 xl:2/5">
+    <div class="min-h-screen container gap-3 flex justify-between">
+      <div class="shadow-lg w-[35%] flex px-3 flex-col items-center">
         <div
-          class="flex items-center justify-between gap-x-2 cursor-pointer bg-green-600 p-5 pt-14"
+          class="flex w-full justify-center gap-x-2 mt-3 cursor-pointer p-5 mb-3 shadow rounded bg-white"
         >
-          <div class="flex gap-5">
-            <img
-              class="object-cover w-24 h-24 rounded-full self-end"
-              @click="openProfile"
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
-              alt=""
-            />
-            <div class="self-end mb-4">
-              <h1 class="text-2xl text-slate-100 font-bold">
+          <div class="flex flex-col gap-5">
+            <div class="relative avatar duration-300 transition-opacity">
+              <img
+                class="object-cover w-32 h-32 rounded-full self-end"
+                :src="[
+                  auth.user.avatar
+                    ? `/storage/${auth.user.avatar}`
+                    : 'https://i.pinimg.com/564x/ff/5f/78/ff5f78476f0edf5b1bf7840f84342ebd.jpg',
+                ]"
+                alt=""
+              />
+              <input
+                type="file"
+                @change="uploadAvatar"
+                ref="file"
+                class="hidden"
+              />
+              <svg
+                @click="openProfile"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="avatar-camera duration-300 transition-opacity text-gray-200 opacity-0 w-7 h-7 absolute top-[38%] left-[38%]"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"
+                />
+              </svg>
+            </div>
+            <div class="">
+              <h1 class="text-2xl text-center font-bold">
                 {{ auth.user.name }}
               </h1>
-              <p class="text-lg text-slate-200">Yangon,Myanmar</p>
+              <p class="text-lg text-center">Yangon,Myanmar</p>
             </div>
           </div>
-          <div class="mb-5 self-end">
-            <Link
-              href=""
-              class="text-sm py-2 px-3 rounded border text-yellow-400 border-yellow-400"
-            >
-              Edit
-            </Link>
-          </div>
         </div>
-        <div class="p-5">
-          <h1 class="text-2xl text-green-600 font-bold">Information</h1>
-          <hr class="mt-2 mb-7" />
 
-          <form>
-            <div class="grid gap-6 mb-6 md:grid-cols-2">
-              <div>
-                <label
-                  for="first_name"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >First name</label
+        <div class="sm:mb-3 w-full border-gray-200 h-80 sm:h-96">
+          <ul
+            class="flex gap-3 flex-col w-full justify-center sm:justify-start -mb-px text-sm font-medium text-center text-gray-500"
+          >
+            <li class="shadow" @click="information">
+              <input
+                class="peer sr-only inline-flex p-4 text-green-600 border-b-2 border-green-600 rounded-t-lg active dark:text-green-500 dark:border-green-500 group"
+                type="radio"
+                value="yes"
+                name="answer"
+                id="yes"
+                checked
+              />
+              <label
+                class="flex justify-center cursor-pointer outline-none focus:border-transparent peer-focus:border-green-500 bg-white py-2 px-4 focus:outline-none peer-checked:border-2 peer-checked:border-green-500 peer-checked:ring-indigo-500 transition-all rounded hover:bg-gray-200 duration-500 ease-in-out"
+                for="yes"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5 mr-2"
                 >
-                <input
-                  type="text"
-                  id="first_name"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
-                  placeholder="first name"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  for="last_name"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >Last name</label
-                >
-                <input
-                  type="text"
-                  id="last_name"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
-                  placeholder="last name"
-                  required
-                />
-              </div>
-            </div>
-            <div class="mb-6">
-              <label
-                for="email"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Email</label
-              >
-              <input
-                type="email"
-                id="email"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
-                placeholder="example@gmail.com"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label
-                for="password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Password</label
-              >
-              <input
-                type="password"
-                id="password"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
-                placeholder="•••••••••"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label
-                for="confirm_password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Confirm password</label
-              >
-              <input
-                type="password"
-                id="confirm_password"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
-                placeholder="•••••••••"
-                required
-              />
-            </div>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z"
+                  />
+                </svg>
 
-            <div class="flex gap-2">
-              <button
-                type="submit"
-                class="text-white duration-300 bg-green-500 hover:bg-green-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-500 dark:focus:ring-green-600"
+                Information
+              </label>
+            </li>
+
+            <li class="shadow" @click="password">
+              <input
+                class="peer sr-only inline-flex p-4 text-green-600 border-b-2 border-green-600 rounded-t-lg active dark:text-green-500 dark:border-green-500 group"
+                type="radio"
+                value="yesno"
+                name="answer"
+                id="yesno"
+              />
+              <label
+                class="flex justify-center cursor-pointer outline-none focus:border-transparent peer-focus:border-green-500 bg-white py-2 px-4 focus:outline-none peer-checked:border-2 peer-checked:border-green-500 peer-checked:ring-indigo-500 transition-all rounded hover:bg-gray-200 duration-500 ease-in-out"
+                for="yesno"
               >
-                Save
-              </button>
-              <button
-                class="text-white duration-300 bg-green-500 hover:bg-green-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-500 dark:focus:ring-green-600"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5 mr-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                  />
+                </svg>
+
+                Change Password
+              </label>
+            </li>
+            <li class="shadow" @click="signature">
+              <input
+                class="peer sr-only inline-flex p-4 text-green-600 border-b-2 border-green-600 rounded-t-lg active dark:text-green-500 dark:border-green-500 group"
+                type="radio"
+                value="no"
+                name="answer"
+                id="no"
+              />
+              <label
+                class="flex justify-center cursor-pointer outline-none focus:border-transparent peer-focus:border-green-500 bg-white py-2 px-4 focus:outline-none peer-checked:border-2 peer-checked:border-green-500 peer-checked:ring-indigo-500 transition-all rounded hover:bg-gray-200 duration-500 ease-in-out"
+                for="no"
               >
-                Cancel
-              </button>
-            </div>
-          </form>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5 mr-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
+                  />
+                </svg>
+
+                Signature
+              </label>
+            </li>
+          </ul>
         </div>
+      </div>
+      <div class="w-full">
+        <transition>
+          <keep-alive>
+            <component :is="selectedComponent"></component>
+          </keep-alive>
+        </transition>
       </div>
     </div>
   </AuthLayout>
 </template>
 <script setup>
-import { Link } from "@inertiajs/vue3";
+import { Link, useForm } from "@inertiajs/vue3";
 import AuthLayout from "@/Layouts/AuthLayout.vue";
+import Information from "@/Components/Profile/Information.vue";
+import Changepassword from "@/Components/Profile/Changepassword.vue";
+import Signature from "@/Components/Profile/Signature.vue";
+import { ref } from "vue";
 defineProps({
   auth: Object,
 });
+const file = ref(null);
+const openProfile = () => {
+  file.value.click();
+};
+const selectedComponent = ref(Information);
+const information = () => {
+  selectedComponent.value = Information;
+};
+
+const signature = () => {
+  selectedComponent.value = Signature;
+};
+const password = () => {
+  selectedComponent.value = Changepassword;
+};
+const uploadAvatar = (e) => {
+  console.log(e.target.files[0]);
+  const form = useForm({
+    avatar: e.target.files[0],
+    _method: "PUT",
+  });
+  form.post(route("profile.avatar"));
+};
 </script>
+<style  scoped>
+.avatar:hover img {
+  opacity: 0.7;
+}
+.avatar:hover .avatar-camera {
+  opacity: 1;
+}
+</style>

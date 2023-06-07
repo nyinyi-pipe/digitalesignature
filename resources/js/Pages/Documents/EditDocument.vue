@@ -274,7 +274,7 @@
                 </div>
                 <div class="addDocs">
                   <svg
-                    data-dropdown-toggle="dropdown-new-doc"
+                    :data-dropdown-toggle="dropdownnewdoc + index"
                     type="button"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -291,7 +291,7 @@
                   </svg>
 
                   <div
-                    id="dropdown-new-doc"
+                    :id="dropdownnewdoc + index"
                     @click="openNewDocumentUpload"
                     class="z-10 hidden bg-white divide-y divide-gray-100 rounded-xs shadow w-39"
                   >

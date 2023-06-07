@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,6 +39,15 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit');
+    }
+
+    public function avatar(Request $request)
+    {
+
+        $avatar = $request->file('avatar')->store('avatars');
+        User::findOrFail(auth()->user()->id)->update([
+            'avatar' => $avatar
+        ]);
     }
 
     /**

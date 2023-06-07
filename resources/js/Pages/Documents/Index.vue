@@ -96,7 +96,7 @@
           </div>
         </div>
       </div>
-      <Table>
+      <Table :links="documents.documents.links">
         <template #th>
           <ThCol>
             <div class="flex items-center gap-x-3">
@@ -135,45 +135,58 @@
               </button>
             </div>
           </ThCol>
-          <ThCol>PDF Name</ThCol>
+          <ThCol>Document Name</ThCol>
           <ThCol> Status </ThCol>
           <ThCol> Date </ThCol>
           <ThCol> Action </ThCol>
         </template>
         <template #td>
-          <tr>
+          <tr
+            v-for="(document, index) of documents.documents.data"
+            :key="document.id"
+          >
             <TdCol
               class="px-4 py-4 text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap"
             >
-              <Link
-                :href="route('dashboard')"
-                class="inline-flex items-center gap-x-3 text-green-500"
-              >
+              <div class="inline-flex items-center gap-x-3">
                 <input
                   type="checkbox"
-                  class="text-green-500 border-gray-300 rounded dark:bg-gray-900 dark:ring-offset-gray-900 dark:border-gray-700"
+                  class="text-green-400 border-gray-300 rounded focus:ring-green-400 duration-300"
                 />
 
-                <span>#0001</span>
+                <span>#000{{ index + 1 }}</span>
+              </div>
+            </TdCol>
+            <TdCol>
+              <Link
+                href="/"
+                class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-red-500 bg-red-100/60 dark:bg-gray-800"
+              >
+                <h2 class="text-xs font-normal">{{ document.doc_name }}</h2>
               </Link>
             </TdCol>
+
             <TdCol>
-              <div
-                class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-green-500 bg-green-100/60 dark:bg-gray-800"
-              >
-                <h2 class="text-sm font-normal">MyWork.pdf</h2>
-              </div>
+              <TdCol>
+                <div
+                  class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2"
+                  :class="
+                    document.doc_status == 3
+                      ? 'text-green-500 bg-green-100/60'
+                      : 'text-blue-500 bg-blue-100/60'
+                  "
+                >
+                  <h2 class="text-xs font-normal">
+                    {{ document.doc_status == 3 ? "Completed" : "Sent" }}
+                  </h2>
+                </div>
+              </TdCol>
             </TdCol>
             <TdCol>
-              <div
-                class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-emerald-500 bg-emerald-100/60 dark:bg-gray-800"
-              >
-                <h2 class="text-sm font-normal">Accept</h2>
-              </div>
+              {{ moment(document.created_at).format(" D MMM YYYY, h:mm:ss A") }}
             </TdCol>
-            <TdCol> 24 Apr,2023 </TdCol>
             <TdCol>
-              <div class="relative flex">
+              <div class="relative">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -181,7 +194,7 @@
                   stroke-width="1.5"
                   stroke="currentColor"
                   class="w-5 h-5 cursor-pointer"
-                  data-dropdown-toggle="document-drop"
+                  :data-dropdown-toggle="documentdrop + document.id"
                 >
                   <path
                     stroke-linecap="round"
@@ -191,34 +204,14 @@
                 </svg>
 
                 <div
-                  id="document-drop"
-                  class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+                  :id="documentdrop + document.id"
+                  class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-20"
                 >
-                  <ul class="text-sm text-gray-700 dark:text-gray-200">
+                  <ul class="text-sm text-gray-700">
                     <li
-                      class="block py-2 hover:bg-yellow-100 cursor-pointer"
-                      @click="edit"
+                      class="block py-1 hover:bg-red-100 cursor-pointer"
+                      @click="deleDoc(document.id)"
                     >
-                      <div class="gap-2 flex items-center justify-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="w-5 h-5 text-yellow-500"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                          />
-                        </svg>
-
-                        <p class="text-yellow-500">Edit</p>
-                      </div>
-                    </li>
-                    <li class="block py-2 hover:bg-red-100 cursor-pointer">
                       <div class="gap-2 flex items-center justify-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -238,33 +231,74 @@
                         <p class="text-red-500">Delete</p>
                       </div>
                     </li>
-                    <li
-                      class="block py-2 hover:bg-indigo-100 cursor-pointer"
-                      @click="send"
-                    >
-                      <div class="gap-2 flex items-center justify-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="w-4 h-4 text-indigo-500"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-                          />
-                        </svg>
-
-                        <p class="text-indigo-500">Send</p>
-                      </div>
-                    </li>
                   </ul>
                 </div>
               </div>
             </TdCol>
+            <div
+              id="deleteModal"
+              tabindex="-1"
+              aria-hidden="true"
+              class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full"
+            >
+              <div class="relative p-4 w-full max-w-md h-full md:h-auto">
+                <!-- Modal content -->
+                <div
+                  class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
+                >
+                  <button
+                    type="button"
+                    class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                  </button>
+                  <svg
+                    class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto"
+                    aria-hidden="true"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  <p class="mb-4 text-gray-500 dark:text-gray-300">
+                    Are you sure you want to delete this document?
+                  </p>
+                  <div class="flex justify-center items-center space-x-4">
+                    <button
+                      type="button"
+                      class="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                    >
+                      No, cancel
+                    </button>
+                    <button
+                      type="submit"
+                      @click="acceptDelete(document.id)"
+                      class="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
+                    >
+                      Yes, I'm sure
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </tr>
         </template>
       </Table>
@@ -276,15 +310,34 @@ import AuthLayout from "@/Layouts/AuthLayout.vue";
 import Table from "@/Components/Table/Table.vue";
 import ThCol from "@/Components/Table/ThCol.vue";
 import TdCol from "@/Components/Table/TdCol.vue";
-import { Link, Head } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import { Link, Head, router } from "@inertiajs/vue3";
+import { onMounted, ref } from "vue";
 import { initFlowbite } from "flowbite";
+import moment from "moment";
+import { Modal } from "flowbite";
 
-onMounted(() => {
-  initFlowbite();
+const deleteModal = ref(null);
+
+const documents = defineProps({
+  documents: Array,
 });
 
-const edit = () => {};
+const deleDoc = () => {
+  deleteModal.value.show();
+};
 
-const send = () => {};
+const acceptDelete = (id) => {
+  router.delete(route("documents.delete-document", id), {
+    onSuccess: () => {
+      location.reload();
+    },
+  });
+};
+
+onMounted(() => {
+  const modal = document.querySelector("#deleteModal");
+  deleteModal.value = new Modal(modal);
+
+  initFlowbite();
+});
 </script>

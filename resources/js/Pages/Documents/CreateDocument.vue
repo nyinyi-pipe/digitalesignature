@@ -61,7 +61,7 @@
 <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { Link, router, Head } from "@inertiajs/vue3";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { onMounted } from "vue";
 
 const upload = async (event) => {
@@ -130,7 +130,8 @@ const upload = async (event) => {
       type: "pdf",
       name: file.name,
     };
-    router.post(route("document.add-document"), form);
+    console.log(imageDataList);
+    // router.post(route("document.add-document"), form);
   } else {
     reader.onloadstart = (evt) => {
       document.querySelector("#upload-text").innerHTML = `
@@ -164,6 +165,7 @@ const upload = async (event) => {
   }
 };
 onMounted(() => {
-  GlobalWorkerOptions.workerSrc = import("pdfjs-dist/build/pdf.worker.entry");
+  GlobalWorkerOptions.workerSrc =
+    "//mozilla.github.io/pdf.js/build/pdf.worker.js";
 });
 </script>

@@ -15,14 +15,8 @@ class SendController extends Controller
 {
     public function index() : Response
     {
-        $documents = Document::with(['sends','sends.recipient'])->get();
-        // dd($documents->sends()->first());
-        // $sendDocs =Send::addSelect(
-        //     [
-        //         'recipient_name' => Nonuser::select('name')->whereColumn('id', 'sends.recipient_id'),
-        //         'document_name' => Document::select('doc_name')->whereColumn('id', 'sends.document_id'),
-        //     ]
-        // )->get();
+        $documents = Document::with(['sends','sends.recipient'])->paginate(5);
+
         return Inertia::render('Sends/Index', [
             'documents' => $documents
         ]);

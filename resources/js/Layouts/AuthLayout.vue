@@ -5,7 +5,7 @@
   >
     <Navbar :title="title" @toggleAside="toggleAside"></Navbar>
 
-    <div class="px-6 pt-6 flex flex-col 2xl:container select-none">
+    <div class="sm:px-6 sm:pt-6 flex flex-col 2xl:container select-none">
       <slot />
       <Footer></Footer>
     </div>

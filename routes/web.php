@@ -13,6 +13,7 @@ use Inertia\Inertia;
 //home
 Route::get('/', [HomeController::class,'index'])->name('home');
 //auth
+
 Route::middleware('auth')->group(function () {
     //dashboard
     Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
@@ -20,10 +21,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/documents', [DocumentController::class,'index'])->name('document.index');
     Route::get('/documents/add-document', [DocumentController::class,'create'])->name('document.add-document');
     Route::post('/documents/add-document', [DocumentController::class,'store'])->name('documents.add-document');
+    Route::delete('/documents/{document}', [DocumentController::class,'destroy'])->name('documents.delete-document');
 
     //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile', [ProfileController::class, 'avatar'])->name('profile.avatar');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
