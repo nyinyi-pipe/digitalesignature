@@ -11,36 +11,71 @@
       </h4>
     </template>
     <form @submit.prevent="submit">
-      <div>
-        <InputLabel for="name" value="Name" />
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <InputLabel for="firstName" value="First Name" />
 
-        <div class="relative mb-6">
-          <div
-            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5 text-slate-500"
+          <div class="relative">
+            <div
+              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-              />
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5 text-slate-500"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+            </div>
+            <TextInput
+              id="firstName"
+              type="text"
+              class="mt-2 block w-full"
+              v-model="form.first_name"
+              required
+              placeholder="first name"
+            />
           </div>
-          <TextInput
-            id="name"
-            type="text"
-            class="mt-2 block w-full"
-            v-model="form.name"
-            required
-            placeholder="your name"
-          />
+        </div>
+
+        <div>
+          <InputLabel for="lastName" value="Last Name" />
+
+          <div class="relative">
+            <div
+              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5 text-slate-500"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+            </div>
+            <TextInput
+              id="lastName"
+              type="text"
+              class="mt-2 block w-full"
+              v-model="form.last_name"
+              required
+              placeholder="last name"
+            />
+          </div>
         </div>
       </div>
 
@@ -160,7 +195,8 @@ import AuthButtom from "@/Components/AuthButtom.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 
 const form = useForm({
-  name: "",
+  first_name: "",
+  last_name: "",
   email: "",
   password: "",
   department: "",

@@ -1,6 +1,5 @@
 <x-layout.app>
     <div>
-
         <aside
             class="aside fixed z-20 transition-all md:ml-[0%] ml-[-100%] top-0 pb-3 px-6 w-[60%] sm:w-[35%] md:w-[25%] flex flex-col justify-between h-screen border-r bg-slate-800 duration-500  lg:w-[18%] xl:w-[18%] 2xl:w-[15%]">
             <div class="mt-3">
@@ -130,7 +129,7 @@
                                                     d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
                                             </svg>
 
-                                            <Link :href="route('profile.edit')" class="text-green-500">Profile</Link>
+                                            <a href="{{route('profile.edit')}}" class="text-green-500">Profile</a>
                                         </div>
                                     </li>
                                     <li class="block py-2 hover:bg-green-100 cursor-pointer">
@@ -166,8 +165,10 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js">
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script>
         (async function() {
             const data = [

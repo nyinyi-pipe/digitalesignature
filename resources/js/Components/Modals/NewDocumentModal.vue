@@ -96,9 +96,9 @@
 </template>
 
 <script setup>
+import convertPdfToImg from "@/composables/convertPdfToImg";
 import { useForm } from "@inertiajs/vue3";
 import axios from "axios";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
 import { onMounted, reactive } from "vue";
 
 const documents = defineProps({
@@ -114,58 +114,7 @@ const upload = async (event) => {
   const reader = new FileReader();
 
   if (file.type == "application/pdf") {
-    reader.onloadstart = (evt) => {
-      document.querySelector("#upload-text").innerHTML = `
-        <h1 class="mb-1">Uploading...</h1>
-        <p>${file.name}</p>
-        <p class="py-1.5 hover:bg-slate-100 hover:shadow-md duration-300 px-2 bg-white rounded text-sm shadow-xl mt-3 flex items-center gap-1 justify-center">Cancel</p>
-    `;
-    };
-    reader.readAsArrayBuffer(file);
-    await new Promise((resolve) => {
-      reader.onload = resolve;
-    });
-    const arrayBuffer = reader.result;
-    const loadingTask = getDocument(arrayBuffer);
-    const pdf = await loadingTask.promise;
-    const numPages = pdf.numPages;
-    let imageDataList = [];
-
-    for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
-      // Convert each page of the PDF to an image
-      const page = await pdf.getPage(pageNumber);
-      const viewport = page.getViewport({ scale: 1.0 });
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      const renderTask = page.render({
-        canvasContext: context,
-        viewport: viewport,
-      });
-
-      await renderTask.promise;
-
-      // Convert the canvas to base64 image data
-      const imageDataURL = canvas.toDataURL();
-      imageDataList.push(imageDataURL);
-    }
-    reader.onprogress = () => {
-      setTimeout(() => {
-        document.querySelector("#upload-text").innerHTML = `
-        <h1 class="mb-1">Progress...</h1>
-        <p>${file.name}</p>
-    `;
-      }, 2000);
-    };
-
-    form.newDocument = imageDataList;
-    // form.put(route("document.new.document-name", documents.id), {
-    //   onSuccess: () => {
-    //     emit("closeNewDocumentUpload");
-    //   },
-    // });
+    form.newDocument = await convertPdfToImg(file);
     axios
       .put(route("document.new.document-name", documents.id), form)
       .then(({ data }) => {
@@ -237,11 +186,6 @@ const upload = async (event) => {
     reader.onloadend = (evt) => {
       setTimeout(() => {
         form.newDocument = [evt.target.result];
-        // form.put(route("document.new.document-name", documents.id), {
-        //   onSuccess: () => {
-        //     emit("closeNewDocumentUpload");
-        //   },
-        // });
         axios
           .put(route("document.new.document-name", documents.id), form)
           .then(({ data }) => {
@@ -296,8 +240,5 @@ const upload = async (event) => {
     reader.readAsDataURL(file);
   }
 };
-onMounted(() => {
-  GlobalWorkerOptions.workerSrc = import("pdfjs-dist/build/pdf.worker.entry");
-});
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <AuthLayout title="Profile">
     <div class="min-h-screen container gap-3 flex justify-between">
-      <div class="shadow-lg w-[35%] flex px-3 flex-col items-center">
+      <div class="w-[35%] flex px-3 flex-col items-center">
         <div
           class="flex w-full justify-center gap-x-2 mt-3 cursor-pointer p-5 mb-3 shadow rounded bg-white"
         >
@@ -60,14 +60,14 @@
               <input
                 class="peer sr-only inline-flex p-4 text-green-600 border-b-2 border-green-600 rounded-t-lg active dark:text-green-500 dark:border-green-500 group"
                 type="radio"
-                value="yes"
-                name="answer"
-                id="yes"
+                value="infor-yes"
+                name="information"
+                id="infor-yes"
                 checked
               />
               <label
                 class="flex justify-center cursor-pointer outline-none focus:border-transparent peer-focus:border-green-500 bg-white py-2 px-4 focus:outline-none peer-checked:border-2 peer-checked:border-green-500 peer-checked:ring-indigo-500 transition-all rounded hover:bg-gray-200 duration-500 ease-in-out"
-                for="yes"
+                for="infor-yes"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -92,13 +92,13 @@
               <input
                 class="peer sr-only inline-flex p-4 text-green-600 border-b-2 border-green-600 rounded-t-lg active dark:text-green-500 dark:border-green-500 group"
                 type="radio"
-                value="yesno"
-                name="answer"
-                id="yesno"
+                value="infor-yesno"
+                name="information"
+                id="infor-yesno"
               />
               <label
                 class="flex justify-center cursor-pointer outline-none focus:border-transparent peer-focus:border-green-500 bg-white py-2 px-4 focus:outline-none peer-checked:border-2 peer-checked:border-green-500 peer-checked:ring-indigo-500 transition-all rounded hover:bg-gray-200 duration-500 ease-in-out"
-                for="yesno"
+                for="infor-yesno"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -122,13 +122,13 @@
               <input
                 class="peer sr-only inline-flex p-4 text-green-600 border-b-2 border-green-600 rounded-t-lg active dark:text-green-500 dark:border-green-500 group"
                 type="radio"
-                value="no"
-                name="answer"
-                id="no"
+                value="infor-no"
+                name="information"
+                id="infor-no"
               />
               <label
                 class="flex justify-center cursor-pointer outline-none focus:border-transparent peer-focus:border-green-500 bg-white py-2 px-4 focus:outline-none peer-checked:border-2 peer-checked:border-green-500 peer-checked:ring-indigo-500 transition-all rounded hover:bg-gray-200 duration-500 ease-in-out"
-                for="no"
+                for="infor-no"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -154,7 +154,7 @@
       <div class="w-full">
         <transition>
           <keep-alive>
-            <component :is="selectedComponent"></component>
+            <component :is="selectedComponent" :auth="auth"></component>
           </keep-alive>
         </transition>
       </div>
