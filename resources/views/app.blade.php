@@ -12,6 +12,8 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js">
     </script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
 
     {{-- <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script> --}}
 

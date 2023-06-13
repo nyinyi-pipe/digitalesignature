@@ -7,6 +7,7 @@ use App\Mail\EditDocumentMail;
 use App\Mail\SendDocumentMail;
 use App\Models\Document;
 use App\Models\DocumentResult;
+use App\Models\Input;
 use App\Models\Nonuser;
 use App\Models\User;
 use Carbon\Carbon;
@@ -93,17 +94,32 @@ class DocumentResultController extends Controller
         $res['name'] = $user->name;
         $res['type'] = $request->type;
         broadcast(new DocumentEvent($res));
-        $document['link'] = route('document.view.document', $view);
-        $document['email'] = $user->email;
-        $document['name'] = $user->name;
-        $document['doc_name'] = $doc_name;
-        Mail::to($requester)->send(new EditDocumentMail($document));
+        // $document['link'] = route('document.view.document', $view);
+        // $document['email'] = $user->email;
+        // $document['name'] = $user->name;
+        // $document['doc_name'] = $doc_name;
+        // Mail::to($requester)->send(new EditDocumentMail($document));
         return redirect()->back();
         // return to_route('recipient.edit.document', [$request->doc_id,$recipient]);
     }
 
     public function updateStatus(DocumentResult $document, Request $request)
     {
+        $doc = Document::findOrFail($request->doc_id);
+        $recipient = Nonuser::findOrFail($request->user_id) ?? User::findOrFail($request->user_id);
+
+        Input::create([
+            'document_id'=>$doc->id,
+            'requester_id'=>$doc->user->id,
+            'recipient_id'=>$recipient->id,
+            'content'=>$doc->doc_name." "."document has been completed by"." ".$recipient->name
+        ]);
+        $doc['link'] = route('document.view.document', $doc->id);
+        $doc['email'] = $recipient->email;
+        $doc['name'] = $recipient->name;
+        Mail::to($doc->user->email)->send(new EditDocumentMail($doc));
+
+
         $document->update([
             'status'=>$request->status
         ]);

@@ -203,6 +203,9 @@ class DocumentController extends Controller
 
     public function view(Document $document, Request $request) : Response
     {
+        // dd($document->update([
+        //     'doc_status'=>0
+        // ]));
         $data = DocumentResult::where('document_id', $document->id)->get();
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");
@@ -241,10 +244,17 @@ class DocumentController extends Controller
 
     public function finishUpdate(Document $document, Request $request) : void
     {
+        $pdf = $request->file('file')->store('documents');
         $document->update([
             'doc_status'=>$request->doc_status,
             'finish_datetime'=>Carbon::now("Asia/Yangon")->toDateTimeString()
         ]);
+        $sends = $document->sends()->get();
+        foreach ($sends as $send) {
+            $send->update([
+                'file'=>$pdf
+            ]);
+        }
     }
 
     public function destroy(Document $document) :void

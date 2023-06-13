@@ -74,8 +74,8 @@
           v-for="(recipient, index) of documents.documents.recipients"
           :key="index"
         >
+          <!-- @click="chooseRecipients" -->
           <div
-            @click="chooseRecipients"
             class="px-3 recipient flex py-1 items-center space-x-1.5 cursor-pointer hover:bg-gray-100"
           >
             <img

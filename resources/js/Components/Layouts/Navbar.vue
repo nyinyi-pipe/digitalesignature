@@ -76,7 +76,11 @@
             <img
               class="object-cover w-9 h-9 rounded-full"
               data-dropdown-toggle="dropdown"
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
+              :src="[
+                auth.user.avatar
+                  ? `/storage/${auth.user.avatar}`
+                  : 'https://i.pinimg.com/564x/ff/5f/78/ff5f78476f0edf5b1bf7840f84342ebd.jpg',
+              ]"
               alt=""
             />
           </div>
@@ -140,11 +144,13 @@ import { onMounted } from "vue";
 import { initFlowbite } from "flowbite";
 import { Link } from "@inertiajs/vue3";
 
-onMounted(() => {
-  initFlowbite();
-});
-defineProps({
+const { auth, title } = defineProps({
   title: String,
+  auth: Object,
+});
+onMounted(() => {
+  console.log(auth);
+  initFlowbite();
 });
 
 const logout = () => {};

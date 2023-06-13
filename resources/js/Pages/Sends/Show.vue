@@ -1,6 +1,6 @@
 <template>
   <Head title="Send"></Head>
-  <AuthLayout :title="sendDocs.documents.doc_name">
+  <AuthLayout :title="sendDocs.documents.doc_name" :auth="auth">
     <div class="p-3 shadow-md py-5 bg-white rounded">
       <div class="container items-center flex justify-center mt-5">
         <div class="w-full px-3">
@@ -57,6 +57,9 @@
                   Not Available
                 </div>
                 <button
+                  v-if="sendDocs.documents.doc_status == 3"
+                  @click="saveDrive"
+                  id="save-drive"
                   class="py-0.5 px-3 bg-blue-500 text-sm rounded text-white duration-300 hover:bg-blue-600"
                 >
                   Upload to Drive
@@ -131,19 +134,27 @@
 </template>
     <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
-import Table from "@/Components/Table/Table.vue";
-import ThCol from "@/Components/Table/ThCol.vue";
-import TdCol from "@/Components/Table/TdCol.vue";
-import { Link, Head } from "@inertiajs/vue3";
+import { Link, Head, useForm } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { initFlowbite } from "flowbite";
 import moment from "moment-timezone";
 
 const sendDocs = defineProps({
   documents: Object,
+  auth: Object,
 });
 
-const createPdf = () => {};
+const saveDrive = () => {
+  window.___gcfg = {
+    lang: "en-US",
+  };
+
+  gapi.savetodrive.render("save-drive", {
+    src: `/storage/${sendDocs.documents.sends[0].file}`,
+    filename: sendDocs.documents.doc_name,
+    sitename: "DailyReport",
+  });
+};
 
 onMounted(() => {
   initFlowbite();

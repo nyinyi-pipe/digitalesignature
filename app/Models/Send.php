@@ -11,7 +11,7 @@ class Send extends Model
 {
     use HasFactory,HasUuids;
 
-    protected $fillable = ['document_id','requester_id','recipient_id','subject','content','cc_mails','status'];
+    protected $fillable = ['document_id','file','requester_id','recipient_id','subject','content','cc_mails','status'];
 
     protected $cast = [
         'cc_mails'=>'array'

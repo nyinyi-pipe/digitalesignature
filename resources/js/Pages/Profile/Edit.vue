@@ -1,5 +1,5 @@
 <template>
-  <AuthLayout title="Profile">
+  <AuthLayout title="Profile" :auth="auth">
     <div class="min-h-screen container gap-3 flex justify-between">
       <div class="w-[35%] flex px-3 flex-col items-center">
         <div

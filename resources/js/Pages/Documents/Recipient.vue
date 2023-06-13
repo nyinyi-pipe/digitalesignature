@@ -1,5 +1,5 @@
 <template>
-  <AuthLayout title="Add Recipients">
+  <AuthLayout title="Add Recipients" :auth="auth">
     <Head title="Add Recipients" />
     <div class="px-28 py-2">
       <div class="mb-5">
@@ -221,6 +221,7 @@ import { Link, Head, usePage, router, useForm } from "@inertiajs/vue3";
 
 const documents = defineProps({
   AddedDocument: Object,
+  auth: Object,
 });
 
 const fields = ref([]);

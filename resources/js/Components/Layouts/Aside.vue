@@ -89,7 +89,7 @@
           </svg>
         </AsideLink>
 
-        <AsideLink title="Input" go="dashboard">
+        <AsideLink title="Input" go="input.index">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentResultController;
+use App\Http\Controllers\InputController;
 use App\Http\Controllers\Mail\MailController;
 use App\Http\Controllers\SendController;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,11 @@ Route::middleware(['auth','editdoc'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/send-documents', [SendController::class,'index'])->name('send-document.index');
     Route::get('/send-documents/{document}', [SendController::class,'show'])->name('send-document.show');
+    Route::put('/send-documents/{document}', [SendController::class,'update'])->name('send-document.update');
+
+    Route::get('/inputs', [InputController::class,'index'])->name('input.index');
+    Route::get('/inputs/{input}', [InputController::class,'show'])->name('input.show');
+
 });
 
 

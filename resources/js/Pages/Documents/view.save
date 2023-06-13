@@ -205,16 +205,16 @@
                 :index="index"
                 :doc="doc"
                 class="w-full object-cover"
-                :src="doc"
+                :src="docs(doc)"
                 alt=""
               />
 
-              <div id="mainCanvas" class="hidden">
+              <div id="mainCanvas" class="">
                 <canvas
                   id="canvas"
                   class="mt-3 w-full object-cover"
-                  :height="height(doc)"
-                  :width="width(doc)"
+                  :height="height(doc, index)"
+                  :width="width(doc, index)"
                 ></canvas>
               </div>
             </div>
@@ -401,19 +401,17 @@ const createPdf = async () => {
     const img = canvas.toDataURL("image/jpeg");
     const jpgUrl = img;
     const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
-    const imageType = await pdfDoc.embedJpg(jpgImageBytes);
-    let jpgImage =
-      imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
+    const jpgImage = await pdfDoc.embedJpg(jpgImageBytes);
     const jpgDims = jpgImage.scale(1);
 
     // Add a blank page to the document
 
     // Get the width and height of the page
     page.drawImage(jpgImage, {
-      x: 35,
-      y: 35,
-      width: c.width ?? page.getWidth() - 70,
-      height: c.height ?? page.getHeight() - 70,
+      x: 0,
+      y: 0,
+      width: c.width,
+      height: c.height,
     });
     // pdfBytes = await pdfDoc.save();
   });
@@ -695,340 +693,11 @@ const createPdf = async () => {
   download(pdfBytes, `${documents.documents.doc_name}.pdf`, "application/pdf");
 };
 
-const finishPdf = async () => {
-  let pdfBytes = null;
-  try {
-    const main = document.querySelectorAll("#mainCanvas");
-    const pdfDoc = await PDFDocument.create();
-    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-    main.forEach(async (c, i) => {
-      const page = pdfDoc.addPage();
-      c.classList.remove("hidden");
-      const canvas = c.querySelector("#canvas");
-      const img = canvas.toDataURL("image/jpeg");
-      const jpgUrl = img;
-      const jpgImageBytes = await fetch(jpgUrl).then((res) =>
-        res.arrayBuffer()
-      );
-
-      const imageType = await pdfDoc.embedJpg(jpgImageBytes);
-      let jpgImage =
-        imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
-      const jpgDims = jpgImage.scale(1);
-
-      // Add a blank page to the document
-
-      // Get the width and height of the page
-      page.drawImage(jpgImage, {
-        x: 35,
-        y: 35,
-        width: c.width ?? page.getWidth() - 70,
-        height: c.height ?? page.getHeight() - 70,
-      });
-    });
-    main.forEach((c) => {
-      c.classList.add("hidden");
-    });
-
-    const page = pdfDoc.addPage();
-    const { width, height } = page.getSize();
-
-    const fontSize = 30;
-    page.drawText("Signature Certificate", {
-      x: 30,
-      y: height - 4 * 13,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-
-    page.drawText("Reference number: VM3HM-YUYA8-MQTJV-SPK3K", {
-      x: 30,
-      y: height - 4 * 20,
-      size: 10,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-
-    page.drawText("Signer", { x: 30, y: height - 4 * 35, size: 10 });
-    page.drawText("Timestamp", { x: 220, y: height - 4 * 35, size: 10 });
-    page.drawText("Signature", { x: 430, y: height - 4 * 35, size: 10 });
-
-    let lineHeight = 8;
-    let signer = 12;
-    let signerEmail = 15;
-    let sent = 19;
-    let view = 22;
-    let sign = 25;
-    let signature = 26;
-    let recipientVer = 30;
-    let emailVer = 33;
-    let watermask = 5;
-    for (let index = 0; index < 20; index++) {
-      watermask += 45;
-
-      page.drawText("SecureSign", {
-        x: 5,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 65,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 125,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 185,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 245,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 305,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 365,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 425,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 485,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 545,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-    }
-    for (
-      let index = 0;
-      index < documents.documents.signatures.length;
-      index++
-    ) {
-      const jpgUrl = documents.documents.signatures[index].result;
-      const jpgImageBytes = await fetch(jpgUrl).then((res) =>
-        res.arrayBuffer()
-      );
-      const jpgImage = await pdfDoc.embedPng(jpgImageBytes);
-      const jpgDims = jpgImage.scale(0.5);
-      lineHeight += 30;
-      signer += 30;
-      signerEmail += 30;
-      sent += 30;
-      view += 30;
-      sign += 30;
-      signature += 30;
-      recipientVer += 30;
-      emailVer += 30;
-
-      page.drawLine({
-        start: { x: 25, y: height - 4 * lineHeight },
-        end: { x: 570, y: height - 4 * lineHeight },
-        thickness: 0.3,
-        color: rgb(0, 0, 0),
-        opacity: 0.55,
-      });
-
-      page.drawText(`${documents.documents.signatures[index].name}`, {
-        x: 30,
-        y: height - 4 * signer,
-        size: 11,
-      });
-      page.drawText(`Email: ${documents.documents.signatures[index].email}`, {
-        x: 30,
-        y: height - 4 * signerEmail,
-        size: 9,
-      });
-
-      page.drawText("Sent:", {
-        x: 30,
-        y: height - 4 * sent,
-        size: 8,
-      });
-      page.drawText("Viewed:", {
-        x: 30,
-        y: height - 4 * view,
-        size: 8,
-      });
-      page.drawText("Signed:", {
-        x: 30,
-        y: height - 4 * sign,
-        size: 8,
-      });
-
-      page.drawText(
-        `${moment(documents.documents.signatures[index].created_at).format(
-          "D MMM YYYY, h:mm:ss A"
-        )}`,
-        {
-          x: 220,
-          y: height - 4 * sent,
-          size: 8,
-        }
-      );
-      page.drawText(
-        `${moment(documents.documents.signatures[index].view).format(
-          "D MMM YYYY, h:mm:ss A"
-        )}`,
-        {
-          x: 220,
-          y: height - 4 * view,
-          size: 8,
-        }
-      );
-      page.drawText(
-        `${moment(documents.documents.signatures[index].updated_at).format(
-          "D MMM YYYY, h:mm:ss A"
-        )}`,
-        {
-          x: 220,
-          y: height - 4 * sign,
-          size: 8,
-        }
-      );
-
-      page.drawImage(jpgImage, {
-        x: 430,
-        y: height - 4 * signature,
-        width: 130,
-        height: 65,
-        opacity: 0.75,
-      });
-
-      page.drawText("Recipient Verification:", {
-        x: 30,
-        y: height - 4 * recipientVer,
-        size: 10,
-      });
-
-      page.drawText(`IP address: ${documents.documents.signatures[index].ip}`, {
-        x: 430,
-        y: height - 4 * recipientVer,
-        size: 8,
-      });
-
-      page.drawText("Email verified ", {
-        x: 30,
-        y: height - 4 * emailVer,
-        size: 8,
-      });
-
-      page.drawText(
-        `${moment(documents.documents.signatures[index].created_at).format(
-          "D MMM YYYY, h:mm:ss A"
-        )}`,
-        {
-          x: 220,
-          y: height - 4 * emailVer,
-          size: 8,
-        }
-      );
-
-      page.drawText(
-        `Location: ${documents.documents.signatures[index].city} ${documents.documents.signatures[index].country}`,
-        {
-          x: 430,
-          y: height - 4 * emailVer,
-          size: 8,
-        }
-      );
-    }
-
-    page.drawText("Document completed by all parties on:", {
-      x: 30,
-      y: height - 4 * (lineHeight + 35),
-      size: 10,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-    page.drawText(
-      `${moment(documents.documents.finish_datetime)
-        .tz("Asia/Yangon")
-        .format("D MMM YYYY, h:mm:ss A")}`,
-      {
-        x: 30,
-        y: height - 4 * (lineHeight + 39),
-        size: 11,
-        font: timesRomanFont,
-        color: rgb(0, 0, 0),
-      }
-    );
-    pdfBytes = await pdfDoc.saveAsBase64();
-  } catch (error) {
-    location.reload();
-  }
-
-  function dataURLtoFile(dataurl, filename) {
-    var arr = dataurl.split(","),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], filename, { type: mime });
-  }
-
-  let fileData = dataURLtoFile(
-    "data:application/pdf;base64," + pdfBytes,
-    documents.documents.doc_name
-  );
-
+const finishPdf = () => {
   finished.value = true;
   const formStatus = useForm({
     doc_status: 3,
     _method: "PUT",
-    file: fileData,
   });
 
   formStatus.post(
@@ -1040,15 +709,20 @@ const finishPdf = async () => {
     }
   );
 };
-const height = (doc) => {
-  const img = new Image();
-  img.src = doc;
-  return img.naturalHeight;
+const imageDetails = reactive([]);
+const height = (doc, index) => {
+  setTimeout(() => {
+    const img = new Image();
+    img.src = location.origin + "/storage/" + doc;
+    return imageDetails[index].height;
+  }, 1700);
 };
-const width = (doc) => {
-  const img = new Image();
-  img.src = doc;
-  return img.naturalWidth;
+const width = (doc, index) => {
+  setTimeout(() => {
+    const img = new Image();
+    img.src = location.origin + "/storage/" + doc;
+    return imageDetails[index].width;
+  }, 1700);
 };
 const noti = ref(false);
 const toggle = ref(false);
@@ -1057,7 +731,7 @@ const date = ref("");
 const signatureResult = ref(null);
 
 const docs = (doc) => {
-  return location.origin + "/storage/documents/" + doc;
+  return location.origin + "/storage/" + doc;
 };
 const closeAlert = () => {
   noti.value = false;
@@ -1126,6 +800,15 @@ onUpdated(() => {
 });
 
 onMounted(() => {
+  setTimeout(() => {
+    const imagees = document.querySelectorAll("#image");
+    imagees.forEach((image) => {
+      let height = image.getBoundingClientRect().height;
+      let width = image.getBoundingClientRect().width;
+      console.log(image.getBoundingClientRect());
+      imageDetails.push({ height, width });
+    });
+  }, 1500);
   if (documents.documents.doc_status == 3) finished.value = true;
   const mainTag = document.querySelectorAll("#main");
   const texts = document.querySelectorAll(".text");
@@ -1242,7 +925,9 @@ onMounted(() => {
         });
       }
     };
-    image.src = documents.documents.doc_docs[index];
+    console.log(documents.documents.doc_docs[index]);
+    image.src =
+      location.origin + "/storage/" + documents.documents.doc_docs[index];
   });
 
   const userSigns = document.querySelectorAll(".userSign");

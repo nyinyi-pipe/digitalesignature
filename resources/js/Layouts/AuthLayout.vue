@@ -3,7 +3,7 @@
   <div
     class="ml-auto h-screen lg:w-[82%] xl:w-[82%] 2xl:w-[85%] relative bg-gray-100"
   >
-    <Navbar :title="title" @toggleAside="toggleAside"></Navbar>
+    <Navbar :auth="auth" :title="title" @toggleAside="toggleAside"></Navbar>
 
     <div class="sm:px-6 sm:pt-6 flex flex-col 2xl:container select-none">
       <slot />
@@ -18,6 +18,7 @@ import Footer from "@/Components/Layouts/Footer.vue";
 import { ref } from "vue";
 defineProps({
   title: String,
+  auth: Object,
 });
 const toggle = ref(false);
 const toggleAside = () => {

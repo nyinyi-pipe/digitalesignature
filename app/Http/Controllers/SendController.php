@@ -57,4 +57,13 @@ class SendController extends Controller
         ]);
     }
 
+    public function update(Document $document, Request $request)
+    {
+        $send = $document->sends()->where('id', $request->send)->first();
+        $file = $request->file('file')->store('documents');
+        $send->update([
+            'file'=>$file
+        ]);
+    }
+
 }

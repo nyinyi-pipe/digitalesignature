@@ -1,5 +1,5 @@
 <template>
-  <AuthLayout title="Dashboard">
+  <AuthLayout :auth="auth" title="Dashboard">
     <Head title="Dashboard" />
     <div class="p-3 shadow py-5 rounded">
       <!-- <div class="sm:flex gap-3 justify-around">
@@ -28,7 +28,9 @@
 <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { onMounted } from "vue";
-
+const { auth } = defineProps({
+  auth: Object,
+});
 onMounted(() => {
   const data = [
     { year: 2010, count: 10 },

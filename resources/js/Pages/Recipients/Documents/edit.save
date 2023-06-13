@@ -111,7 +111,7 @@
                 id="image"
                 :doc="doc"
                 class="w-full object-cover"
-                :src="doc"
+                :src="docs(doc)"
                 alt=""
               />
             </div>
@@ -312,7 +312,7 @@ const finished = () => {
   );
 };
 const docs = (doc) => {
-  return location.origin + "/storage/documents/" + doc;
+  return location.origin + "/storage/" + doc;
 };
 
 const closeSignatureModal = () => {
@@ -329,12 +329,7 @@ const saveText = (e) => {
     route("recipient.update.document", [
       documents.documents.id,
       e.target.getAttribute("user_id"),
-    ]),
-    {
-      onSuccess: () => {
-        form.reset();
-      },
-    }
+    ])
   );
 };
 
@@ -345,12 +340,7 @@ const saveDate = (e) => {
     route("recipient.update.document", [
       documents.documents.id,
       e.target.getAttribute("user_id"),
-    ]),
-    {
-      onSuccess: () => {
-        form.reset();
-      },
-    }
+    ])
   );
 };
 
