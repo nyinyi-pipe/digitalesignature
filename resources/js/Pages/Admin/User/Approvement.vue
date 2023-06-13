@@ -1,6 +1,6 @@
 
 <template>
-  <AuthLayout title="Approvement">
+  <AuthLayout title="Approvement" :auth="auth">
     <Head title="Approvement" />
     <Table>
       <template #th>
@@ -86,4 +86,7 @@ import Table from "../../../Components/Table/Table.vue";
 import ThCol from "../../../Components/Table/ThCol.vue";
 import TdCol from "../../../Components/Table/TdCol.vue";
 import SwitchField from "@/Components/SwitchField.vue";
+defineProps({
+  auth: Object,
+});
 </script>
