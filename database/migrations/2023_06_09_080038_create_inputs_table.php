@@ -11,10 +11,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('inputs', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('document_id');
-            $table->foreignUuid('requester_id');
-            $table->foreignUuid('recipient_id');
+            $table->id();
+            $table->foreignId('document_id');
+            $table->foreignId('requester_id');
+            $table->foreignId('recipient_id');
             $table->longText('content')->nullable();
             $table->timestamps();
         });

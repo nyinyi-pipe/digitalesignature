@@ -13,7 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles ,HasUuids;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles ;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +27,7 @@ class User extends Authenticatable
         'email',
         'signature',
         'password',
+        'status',
         'avatar'
     ];
 
@@ -48,4 +49,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function sends()
+    {
+        return $this->hasMany(Send::class, 'requester_id');
+    }
 }

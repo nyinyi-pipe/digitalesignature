@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Send extends Model
 {
-    use HasFactory,HasUuids;
+    use HasFactory;
 
     protected $fillable = ['document_id','file','requester_id','recipient_id','subject','content','cc_mails','status'];
 

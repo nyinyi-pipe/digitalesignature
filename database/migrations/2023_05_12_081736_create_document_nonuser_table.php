@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('document_nonuser', function (Blueprint $table) {
             $table->primary(['document_id','nonuser_id']);
-            $table->foreignUuid('document_id');
-            $table->foreignUuid('nonuser_id');
+            $table->foreignId('document_id');
+            $table->foreignId('nonuser_id');
             $table->timestamps();
         });
     }

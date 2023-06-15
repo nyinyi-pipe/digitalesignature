@@ -82,6 +82,7 @@
             </div>
             <div>
               <button
+                v-if="documents.documents.status != 0"
                 @click="finished"
                 class="m-0 py-0.5 px-4 rounded-sm bg-yellow-500"
               >
@@ -353,7 +354,9 @@ const saveDate = (e) => {
     }
   );
 };
-
+const u_ip = ref("");
+const u_city = ref("");
+const u_country = ref("");
 const indexs = ref(null);
 const openSignatureModal = (e) => {
   indexs.value = e.target.closest(".fields").getAttribute("index");
@@ -365,8 +368,30 @@ const openSignatureModal = (e) => {
       .querySelector(".fieldStatus")
       .classList.add("hidden");
   }
+  if (documents.documents.signatures[0].result) {
+    const signatures = document.querySelectorAll(".signature");
+    signatures[indexs.value].querySelector(".img").src =
+      documents.documents.signatures[0].result;
+    const form = useForm({
+      signature: documents.documents.signatures[0].result,
+      doc_id: documents.documents.id,
+      id: signatures[indexs.value].querySelector(".img").getAttribute("signId"),
+      type: "signature",
+      _method: "PUT",
+      ip: u_ip.value,
+      city: u_city.value,
+      country: u_country.value,
+    });
+    form.post(
+      route("recipient.update.document", [
+        signatures[indexs.value].querySelector(".img").getAttribute("id"),
+        signatures[indexs.value].querySelector(".img").getAttribute("user_id"),
+      ])
+    );
+  } else {
+    signatureModal.value.show();
+  }
   //   signatureResult.value = true;
-  signatureModal.value.show();
 };
 
 const changeWriteStatus = (e) => {
@@ -378,10 +403,6 @@ const changeWriteStatus = (e) => {
     main.querySelector(".textInput").classList.add("flex");
   }
 };
-
-const u_ip = ref("");
-const u_city = ref("");
-const u_country = ref("");
 
 onMounted(() => {
   const modalSignature = document.querySelector("#signature-modal");

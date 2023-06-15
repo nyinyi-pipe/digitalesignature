@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
-Route::middleware(['auth','editdoc'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/documents/{document}/add-recipients', [DocumentController::class,'recipients'])->name('document.add-recipients');
     Route::put('/documents/{document}/add-recipients', [DocumentController::class,'storeRecipients'])->name('document.store-recipients');
     Route::put('/documents/{document}/add-recipient', [DocumentController::class,'addRecipients'])->name('document.add.recipients');

@@ -1,5 +1,5 @@
 <template >
-  <Aside :toggle="toggle" @closeToggle="closeToggle"></Aside>
+  <Aside :auth="auth.user" :toggle="toggle" @closeToggle="closeToggle"></Aside>
   <div
     class="ml-auto h-screen lg:w-[82%] xl:w-[82%] 2xl:w-[85%] relative bg-gray-100"
   >

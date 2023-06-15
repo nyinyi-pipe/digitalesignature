@@ -10,13 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('nonusers', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('email')->unique();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('status')->default(0);
         });
     }
 
@@ -25,6 +20,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('nonusers');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('status');
+        });
     }
 };

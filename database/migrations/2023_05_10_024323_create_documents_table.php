@@ -11,8 +11,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('documents', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('user_id');
+            $table->id();
+            $table->foreignId('user_id');
             // $table->json('nonuser_id')->nullable();
             $table->longText('doc_name');
             $table->json('doc_docs');

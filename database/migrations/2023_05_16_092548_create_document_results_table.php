@@ -11,9 +11,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('document_results', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('document_id');
-            $table->foreignUuid('nonuser_id');
+            $table->id();
+            $table->foreignId('document_id');
+            $table->foreignId('nonuser_id');
             $table->string('index');
             $table->string('x');
             $table->string('y');

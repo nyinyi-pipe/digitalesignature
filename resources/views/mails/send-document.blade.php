@@ -12,7 +12,7 @@
                         src="https://images.pexels.com/photos/325044/pexels-photo-325044.jpeg?cs=srgb&dl=pexels-chevanon-photography-325044.jpg&fm=jpg"
                         alt="">
                     <div class="sender-container">
-                        <h4>Ar Kar Lin</h4>
+                        <h4>{{auth()->user()->name}}</h4>
                         <span>sent you</span>
                         <h4>{{$subject}}</h4>
                     </div>

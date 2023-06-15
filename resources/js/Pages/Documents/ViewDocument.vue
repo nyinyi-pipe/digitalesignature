@@ -410,10 +410,10 @@ const createPdf = async () => {
 
     // Get the width and height of the page
     page.drawImage(jpgImage, {
-      x: 35,
-      y: 35,
-      width: c.width ?? page.getWidth() - 70,
-      height: c.height ?? page.getHeight() - 70,
+      x: 0,
+      y: 0,
+      width: c.width ?? page.getWidth(),
+      height: c.height ?? page.getHeight(),
     });
     // pdfBytes = await pdfDoc.save();
   });
@@ -720,10 +720,10 @@ const finishPdf = async () => {
 
       // Get the width and height of the page
       page.drawImage(jpgImage, {
-        x: 35,
-        y: 35,
-        width: c.width ?? page.getWidth() - 70,
-        height: c.height ?? page.getHeight() - 70,
+        x: 0,
+        y: 0,
+        width: c.width ?? page.getWidth(),
+        height: c.height ?? page.getHeight(),
       });
     });
     main.forEach((c) => {
@@ -1205,8 +1205,8 @@ onMounted(() => {
                 ig,
                 documents.documents.signatures[i].x.replace("px", ""),
                 documents.documents.signatures[i].y.replace("px", ""),
-                75,
-                75
+                100,
+                100
               );
             };
             ig.src = sign.result;

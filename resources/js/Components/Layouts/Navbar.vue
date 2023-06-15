@@ -149,7 +149,6 @@ const { auth, title } = defineProps({
   auth: Object,
 });
 onMounted(() => {
-  console.log(auth);
   initFlowbite();
 });
 

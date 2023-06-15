@@ -98,7 +98,7 @@ const upload = async (event) => {
     reader.onloadend = (evt) => {
       setTimeout(() => {
         const form = {
-          document: evt.target.result,
+          document: [evt.target.result],
           type: "png",
           name: file.name,
         };

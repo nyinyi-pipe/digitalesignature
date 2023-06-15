@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Input extends Model
 {
-    use HasFactory,HasUuids;
+    use HasFactory;
     protected $fillable = ['document_id','requester_id','recipient_id','content'];
 
     public function document()

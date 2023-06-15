@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Nonuser extends Model
 {
-    use HasFactory , HasUuids;
+    use HasFactory ;
     protected $fillable = ['name','email','first_name','last_name'];
 
     public function nonuserdocuments()

@@ -15,7 +15,10 @@ class SendController extends Controller
 {
     public function index() : Response
     {
+        // $documents  = auth()->user()->documents->load(['sends','sends.recipient']);
+        // if(auth()->user()->hasRole('admin')) {
         $documents = Document::with(['sends','sends.recipient'])->paginate(5);
+        // }
 
         return Inertia::render('Sends/Index', [
             'documents' => $documents
