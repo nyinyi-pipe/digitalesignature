@@ -24,10 +24,6 @@ class DocumentController extends Controller
     public function index()
     {
         $documents  = auth()->user()->documents->load(['sends','sends.recipient'])->toQuery()->paginate(5);
-        if(auth()->user()->hasRole('admin')) {
-            $documents = Document::with(['sends','sends.recipient'])->paginate(5);
-        }
-
         return Inertia::render('Documents/Index', [
             'documents'=> $documents
         ]);
@@ -126,8 +122,11 @@ class DocumentController extends Controller
         ]);
     }
 
-    public function editDocument(Document $document, Request $request) : Response
+    public function editDocument(Document $document, Request $request)
     {
+        if($document->doc_status == 3) {
+            return to_route('document.index');
+        }
         $data = DocumentResult::where('document_id', $document->id)->get();
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");

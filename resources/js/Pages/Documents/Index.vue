@@ -193,7 +193,9 @@
                   viewBox="0 0 24 24"
                   stroke-width="1.5"
                   stroke="currentColor"
-                  class="w-5 h-5 cursor-pointer"
+                  class="w-5 h-5 cursor-pointer editIter"
+                  :data-id="document.id"
+                  :status="document.doc_status"
                   :data-dropdown-toggle="documentdrop + document.id"
                 >
                   <path
@@ -209,8 +211,8 @@
                 >
                   <ul class="text-sm text-gray-700">
                     <Link
-                      v-if="document.doc_status == 0"
-                      :href="route('document.edit.document', document.id)"
+                      v-if="editStatus == 0"
+                      :href="route('document.edit.document', editId)"
                       class="block py-1 hover:bg-yellow-100 cursor-pointer"
                     >
                       <div class="gap-2 flex items-center ms-2">
@@ -345,7 +347,8 @@ import moment from "moment";
 import { Modal } from "flowbite";
 
 const deleteModal = ref(null);
-
+const editStatus = ref(null);
+const editId = ref(null);
 const documents = defineProps({
   documents: Array,
   auth: Object,
@@ -370,13 +373,16 @@ const acceptDelete = (id) => {
 onMounted(() => {
   const modal = document.querySelector("#deleteModal");
   deleteModal.value = new Modal(modal);
-  let docs = document.querySelectorAll("#deledoc");
-  docs.forEach((doc) => {
-    doc.addEventListener("click", () => {
-      deId.value = doc.getAttribute("data-id");
-    });
-  });
 
   initFlowbite();
+
+  const editIters = document.querySelectorAll(".editIter");
+  editIters.forEach((edit) => {
+    edit.addEventListener("click", () => {
+      editStatus.value = edit.getAttribute("status");
+      editId.value = parseFloat(edit.getAttribute("data-id"));
+      deId.value = parseFloat(edit.getAttribute("data-id"));
+    });
+  });
 });
 </script>

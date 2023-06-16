@@ -96,7 +96,7 @@
     </div>
   </AuthLayout>
 </template>
-    <script setup>
+  <script setup>
 import Table from "@/Components/Table/Table.vue";
 import ThCol from "@/Components/Table/ThCol.vue";
 import TdCol from "@/Components/Table/TdCol.vue";

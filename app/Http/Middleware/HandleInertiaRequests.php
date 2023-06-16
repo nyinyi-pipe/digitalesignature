@@ -34,7 +34,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => function () use ($request) {
                     $user = $request->user();
-                    $user['roles'] = $request->user()->getRoleNames()->toArray();
+                    if($user) {
+                        $user['roles'] = $request->user()->getRoleNames()->toArray();
+                    }
                     return $user;
                 },
             ],

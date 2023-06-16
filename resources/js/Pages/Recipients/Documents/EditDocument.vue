@@ -82,7 +82,6 @@
             </div>
             <div>
               <button
-                v-if="documents.documents.status != 0"
                 @click="finished"
                 class="m-0 py-0.5 px-4 rounded-sm bg-yellow-500"
               >

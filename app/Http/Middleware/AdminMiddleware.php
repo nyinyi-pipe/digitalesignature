@@ -18,6 +18,6 @@ class AdminMiddleware
         if($request->user()->hasRole('admin')) {
             return $next($request);
         }
-        return $next($request);
+        return back();
     }
 }

@@ -3,7 +3,9 @@
 namespace App\Http;
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\CompletedDocMiddleware;
 use App\Http\Middleware\DocumentEditMiddleware;
+use App\Http\Middleware\EmployeeMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel

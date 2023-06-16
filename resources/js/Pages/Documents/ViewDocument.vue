@@ -1,6 +1,10 @@
 <template>
   <Head title="Document" />
-  <EditAside :toggle="toggle" @closeToggle="closeToggle"></EditAside>
+  <EditAside
+    :auth="documents.auth.user"
+    :toggle="toggle"
+    @closeToggle="closeToggle"
+  ></EditAside>
 
   <div class="h-screen overflow-hidden">
     <div

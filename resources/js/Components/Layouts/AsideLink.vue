@@ -31,8 +31,9 @@
 
 <script setup>
 import { Link } from "@inertiajs/vue3";
-defineProps({
+const { auth, go, title } = defineProps({
   go: String,
   title: String,
+  auth: Object,
 });
 </script>
