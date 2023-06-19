@@ -14,7 +14,7 @@ class DashboardController extends Controller
     public function index()
     {
         $results = $this->calculate(auth()->user()->documents);
-        $documents  = auth()->user()->documents->load(['sends','sends.recipient'])->toQuery()->paginate(5);
+        $documents  = auth()->user()->documents()->count() ? auth()->user()->documents->load(['sends','sends.recipient'])->toQuery()->paginate(5) : '';
 
         return Inertia::render('Dashboard', [
             'documents'=>$documents,

@@ -15,7 +15,7 @@ class Document extends Model
     *
     * @var array<int, string>
     */
-    protected $fillable = ['user_id','doc_name','finish_datetime','doc_docs','doc_type','doc_key','doc_status'];
+    protected $fillable = ['user_id','doc_name','finish_datetime','doc_docs','doc_type','doc_key','doc_status','folder'];
 
     protected $casts = [
         'doc_docs' => 'array',

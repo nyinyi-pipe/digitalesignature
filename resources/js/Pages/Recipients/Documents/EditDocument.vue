@@ -1,6 +1,6 @@
 <template>
   <Head title="Document" />
-  <EditAside :toggle="toggle" @closeToggle="closeToggle"></EditAside>
+  <!-- <EditAside :toggle="toggle" @closeToggle="closeToggle"></EditAside> -->
   <div class="h-screen overflow-hidden">
     <!-- signature modal -->
     <SignatureModal

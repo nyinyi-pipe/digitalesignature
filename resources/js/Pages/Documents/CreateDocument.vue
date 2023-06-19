@@ -61,52 +61,16 @@
 <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { Link, router, Head } from "@inertiajs/vue3";
-import convertPdfToImg from "@/composables/convertPdfToImg";
 defineProps({
   auth: Object,
 });
 const upload = async (event) => {
   const file = event.target.files[0];
-
-  if (file.type == "application/pdf") {
-    const images = await convertPdfToImg(file);
-    const form = {
-      document: images,
-      type: "pdf",
-      name: file.name,
-    };
-    router.post(route("document.add-document"), form);
-  } else {
-    const reader = new FileReader();
-    reader.onloadstart = (evt) => {
-      document.querySelector("#upload-text").innerHTML = `
-        <h1 class="mb-1">Uploading...</h1>
-        <p>${file.name}</p>
-        <p class="py-1.5 hover:bg-slate-100 hover:shadow-md duration-300 px-2 bg-white rounded text-sm shadow-xl mt-3 flex items-center gap-1 justify-center">Cancel</p>
-    `;
-    };
-
-    reader.onprogress = () => {
-      setTimeout(() => {
-        document.querySelector("#upload-text").innerHTML = `
-        <h1 class="mb-1">Progress...</h1>
-        <p>${file.name}</p>
-    `;
-      }, 2000);
-    };
-
-    reader.onloadend = (evt) => {
-      setTimeout(() => {
-        const form = {
-          document: [evt.target.result],
-          type: "png",
-          name: file.name,
-        };
-        router.post(route("document.add-document"), form);
-      }, 4000);
-    };
-
-    reader.readAsDataURL(file);
-  }
+  const form = {
+    document: file,
+    type: "png",
+    name: file.name,
+  };
+  router.post(route("document.add-document"), form);
 };
 </script>

@@ -96,7 +96,6 @@
 </template>
 
 <script setup>
-import convertPdfToImg from "@/composables/convertPdfToImg";
 import { useForm } from "@inertiajs/vue3";
 import axios from "axios";
 import { onMounted, reactive } from "vue";
@@ -107,6 +106,7 @@ const documents = defineProps({
 const emit = defineEmits("closeNewDocumentUpload");
 const form = useForm({
   newDocument: null,
+  _method: "PUT",
 });
 
 const upload = async (event) => {
@@ -114,9 +114,16 @@ const upload = async (event) => {
   const reader = new FileReader();
 
   if (file.type == "application/pdf") {
-    form.newDocument = await convertPdfToImg(file);
+    form.newDocument = file;
+    const formData = new FormData();
+    formData.append("newDocument", file);
+    formData.append("_method", "PUT");
     axios
-      .put(route("document.new.document-name", documents.id), form)
+      .post(route("document.new.document-name", documents.id), formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then(({ data }) => {
         document.querySelector("#upload-text").innerHTML = `
             <svg
@@ -185,9 +192,16 @@ const upload = async (event) => {
 
     reader.onloadend = (evt) => {
       setTimeout(() => {
-        form.newDocument = [evt.target.result];
+        form.newDocument = file;
+        const formData = new FormData();
+        formData.append("newDocument", file);
+        formData.append("_method", "PUT");
         axios
-          .put(route("document.new.document-name", documents.id), form)
+          .post(route("document.new.document-name", documents.id), formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
           .then(({ data }) => {
             document.querySelector("#upload-text").innerHTML = `
                 <svg

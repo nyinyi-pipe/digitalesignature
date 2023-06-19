@@ -43,13 +43,14 @@
                 </div>
               </div>
               <div class="flex gap-2 mt-2">
-                <button
+                <Link
+                  :href="route('document.view.document', sendDocs.documents.id)"
                   v-if="sendDocs.documents.doc_status == 3"
                   @click="createPdf"
                   class="py-0.5 px-3 bg-yellow-500 text-sm rounded text-white duration-300 hover:bg-yellow-600"
                 >
                   Print Certificate
-                </button>
+                </Link>
                 <div
                   v-else
                   class="py-0.5 px-3 bg-red-500 text-sm rounded text-white duration-300 cursor-not-allowed"

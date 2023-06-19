@@ -16,6 +16,7 @@ return new class extends Migration {
             // $table->json('nonuser_id')->nullable();
             $table->longText('doc_name');
             $table->json('doc_docs');
+            $table->string('folder');
             $table->string('doc_type');
             $table->string('doc_key')->nullable();
             $table->integer('doc_status')->default(0);

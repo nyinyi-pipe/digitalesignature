@@ -373,7 +373,6 @@ const acceptDelete = (id) => {
 onMounted(() => {
   const modal = document.querySelector("#deleteModal");
   deleteModal.value = new Modal(modal);
-
   initFlowbite();
 
   const editIters = document.querySelectorAll(".editIter");

@@ -11,19 +11,23 @@ use App\Models\DocumentResult;
 use App\Models\Nonuser;
 use App\Models\User;
 use Carbon\Carbon;
+use Faker\Provider\File;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File as FacadesFile;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Imagick;
 
 class DocumentController extends Controller
 {
     public function index()
     {
-        $documents  = auth()->user()->documents->load(['sends','sends.recipient'])->toQuery()->paginate(5);
+        $documents  = auth()->user()->documents()->count() ? auth()->user()->documents->load(['sends','sends.recipient'])->toQuery()->paginate(5) : '';
         return Inertia::render('Documents/Index', [
             'documents'=> $documents
         ]);
@@ -37,11 +41,26 @@ class DocumentController extends Controller
     public function store(DocumentRequest $request) :RedirectResponse
     {
         $request->validated();
+        $folder = uniqid();
+        $pdf = $request->file('document')->store('documents');
+        $imagick = new Imagick();
+        $imagick->readImage(public_path("storage/".$pdf));
+        mkdir($folder);
+        $filename = uniqid();
+        $saveImagePath = public_path($folder."/".$filename.".jpeg");
+        $imagick->writeImages($saveImagePath, true);
+
+        $converted = [];
+        $files = FacadesFile::allFiles(public_path($folder));
+        foreach ($files as $file) {
+            $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
+        }
         $doc_type = $request->type;
         $newDocument = Document::create([
             'user_id'=>auth()->user()->id,
             'doc_name'=> $request->name,
-            'doc_docs'=> $request->document,
+            'doc_docs'=> $converted,
+            'folder'=>$folder,
             'doc_type'=> $doc_type,
             'doc_key'=>'TEST'
         ]);
@@ -143,28 +162,47 @@ class DocumentController extends Controller
 
     public function newDocumentName(Document $document, Request $request)
     {
-        $doc_docs = $document->doc_docs;
-        $docs = [];
-        if($request->newDocument != null) {
+        $doc_docs = null;
+        if($request->file('newDocument')) {
+            $pdf = $request->file('newDocument')->store('documents');
+            $imagick = new Imagick();
+            $imagick->readImage(public_path("storage/".$pdf));
+            $filename = uniqid();
+            $saveImagePath = public_path($document->folder."/".$filename.".jpeg");
+            $imagick->writeImages($saveImagePath, true);
 
-            if(is_array($doc_docs)) {
-                $docs = $doc_docs;
-                foreach ($request->newDocument as $doc) {
-                    $docs[] = $doc;
-                }
-            } else {
-                $docs[] = $doc_docs;
-                foreach ($request->newDocument as $doc) {
-                    $docs[] = $doc;
-                }
+            $converted = [];
+            $files = FacadesFile::allFiles(public_path($document->folder));
+            foreach ($files as $file) {
+                $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
             }
+
+            $doc_docs = $converted;
         }
+
+        // $doc_docs = $document->doc_docs;
+        // $docs = [];
+        // if($request->newDocument != null) {
+
+        //     if(is_array($doc_docs)) {
+        //         $docs = $doc_docs;
+        //         foreach ($request->newDocument as $doc) {
+        //             $docs[] = $doc;
+        //         }
+        //     }
+        //     // } else {
+        //     //     $docs[] = $doc_docs;
+        //     //     foreach ($request->newDocument as $doc) {
+        //     //         $docs[] = $doc;
+        //     //     }
+        //     // }
+        // }
 
         $document->update([
             'doc_name'=>$request->newDocumentName??$document->doc_name,
-            'doc_docs'=>$request->newDocument != null?$docs:$doc_docs
+            'doc_docs'=>$request->newDocument != null?$doc_docs :$document->doc_docs
         ]);
-        // return redirect()->back();
+        // return back();
         return response()->json([
             'document'=>$document
         ]);
