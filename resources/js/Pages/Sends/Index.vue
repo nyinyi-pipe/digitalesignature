@@ -176,12 +176,12 @@
               <TdCol>
                 <div class="flex gap-1 flex-wrap">
                   <div
-                    v-for="recipient of sendDoc.sends"
+                    v-for="recipient of itemUnique(sendDoc.sends)"
                     :key="recipient.id"
                     class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
                   >
                     <h2 class="text-xs font-normal">
-                      {{ recipient.recipient.name }}
+                      {{ recipient }}
                     </h2>
                   </div>
                 </div>
@@ -215,6 +215,7 @@ import TdCol from "@/Components/Table/TdCol.vue";
 import { Link, Head } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { initFlowbite } from "flowbite";
+import itemUnique from "@/composables/itemUnique";
 
 const sendDocs = defineProps({
   documents: Array,

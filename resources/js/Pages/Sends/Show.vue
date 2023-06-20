@@ -82,20 +82,25 @@
                   <h1 class="text-sm font-bold mr-3">Name:</h1>
                   <div
                     class="text-xs mr-1 m-0 py-0.5 px-3 rounded-lg bg-green-100/60 text-green-400"
-                    v-for="recipient of sendDocs.documents.sends"
-                    :key="recipient.recipient.id"
+                    v-for="(name, index) of itemUnique(
+                      sendDocs.documents.sends
+                    )"
+                    :key="index"
                   >
-                    {{ recipient.recipient.name }}
+                    {{ name }}
                   </div>
                 </div>
                 <div class="flex items-center mt-2">
                   <h1 class="text-sm font-bold mr-3">Email:</h1>
                   <div
                     class="text-xs mr-1 m-0 py-0.5 px-3 rounded-lg bg-green-100/60 text-green-400"
-                    v-for="recipient of sendDocs.documents.sends"
-                    :key="recipient.recipient.id"
+                    v-for="(email, index) of itemUnique(
+                      sendDocs.documents.sends,
+                      'email'
+                    )"
+                    :key="index"
                   >
-                    {{ recipient.recipient.email }}
+                    {{ email }}
                   </div>
                 </div>
               </div>
@@ -136,6 +141,7 @@
     <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { Link, Head, useForm } from "@inertiajs/vue3";
+import itemUnique from "@/composables/itemUnique";
 import { onMounted } from "vue";
 import { initFlowbite } from "flowbite";
 import moment from "moment-timezone";

@@ -32,12 +32,16 @@
         <div class="flex gap-3">
           <img
             class="h-10 w-10 object-cover rounded-full"
-            src="https://i.pinimg.com/236x/59/47/4a/59474acff5c5add368adca80b2a7edcd.jpg"
+            :src="[
+              input.recipient.avatar
+                ? `/storage/${input.recipient.avatar}`
+                : 'https://i.pinimg.com/564x/ff/5f/78/ff5f78476f0edf5b1bf7840f84342ebd.jpg',
+            ]"
             alt=""
           />
           <div class="self-start">
             <div class="flex items-center space-x-2">
-              <h3 class="font-bold">eSignature</h3>
+              <h3 class="font-bold">{{ input.recipient.name }}</h3>
               <h5 class="font-light text-xs text-gray-500">
                 >{{ input.recipient.email }}
               </h5>
@@ -89,13 +93,17 @@
             src="https://i.pinimg.com/236x/b1/ce/04/b1ce0471c959d3f471b306079c9b7b18.jpg"
             alt=""
           />
-          <h1 class="font-bold text-lg">E-Signature</h1>
+          <h1 class="font-bold text-lg">SecureSign</h1>
         </div>
         <div class="p-7 bg-white">
           <div class="w-full flex gap-4 pb-2 border-0 border-b-2">
             <img
               class="w-10 h-10 object-cover"
-              src="https://i.pinimg.com/236x/b1/ce/04/b1ce0471c959d3f471b306079c9b7b18.jpg"
+              :src="[
+                input.recipient.avatar
+                  ? `/storage/${input.recipient.avatar}`
+                  : 'https://i.pinimg.com/564x/ff/5f/78/ff5f78476f0edf5b1bf7840f84342ebd.jpg',
+              ]"
               alt=""
             />
             <div class="flex w-full gap-2 overflow-hidden">
@@ -141,6 +149,7 @@ const { input, auth } = defineProps({
   auth: Object,
 });
 onMounted(() => {
+  console.log(input);
   initFlowbite();
 });
 </script>
