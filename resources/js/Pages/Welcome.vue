@@ -2,7 +2,7 @@
   <div class="min-h-screen w-full container mx-auto">
     <Navbar :user="auth.user" />
     <div
-      class="min-h-screen mt-7 sm:-mt-10 flex flex-col sm:flex-row items-center"
+      class="min-h-screen mt-7 sm:-mt-10 flex flex-col gap-5 sm:gap-0 sm:flex-row items-center"
     >
       <div class="w-full px-5 sm:px-0 sm:w-[40%]">
         <h1 class="uppercase font-extrabold text-4xl text-teal-500">
@@ -41,6 +41,36 @@
           class="w-full object-cover"
           alt=""
         />
+      </div>
+    </div>
+    <div class="mb-10">
+      <h1
+        class="text-center text-3xl underline font-extrabold text-teal-500 mb-7"
+      >
+        About Us
+      </h1>
+      <div class="grid sm:grid-cols-2 px-5 gap-3 sm:gap-0 sm:px-0 items-center">
+        <div class="flex justify-center">
+          <img
+            src="/images/3d-casual-life-signing-contract.png"
+            class="h-full"
+            alt=""
+          />
+        </div>
+        <div class="py-5">
+          <h1 class="mb-4 text-gray-600 text-xl font-bold uppercase">
+            Lorem ipsum dolor sit elit. Amet
+          </h1>
+          <p class="tracking-wide text-gray-500">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis
+            rerum iusto alias illo tenetur ullam non voluptatem praesentium
+            accusamus, voluptates doloremque sunt minima nesciunt cumque
+            incidunt accusantium nostrum eius corporis beatae eaque vitae?
+            Beatae omnis, harum ipsum tenetur illum ratione eum voluptas eos
+            magni sint natus iusto excepturi voluptates, illo vero dignissimos
+            consequatur
+          </p>
+        </div>
       </div>
     </div>
   </div>
