@@ -1,9 +1,7 @@
 <template>
-  <div
-    class="min-h-screen flex flex-col sm:justify-center items-center px-3 py-8 sm:pt-0"
-  >
+  <div class="min-h-screen container mx-auto flex flex-col py-8 sm:pt-0">
     <Navbar />
-    <div class="mt-8">
+    <div class="mt-8 self-center">
       <div class="flex gap-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +20,7 @@
       </h3>
     </div>
     <div
-      class="w-full sm:max-w-md mt-6 p-10 shadow-lg overflow-hidden rounded-md"
+      class="w-full self-center sm:max-w-md mt-6 p-10 shadow-lg overflow-hidden rounded-md"
     >
       <slot />
     </div>
