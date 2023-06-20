@@ -1,5 +1,5 @@
 <template>
-  <div class="sticky z-10 top-0 h-10 bg-white">
+  <div class="sticky z-10 top-0 h-14 bg-white">
     <div
       class="p-3 flex items-center justify-between overflow-hidden space-x-4 2xl:container"
     >
