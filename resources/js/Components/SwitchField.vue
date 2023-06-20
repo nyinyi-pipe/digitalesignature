@@ -15,14 +15,19 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
+import { onMounted } from "vue";
 
-defineProps({
+const { user } = defineProps({
   user: Object,
+});
+
+onMounted(() => {
+  console.log(user);
 });
 
 const changeStatus = (id) => {
   router.put(
-    route("user.status"),
+    route("admin.user.status"),
     { id },
     {
       onSuccess: () => {

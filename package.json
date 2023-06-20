@@ -32,6 +32,7 @@
         "sass": "^1.62.1",
         "sweetalert2": "^11.7.5",
         "tw-elements": "^1.0.0-beta2",
+        "typewriter-effect": "^2.20.1",
         "vue-chart-3": "^3.1.8",
         "vue-signature-pad": "^3.0.2"
     }

@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SignatureController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
+Route::prefix('admin')->middleware('auth', 'admin', 'approv')->group(function () {
     Route::get('/dashboard', [DashboardController::class,'index'])->name('admin.dashboard');
 
     Route::get('/approvement', [UserController::class,'approvement'])->name('admin.user.approvement');

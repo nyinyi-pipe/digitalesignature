@@ -129,7 +129,12 @@
                     />
                   </svg>
 
-                  <p @click="logout" class="text-green-500">Logout</p>
+                  <Link
+                    method="POST"
+                    :href="route('logout')"
+                    class="text-green-500"
+                    >Logout</Link
+                  >
                 </div>
               </li>
             </ul>
@@ -151,6 +156,4 @@ const { auth, title } = defineProps({
 onMounted(() => {
   initFlowbite();
 });
-
-const logout = () => {};
 </script>

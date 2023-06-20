@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Admin',
             'last_name' => 'Admin',
             'email' => 'admin@gmail.com',
-            'password'=> bcrypt('admin1234')
+            'password'=>  bcrypt(12345678),
+            'status'=>1,
         ]);
         $user->assignRole('admin');
 

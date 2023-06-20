@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\approvementMiddleware;
 use App\Http\Middleware\CompletedDocMiddleware;
 use App\Http\Middleware\DocumentEditMiddleware;
 use App\Http\Middleware\EmployeeMiddleware;
@@ -71,6 +72,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'editdoc' => DocumentEditMiddleware::class,
         'admin'=>AdminMiddleware::class,
+        'approv'=>approvementMiddleware::class,
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class

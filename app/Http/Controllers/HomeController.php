@@ -19,4 +19,12 @@ class HomeController extends Controller
             'phpVersion' => PHP_VERSION,
         ]);
     }
+
+    public function waitApprove()
+    {
+        if(auth()->user() && auth()->user()->status) {
+            return to_route('dashboard');
+        }
+        return Inertia::render('Admin/User/WaitApprove');
+    }
 }

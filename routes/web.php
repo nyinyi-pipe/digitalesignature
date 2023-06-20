@@ -15,7 +15,7 @@ use Inertia\Inertia;
 Route::get('/', [HomeController::class,'index'])->name('home');
 //auth
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth','approv'])->group(function () {
     //dashboard
     Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
     //document
@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','approv'])->group(function () {
     Route::get('/documents/{document}/add-recipients', [DocumentController::class,'recipients'])->name('document.add-recipients');
     Route::put('/documents/{document}/add-recipients', [DocumentController::class,'storeRecipients'])->name('document.store-recipients');
     Route::put('/documents/{document}/add-recipient', [DocumentController::class,'addRecipients'])->name('document.add.recipients');
@@ -44,7 +44,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','approv'])->group(function () {
     Route::get('/send-documents', [SendController::class,'index'])->name('send-document.index');
     Route::get('/send-documents/{document}', [SendController::class,'show'])->name('send-document.show');
     Route::put('/send-documents/{document}', [SendController::class,'update'])->name('send-document.update');
@@ -63,6 +63,9 @@ Route::put('/document/v/{document}', [DocumentController::class,'finishUpdate'])
 Route::get('/u/{document}/{recipient}', [DocumentResultController::class,'edit'])->name('recipient.edit.document');
 Route::put('/u/{document}/{recipient}', [DocumentResultController::class,'update'])->name('recipient.update.document');
 Route::put('/u/{document}', [DocumentResultController::class,'updateStatus'])->name('recipient.update.status.document');
+
+
+Route::get('/wait-approve', [HomeController::class,'waitApprove'])->name('non.approve');
 
 
 
