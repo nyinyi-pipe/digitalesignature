@@ -1,7 +1,7 @@
 <template>
-  <div class="container mx-auto pt-3 px-3 md:px-0 sm:pt-5">
+  <div class="container mx-auto pt-3 px-3 md:px-0 sm:pt-5 sticky top-0">
     <div
-      class="sticky z-10 top-0 py-3 h-14 border-b shadow-lg bg-white rounded-xl lg:py-2.5"
+      class="sticky z-10 top-0 py-3 h-14 border-b shadow bg-white rounded-lg lg:py-2.5"
     >
       <div
         class="px-3 sm:px-6 flex items-center justify-between space-x-4 2xl:container"
@@ -33,19 +33,19 @@
         <div class="flex space-x-2" v-if="user">
           <Link
             href="/dashboard"
-            class="py-1.5 text-sm sm:text-md px-2 sm:py-1.5 sm:px-2.5 rounded bg-teal-500 text-white"
+            class="py-1.5 text-sm hover:bg-teal-500 sm:text-md px-2 sm:py-1.5 transition-colors sm:px-2.5 rounded bg-teal-400 text-white"
             >Dashboard</Link
           >
         </div>
         <div class="flex space-x-2" v-else>
           <Link
             href="/login"
-            class="py-1.5 text-sm sm:text-md px-2 sm:py-1.5 sm:px-2.5 rounded bg-teal-500 text-white"
+            class="py-1.5 text-sm hover:bg-teal-500 sm:text-md px-2 sm:py-1.5 transition-colors sm:px-2.5 rounded bg-teal-400 text-white"
             >Sign In</Link
           >
           <Link
             href="/register"
-            class="py-1.5 text-sm sm:text-md px-2 sm:py-1.5 sm:px-2.5 rounded bg-teal-500 text-white"
+            class="py-1.5 text-sm hover:bg-teal-500 sm:text-md px-2 sm:py-1.5 transition-colors sm:px-2.5 rounded bg-teal-400 text-white"
             >Sign Up</Link
           >
         </div>

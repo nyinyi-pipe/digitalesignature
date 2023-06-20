@@ -2,6 +2,7 @@
   <div
     class="min-h-screen flex flex-col sm:justify-center items-center px-3 py-8 sm:pt-0"
   >
+    <Navbar />
     <div class="mt-8">
       <div class="flex gap-2">
         <svg
@@ -33,3 +34,6 @@
     </div>
   </div>
 </template>
+<script setup>
+import Navbar from "@/Components/Navbar.vue";
+</script>

@@ -81,7 +81,7 @@
 
       <div class="mt-4">
         <InputLabel for="Email" value="Email" />
-
+        <InputError :message="errors.email" />
         <div class="relative mb-6">
           <div
             class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
@@ -146,6 +146,7 @@
 
       <div class="mt-4">
         <InputLabel for="password_confirmation" value="Confirm Password" />
+        <InputError :message="errors.password" />
 
         <div class="relative mb-6">
           <div
@@ -193,6 +194,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import AuthButtom from "@/Components/AuthButtom.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+import InputError from "@/Components/InputError.vue";
+import { reactive } from "vue";
 
 const form = useForm({
   first_name: "",
@@ -204,8 +207,16 @@ const form = useForm({
   terms: false,
 });
 
+const errors = reactive({
+  email: "",
+  password: "",
+});
 const submit = () => {
   form.post(route("register"), {
+    onError: (data) => {
+      errors.password = data.password;
+      errors.email = data.email;
+    },
     onFinish: () => form.reset("password", "password_confirmation"),
   });
 };

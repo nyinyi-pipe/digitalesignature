@@ -5,12 +5,13 @@
     <template #loginOrRegister>
       <h4 class="text-center mb-4">
         Don't have an account?
-        <Link :href="route('register')" class="text-green-500 font-medium"
+        <Link :href="route('register')" class="text-teal-500 font-medium"
           >Signup</Link
         >
       </h4>
     </template>
     <form @submit.prevent="submit">
+      <InputError :message="error" />
       <div>
         <InputLabel for="Email" value="Email" />
 
@@ -89,7 +90,9 @@ import GuestLayout from "@/Layouts/GuestLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
 import AuthButtom from "@/Components/AuthButtom.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-
+import InputError from "@/Components/InputError.vue";
+import { ref } from "vue";
+import InputLabel from "@/Components/InputLabel.vue";
 defineProps({
   canResetPassword: {
     type: Boolean,
@@ -104,9 +107,10 @@ const form = useForm({
   password: "",
   //   remember: false,
 });
-
+const error = ref("");
 const submit = () => {
   form.post(route("login"), {
+    onError: ({ email }) => (error.value = email),
     onFinish: () => form.reset("password"),
   });
 };
