@@ -379,6 +379,7 @@ import moment from "moment-timezone";
 const documents = defineProps({
   documents: Object,
   auth: Object,
+  reference: String,
 });
 const finished = ref(false);
 const ipAdd = ref();
@@ -391,7 +392,7 @@ const createPdf = async () => {
   const pdfDoc = await PDFDocument.create();
 
   // Embed the Times Roman font
-  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
 
   // Add a blank page to the document
 
@@ -438,17 +439,32 @@ const createPdf = async () => {
     color: rgb(0, 0, 0),
   });
 
-  page.drawText("Reference number: VM3HM-YUYA8-MQTJV-SPK3K", {
+  let reference = "Reference number: " + documents.reference;
+  page.drawText(reference, {
     x: 30,
     y: height - 4 * 20,
     size: 10,
-    font: timesRomanFont,
     color: rgb(0, 0, 0),
   });
 
-  page.drawText("Signer", { x: 30, y: height - 4 * 35, size: 10 });
-  page.drawText("Timestamp", { x: 220, y: height - 4 * 35, size: 10 });
-  page.drawText("Signature", { x: 430, y: height - 4 * 35, size: 10 });
+  page.drawText("Signer", {
+    x: 30,
+    y: height - 4 * 35,
+    size: 10,
+    font: timesRomanFont,
+  });
+  page.drawText("Timestamp", {
+    x: 220,
+    y: height - 4 * 35,
+    size: 10,
+    font: timesRomanFont,
+  });
+  page.drawText("Signature", {
+    x: 430,
+    y: height - 4 * 35,
+    size: 10,
+    font: timesRomanFont,
+  });
 
   let lineHeight = 8;
   let signer = 12;
@@ -467,7 +483,7 @@ const createPdf = async () => {
       x: 5,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -475,7 +491,7 @@ const createPdf = async () => {
       x: 65,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -483,7 +499,7 @@ const createPdf = async () => {
       x: 125,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -491,7 +507,7 @@ const createPdf = async () => {
       x: 185,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -499,7 +515,7 @@ const createPdf = async () => {
       x: 245,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -507,7 +523,7 @@ const createPdf = async () => {
       x: 305,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -515,7 +531,7 @@ const createPdf = async () => {
       x: 365,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -523,7 +539,7 @@ const createPdf = async () => {
       x: 425,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -531,7 +547,7 @@ const createPdf = async () => {
       x: 485,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
@@ -539,324 +555,16 @@ const createPdf = async () => {
       x: 545,
       y: watermask,
       size: 10,
-      color: rgb(0.95, 0.1, 0.1),
+      color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
   }
-
+  let signatures = [];
   for (let index = 0; index < documents.documents.signatures.length; index++) {
-    const jpgUrl = documents.documents.signatures[index].result;
-    const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
-    const jpgImage = await pdfDoc.embedPng(jpgImageBytes);
-    const jpgDims = jpgImage.scale(0.5);
-    lineHeight += 30;
-    signer += 30;
-    signerEmail += 30;
-    sent += 30;
-    view += 30;
-    sign += 30;
-    signature += 30;
-    recipientVer += 30;
-    emailVer += 30;
+    if (!signatures.includes(documents.documents.signatures[index].email)) {
+      signatures.push(documents.documents.signatures[index].email);
 
-    page.drawLine({
-      start: { x: 25, y: height - 4 * lineHeight },
-      end: { x: 570, y: height - 4 * lineHeight },
-      thickness: 0.3,
-      color: rgb(0, 0, 0),
-      opacity: 0.55,
-    });
-
-    page.drawText(`${documents.documents.signatures[index].name}`, {
-      x: 30,
-      y: height - 4 * signer,
-      size: 11,
-    });
-    page.drawText(`Email: ${documents.documents.signatures[index].email}`, {
-      x: 30,
-      y: height - 4 * signerEmail,
-      size: 9,
-    });
-
-    page.drawText("Sent:", {
-      x: 30,
-      y: height - 4 * sent,
-      size: 8,
-    });
-    page.drawText("Viewed:", {
-      x: 30,
-      y: height - 4 * view,
-      size: 8,
-    });
-    page.drawText("Signed:", {
-      x: 30,
-      y: height - 4 * sign,
-      size: 8,
-    });
-
-    page.drawText(
-      `${moment(documents.documents.signatures[index].created_at).format(
-        "D MMM YYYY, h:mm:ss A"
-      )}`,
-      {
-        x: 220,
-        y: height - 4 * sent,
-        size: 8,
-      }
-    );
-    page.drawText(
-      `${moment(documents.documents.signatures[index].view).format(
-        "D MMM YYYY, h:mm:ss A"
-      )}`,
-      {
-        x: 220,
-        y: height - 4 * view,
-        size: 8,
-      }
-    );
-    page.drawText(
-      `${moment(documents.documents.signatures[index].updated_at).format(
-        "D MMM YYYY, h:mm:ss A"
-      )}`,
-      {
-        x: 220,
-        y: height - 4 * sign,
-        size: 8,
-      }
-    );
-
-    page.drawImage(jpgImage, {
-      x: 430,
-      y: height - 4 * signature,
-      width: 130,
-      height: 65,
-      opacity: 0.75,
-    });
-
-    page.drawText("Recipient Verification:", {
-      x: 30,
-      y: height - 4 * recipientVer,
-      size: 10,
-    });
-
-    page.drawText(`IP address: ${documents.documents.signatures[index].ip}`, {
-      x: 430,
-      y: height - 4 * recipientVer,
-      size: 8,
-    });
-
-    page.drawText("Email verified ", {
-      x: 30,
-      y: height - 4 * emailVer,
-      size: 8,
-    });
-
-    page.drawText(
-      `${moment(documents.documents.signatures[index].created_at).format(
-        "D MMM YYYY, h:mm:ss A"
-      )}`,
-      {
-        x: 220,
-        y: height - 4 * emailVer,
-        size: 8,
-      }
-    );
-
-    page.drawText(
-      `Location: ${documents.documents.signatures[index].city} ${documents.documents.signatures[index].country}`,
-      {
-        x: 430,
-        y: height - 4 * emailVer,
-        size: 8,
-      }
-    );
-  }
-
-  page.drawText("Document completed by all parties on:", {
-    x: 30,
-    y: height - 4 * (lineHeight + 35),
-    size: 10,
-    font: timesRomanFont,
-    color: rgb(0, 0, 0),
-  });
-  page.drawText(
-    `${moment(documents.documents.finish_datetime)
-      .tz("Asia/Yangon")
-      .format("D MMM YYYY, h:mm:ss A")}`,
-    {
-      x: 30,
-      y: height - 4 * (lineHeight + 39),
-      size: 11,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    }
-  );
-  // Serialize the PDFDocument to bytes (a Uint8Array)
-  pdfBytes = await pdfDoc.save();
-
-  // Trigger the browser to download the PDF document
-  download(pdfBytes, `${documents.documents.doc_name}.pdf`, "application/pdf");
-};
-
-const finishPdf = async () => {
-  let pdfBytes = null;
-  try {
-    const main = document.querySelectorAll("#mainCanvas");
-    const pdfDoc = await PDFDocument.create();
-    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-    main.forEach(async (c, i) => {
-      const page = pdfDoc.addPage();
-      c.classList.remove("hidden");
-      const canvas = c.querySelector("#canvas");
-      const img = canvas.toDataURL("image/jpeg");
-      const jpgUrl = img;
-      const jpgImageBytes = await fetch(jpgUrl).then((res) =>
-        res.arrayBuffer()
-      );
-
-      const imageType = await pdfDoc.embedJpg(jpgImageBytes);
-      let jpgImage =
-        imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
-      const jpgDims = jpgImage.scale(1);
-
-      // Add a blank page to the document
-
-      // Get the width and height of the page
-      page.drawImage(jpgImage, {
-        x: 0,
-        y: 0,
-        width: c.width ?? page.getWidth(),
-        height: c.height ?? page.getHeight(),
-      });
-    });
-    main.forEach((c) => {
-      c.classList.add("hidden");
-    });
-
-    const page = pdfDoc.addPage();
-    const { width, height } = page.getSize();
-
-    const fontSize = 30;
-    page.drawText("Signature Certificate", {
-      x: 30,
-      y: height - 4 * 13,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-
-    page.drawText("Reference number: VM3HM-YUYA8-MQTJV-SPK3K", {
-      x: 30,
-      y: height - 4 * 20,
-      size: 10,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
-    });
-
-    page.drawText("Signer", { x: 30, y: height - 4 * 35, size: 10 });
-    page.drawText("Timestamp", { x: 220, y: height - 4 * 35, size: 10 });
-    page.drawText("Signature", { x: 430, y: height - 4 * 35, size: 10 });
-
-    let lineHeight = 8;
-    let signer = 12;
-    let signerEmail = 15;
-    let sent = 19;
-    let view = 22;
-    let sign = 25;
-    let signature = 26;
-    let recipientVer = 30;
-    let emailVer = 33;
-    let watermask = 5;
-    for (let index = 0; index < 20; index++) {
-      watermask += 45;
-
-      page.drawText("SecureSign", {
-        x: 5,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 65,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 125,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 185,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 245,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 305,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 365,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 425,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 485,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-      page.drawText("SecureSign", {
-        x: 545,
-        y: watermask,
-        size: 10,
-        color: rgb(0.95, 0.1, 0.1),
-        opacity: 0.2,
-        rotate: degrees(-45),
-      });
-    }
-    for (
-      let index = 0;
-      index < documents.documents.signatures.length;
-      index++
-    ) {
       const jpgUrl = documents.documents.signatures[index].result;
       const jpgImageBytes = await fetch(jpgUrl).then((res) =>
         res.arrayBuffer()
@@ -885,6 +593,7 @@ const finishPdf = async () => {
         x: 30,
         y: height - 4 * signer,
         size: 11,
+        font: timesRomanFont,
       });
       page.drawText(`Email: ${documents.documents.signatures[index].email}`, {
         x: 30,
@@ -951,6 +660,7 @@ const finishPdf = async () => {
         x: 30,
         y: height - 4 * recipientVer,
         size: 10,
+        font: timesRomanFont,
       });
 
       page.drawText(`IP address: ${documents.documents.signatures[index].ip}`, {
@@ -985,12 +695,374 @@ const finishPdf = async () => {
         }
       );
     }
+  }
+
+  page.drawText("Document completed by all parties on:", {
+    x: 30,
+    y: height - 4 * (lineHeight + 35),
+    size: 10,
+    color: rgb(0, 0, 0),
+  });
+  page.drawText(
+    `${moment(documents.documents.finish_datetime)
+      .tz("Asia/Yangon")
+      .format("D MMM YYYY, h:mm:ss A")}`,
+    {
+      x: 30,
+      y: height - 4 * (lineHeight + 39),
+      size: 11,
+      color: rgb(0, 0, 0),
+    }
+  );
+
+  const jpgUrl =
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXwBFRcXHhoeOyEhO3xTRlN8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fP/AABEIAIIArgMBIgACEQEDEQH/xAAaAAABBQEAAAAAAAAAAAAAAAAAAQIDBAUG/8QANxAAAQQBAwIEBAYBAgcBAAAAAQACAxEEEiExQVEFEyJhcYGRoRQyQrHR8MEVIzRDUmJyguEG/8QAGQEAAwEBAQAAAAAAAAAAAAAAAAIDAQQF/8QAJREAAgICAgEEAgMAAAAAAAAAAAECEQMhEjFBBBMiUWFxIzIz/9oADAMBAAIRAxEAPwDlEfv3S8oopgE23SgeyVrbO90ruPEyGN2VK0O0GmtPDnfwOUw6jYxvh2WYfNGNIWVdhvTuq2kuIa0bn6qyZ5JMnznyuMt/m1V9FNkx+fF+Ia0NkaQJgBVk8O+db+/xTUH6KGgn37I8s1xSsR9qsdVox4Hn7kk37JuKHULMXQR1SVstCfC8k0SSAeVUMYv2WuBNwaIUu3ZSPYB+obdEwt491nERoahKRx7oDSeN0riAJEukoorHEAtJ8UKSWd87mGZ96QGg1wEtNARoPdKOEEkla9ANSFKkpIaPHKlZGXNFmhajbYNjopGucRQG/dGysK8kjYyZNN7DkjsrHifodFjih5TbcOmo8qXCgp5kkFtaLI7+ypZspdmTuu/WRfetk0dyopNcYX9jseKxbWkn2WhiRhuQI3j0yehxuwL4P1oqlDO17QXuF9i1XGviBaQW+Z33FKsX4JIgmYYHua4UQSDstTwtwl21cHZJ4rE2XTO1oIl9RPvW4We10sdGM0QUu5I6Y6N7xXDD8a2UXDlcpJG5rjtwtsZ8mgCV12ohiDJnBsiMbud/C2Da0wePktDPA8MPmE8lHemBwvjkqt4wxsPi09NGhxDgOm4/m11GDByWtaABpGngBc74/G4+KFvNNaNvgkjK8lE8kFFUjNe0N0k71yLpMDHGidgdrKsGMF5J6fJEcz4jrjDe3Fro/JHiMkYYwwOaRqFgna1EYzvzYUsQMttIJLASOu3ZNGziRtt0WvfZnEr8J2nbdW8DGjy8rRLM2FtE6nJj8fQHEOBbdA90kYptoRqiqhOcKSCuvCnJUwQPdrrYChWwTbSnY7bhIpmkg9TqA5KuY0J1A1yq8TbIoLYwIKcLI333Q3R14oeWJkvGNC1l+p5sn2H9+yxp/wDiJb41u4+JV7Jl/GyHSQ0aSGAnnegqORTtEwr/AHL1D/uHP7g/NZjVW2HqZWlFeB7DGBpDzZ2ojlWmihraY6HOp1f5WaHEHavorceSX7AvZQqmuIBVltnKma2P4gyJ7mTNMsEgAOnej3C0YcDHyQTjSseCOCaIXMxh0zg0ktr3+6sNeYHBuKXAgje9yaXTk9Op7hplYZeJtnwOQye3Qg2psaFzAGeQ/Q3gEcnuVQx/EcmCYQ5J3b/1O3HzWq3xFz3aWvGroTwVwyjlg97OmOSyxiStaQzS6+tjhc94o10njUpaPy7/AMf4W7j5/muMckYDwObokqvk+Gsmklmid/uObuw+/W1GMuOS2JJb2cq5pIqqDdhSVrSLFf8AxW5MWRriNGnRtRTCNNem7+y71NNaF4UVg0tOpjtPuktrfSd/fqVNI7S0NcLIKiJa/wBUho9KTWK0ROAu+B7Jjn2ACdgpnUWWBZ7KECyRW5RzrolKA2UtLzovT0vlMUj4SyNriW7kjTe4TKNH2UJ9iVQaSQSmqxG0PjIAo9VC5pBorHEyzTxAHbjax36rVij8rCmlNW1lA/HZYOJLod81uZs4i8J0fqkNk+yhO7PUg+UTAn1NlAYKIoD4qUwRvjnYDpcxxc0X7DUPt9lXkmL4mjbajfXZELyXu6B1m+xXTjino4ctN6IavYbq9hY5dvexH5eqgghd5o1N2XQQ+HCRgc02DweD81eGOlcjnm+KKjYYvSGudrF6jWxCkkxw4lmgAveOlrTdDCxoZs53UqeLHjkFgbdAVdZFHo4Z52noyG+HAHzHvO5o1t9FYGMY43Pbd++/2Ww0RMvW4AD32aqeR4xgYbHN1Fz+zRanLK5eDceXI5aK7dTcUzO2DBZPcK7IJTFHNFpLnN1NAOxA5pZDv/0T5GPEeEXR0dQ7DqpcHxNrsFrIoneXCBW+7aXnexObdHtRyOSVmi10WezU4Ob0rqw+/sVneJYMmM6yBROxTYvEqz3yMFMl3cK6rdh8vKhDZG62gkC+gS5YT9O1fQ/L6OPeBISHENIVZ4P02Wt4tiRYeX5cJJDt9lVkw9ULpN7HYLojK1YrXJaIccjQQWg99iosig8gNqgLT7fA0h2rfegqcj9by4k2U10LNpRryOkdYHf9lGOd/qntjc4XVhI8DVsNlJztkpRdWSNfpjFbUknkD9PBNbmlF7IAJOwtbyJE2HH5kzR77q94hkCRxaHW1orZZ8DyxhqhfXuh0lt9zyso74TUMdeWQ1yVJEa54+KYTtXRFq0ZUcfkuw5D4nARkNdxudgtVpmmiaQ5rWg6SW9Vz2oVVKRuXIyMxtdTSbr3Vll0b8X/AGN2HxZp9Bi1NDdnu6qLN8bd6WQkHuBssLW4CgTSXgWDSFkT6Rz+1D6NaDMMjm/iDro0GayNloY3+l5bGCGFkMl7B/DulH+VzIJuy5SxTeW6zt1BaATaHPl+B3FeDsYvDpcfIZ+HNR+W5rgOlkGj9SsGCZnhHjM4LQcfWRpq7FqfA8ckZoY8jQBR1Gq+a0seLwnM1ExHU5v6nE1a54wnGTk3Zs8vx2iPL8Pgd5cuK4aCNTD0Lb4UsWLNlYcmOJfKmaQ5pB4I4WRkY2V4fl1CXHHLqAHb4J0PiE2NkOdLG4C7JApdUscs2OmThOS3F2WM5kr5myTCibDh0DhsVJGxkjNIdRVr/UcPxLHdDLJ5bvzB2ngrGyRJjShuprhsQ5psOHcLhpx+D7PRw5eStofn47dBkDhTR9VShihmlZ5h0tPPUBWJjLOHWLjB2SYuMTWltgqGWVRqzp4qUrojyTBjtLY6J6KgadbRV1dkrTyMEzHY7jgrNyITC/S4UkxNPzsj6nn3WiIoBIShhJ6pXsLKscros4uL7Gl5oAcDhN5RV8bo4To235F4SIKRFitindKHENc39LqJ27JqEaMFAN+kWTwOUb9UNJabHKC8lNaMFLa6IbQu79qTeU5kb3/kaSByeg+aG7YD3Sue1kZDQ1orYVfXfur+Bl+VIfJYdBq2k2a9vdVPwpDRbgSeA3clSY7nQuGkeW8nYtbbvkrYots2r7Oixs187tUsVNIq+GgfEpcjFhznEh17U17NwN65WH5xDgXtF3dzvL668KX8c8hr3ue83YMjtLB02aFdpp/Ej7NO4jzhZnh0jNMzhjueN2UbPQFWvEmF3lPdQaWW3aup/hJHkCXBmY95c1zC3ihfSh9FteIYgzMKBzBWgUK7Lz89Qmmehi5RiuRy5JDKF7pjcgxN2J6g9lfnxzC2yLHuKHwWNKHGTYEjmlCVTOhtwVo0MfNa/wBJdxxfVV813my7dG1dKu0tAut/ZSeftpFajweymoJStGvLyhxkRxyCNzdbbAKXJe2V9xtpvauFAbJtK53pA+ytxV2cbyOmifGyX4Ty9mkuLS3cXyqrjZJ7pXOLkxVJylegSg0boH2KRKORZoIEEQldQJrcX9UoAAt30CAG0nBnc0jU5xAHyCLDTtu5AEjQ1lkMsjq/p8unzT2SyPcA0FxHHt8+B9FCG3vIab9E8zuIDIRpB2FcosC4xzYjpc7XKeWN4/8AYn/P0SySFwLnSFgDdy0eoj27D7lVA5sDaFOfW56BK14sOd6i31uvq7oPkmTaNJC3TeiNrXH099IHPz/gqJ0gL+LPHuhzi2E0bdqon7n7lGM0uf6RZVoyb7ZqTbpF6GKd8Lpm/wDJ9YaOtd12LpPKwmNo6g0OLeqzfCtGLhS5EwtumqPX2WQfEsiPJLnu1hxvfghcOT+SX6O2UfH0Xsu5GmTFk1WN4zz8v4WEXujlMkbtDuhGyvZBIkbLjuPr9bD/AI+I+6qzuZkxmRo0yN3cB1/v2/YUQb0USSCd0hcSUpaTZ7cptKlHG27JI3mJwNA9eVEU7b4pOvCKMdtDUiVItFBCEIAOEJELbAcX+nS0UOvcpoIG9WUiRADnOLtyUrX6G7D1Hr2TEXugBwPAO9mynh5N93WSowCTtyr+F4bkTPa4xEMvlxoLLoeEHJ0gxcCfI/TUfVztgtGOPBwqLtUzwaq6FpfFJ6ZHBG7Zo308LMcCH1rv3pG5HbxWPSWzUyfE3ZLQxtsZRAYOFQf5YjjIfqceRXCf6PL1AU61Xnb6yb2O/CxRSGlpErJXPiMZcdhY9j/f3UJmcHam7ONE11KZG5zHXX9tSHQSTXXYdk1EuyJ2+4FA9EgoE7Wnu2A00oy67CGiUqQ0mz2SuIcbApNQsIbESIQgwCkQhAAhCEAIUiEIAEIQgCfCF5Ud910fi5LcWINNC+nxCEJJdnf6f/MyT+R3xKjb+b6IQnQzJp9nP/8AI/uoB+dv96pULTWNk5KjKEJiLGP6JHfmKEIISBOZ1QhIxV2f/9k=";
+  const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
+  const imageType = await pdfDoc.embedJpg(jpgImageBytes);
+  let jpgImage =
+    imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
+  const jpgDims = jpgImage.scale(1);
+  page.drawImage(jpgImage, {
+    x: 30,
+    y: 30,
+    width: 60,
+    height: 60,
+  });
+  page.drawText("Certificate by SecureSign", {
+    x: 105,
+    y: 77,
+    font: timesRomanFont,
+    size: 12,
+    color: rgb(0, 0, 0),
+  });
+
+  page.drawText("SecureSign is a document workflow and certified ", {
+    x: 105,
+    y: 60,
+    size: 9,
+    color: rgb(0, 0, 0),
+  });
+
+  // Serialize the PDFDocument to bytes (a Uint8Array)
+  pdfBytes = await pdfDoc.save();
+
+  // Trigger the browser to download the PDF document
+  download(pdfBytes, `${documents.documents.doc_name}.pdf`, "application/pdf");
+};
+
+const finishPdf = async () => {
+  let pdfBytes = null;
+  try {
+    const main = document.querySelectorAll("#mainCanvas");
+    const pdfDoc = await PDFDocument.create();
+    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    main.forEach(async (c, i) => {
+      const page = pdfDoc.addPage();
+      c.classList.remove("hidden");
+      const canvas = c.querySelector("#canvas");
+      const img = canvas.toDataURL("image/jpeg");
+      const jpgUrl = img;
+      const jpgImageBytes = await fetch(jpgUrl).then((res) =>
+        res.arrayBuffer()
+      );
+
+      const imageType = await pdfDoc.embedJpg(jpgImageBytes);
+      let jpgImage =
+        imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
+      const jpgDims = jpgImage.scale(1);
+
+      // Add a blank page to the document
+
+      // Get the width and height of the page
+      page.drawImage(jpgImage, {
+        x: 0,
+        y: 0,
+        width: c.width ?? page.getWidth(),
+        height: c.height ?? page.getHeight(),
+      });
+    });
+    main.forEach((c) => {
+      c.classList.add("hidden");
+    });
+
+    const page = pdfDoc.addPage();
+    const { width, height } = page.getSize();
+
+    const fontSize = 30;
+    page.drawText("Signature Certificate", {
+      x: 30,
+      y: height - 4 * 13,
+      size: fontSize,
+      font: timesRomanFont,
+      color: rgb(0, 0, 0),
+    });
+
+    page.drawText("Reference number: VM3HM-YUYA8-MQTJV-SPK3K", {
+      x: 30,
+      y: height - 4 * 20,
+      size: 10,
+      color: rgb(0, 0, 0),
+    });
+
+    page.drawText("Signer", {
+      x: 30,
+      y: height - 4 * 35,
+      size: 10,
+      font: timesRomanFont,
+    });
+    page.drawText("Timestamp", {
+      x: 220,
+      y: height - 4 * 35,
+      size: 10,
+      font: timesRomanFont,
+    });
+    page.drawText("Signature", {
+      x: 430,
+      y: height - 4 * 35,
+      size: 10,
+      font: timesRomanFont,
+    });
+
+    let lineHeight = 8;
+    let signer = 12;
+    let signerEmail = 15;
+    let sent = 19;
+    let view = 22;
+    let sign = 25;
+    let signature = 26;
+    let recipientVer = 30;
+    let emailVer = 33;
+    let watermask = 5;
+    for (let index = 0; index < 20; index++) {
+      watermask += 45;
+
+      page.drawText("SecureSign", {
+        x: 5,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 65,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 125,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 185,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 245,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 305,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 365,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 425,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 485,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+      page.drawText("SecureSign", {
+        x: 545,
+        y: watermask,
+        size: 10,
+        color: rgb(0.1, 0.95, 0.1),
+        opacity: 0.2,
+        rotate: degrees(-45),
+      });
+    }
+    let signatures = [];
+    for (
+      let index = 0;
+      index < documents.documents.signatures.length;
+      index++
+    ) {
+      if (!signatures.includes(documents.documents.signatures[index].email)) {
+        const jpgUrl = documents.documents.signatures[index].result;
+        const jpgImageBytes = await fetch(jpgUrl).then((res) =>
+          res.arrayBuffer()
+        );
+        const jpgImage = await pdfDoc.embedPng(jpgImageBytes);
+        const jpgDims = jpgImage.scale(0.5);
+        lineHeight += 30;
+        signer += 30;
+        signerEmail += 30;
+        sent += 30;
+        view += 30;
+        sign += 30;
+        signature += 30;
+        recipientVer += 30;
+        emailVer += 30;
+
+        page.drawLine({
+          start: { x: 25, y: height - 4 * lineHeight },
+          end: { x: 570, y: height - 4 * lineHeight },
+          thickness: 0.3,
+          color: rgb(0, 0, 0),
+          opacity: 0.55,
+        });
+
+        page.drawText(`${documents.documents.signatures[index].name}`, {
+          x: 30,
+          y: height - 4 * signer,
+          size: 11,
+          font: timesRomanFont,
+        });
+        page.drawText(`Email: ${documents.documents.signatures[index].email}`, {
+          x: 30,
+          y: height - 4 * signerEmail,
+          size: 9,
+        });
+
+        page.drawText("Sent:", {
+          x: 30,
+          y: height - 4 * sent,
+          size: 8,
+        });
+        page.drawText("Viewed:", {
+          x: 30,
+          y: height - 4 * view,
+          size: 8,
+        });
+        page.drawText("Signed:", {
+          x: 30,
+          y: height - 4 * sign,
+          size: 8,
+        });
+
+        page.drawText(
+          `${moment(documents.documents.signatures[index].created_at).format(
+            "D MMM YYYY, h:mm:ss A"
+          )}`,
+          {
+            x: 220,
+            y: height - 4 * sent,
+            size: 8,
+          }
+        );
+        page.drawText(
+          `${moment(documents.documents.signatures[index].view).format(
+            "D MMM YYYY, h:mm:ss A"
+          )}`,
+          {
+            x: 220,
+            y: height - 4 * view,
+            size: 8,
+          }
+        );
+        page.drawText(
+          `${moment(documents.documents.signatures[index].updated_at).format(
+            "D MMM YYYY, h:mm:ss A"
+          )}`,
+          {
+            x: 220,
+            y: height - 4 * sign,
+            size: 8,
+          }
+        );
+
+        page.drawImage(jpgImage, {
+          x: 430,
+          y: height - 4 * signature,
+          width: 130,
+          height: 65,
+          opacity: 0.75,
+        });
+
+        page.drawText("Recipient Verification:", {
+          x: 30,
+          y: height - 4 * recipientVer,
+          size: 10,
+          font: timesRomanFont,
+        });
+
+        page.drawText(
+          `IP address: ${documents.documents.signatures[index].ip}`,
+          {
+            x: 430,
+            y: height - 4 * recipientVer,
+            size: 8,
+          }
+        );
+
+        page.drawText("Email verified ", {
+          x: 30,
+          y: height - 4 * emailVer,
+          size: 8,
+        });
+
+        page.drawText(
+          `${moment(documents.documents.signatures[index].created_at).format(
+            "D MMM YYYY, h:mm:ss A"
+          )}`,
+          {
+            x: 220,
+            y: height - 4 * emailVer,
+            size: 8,
+          }
+        );
+
+        page.drawText(
+          `Location: ${documents.documents.signatures[index].city} ${documents.documents.signatures[index].country}`,
+          {
+            x: 430,
+            y: height - 4 * emailVer,
+            size: 8,
+          }
+        );
+      }
+    }
 
     page.drawText("Document completed by all parties on:", {
       x: 30,
       y: height - 4 * (lineHeight + 35),
       size: 10,
-      font: timesRomanFont,
       color: rgb(0, 0, 0),
     });
     page.drawText(
@@ -1001,10 +1073,37 @@ const finishPdf = async () => {
         x: 30,
         y: height - 4 * (lineHeight + 39),
         size: 11,
-        font: timesRomanFont,
         color: rgb(0, 0, 0),
       }
     );
+
+    const jpgUrl =
+      "data:image/jpeg;base64,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";
+    const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
+    const imageType = await pdfDoc.embedJpg(jpgImageBytes);
+    let jpgImage =
+      imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
+    const jpgDims = jpgImage.scale(1);
+    page.drawImage(jpgImage, {
+      x: 30,
+      y: 30,
+      width: 60,
+      height: 60,
+    });
+    page.drawText("Certificate by SecureSign", {
+      x: 105,
+      y: 77,
+      font: timesRomanFont,
+      size: 12,
+      color: rgb(0, 0, 0),
+    });
+
+    page.drawText("SecureSign is a document workflow and certified ", {
+      x: 105,
+      y: 60,
+      size: 9,
+      color: rgb(0, 0, 0),
+    });
     pdfBytes = await pdfDoc.saveAsBase64();
   } catch (error) {
     location.reload();

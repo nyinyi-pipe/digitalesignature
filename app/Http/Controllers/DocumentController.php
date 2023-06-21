@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Imagick;
+use Illuminate\Support\Str;
 
 class DocumentController extends Controller
 {
@@ -267,7 +268,8 @@ class DocumentController extends Controller
         $request->session()->forget('editDoc');
 
         return Inertia::render("Documents/ViewDocument", [
-            'documents'=>$document
+            'documents'=>$document,
+            'reference'=>Str::upper(Str::random(20))
         ]);
 
     }
