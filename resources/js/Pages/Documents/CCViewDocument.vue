@@ -1,6 +1,10 @@
 <template>
   <Head title="Document" />
-  <EditAside :toggle="toggle" @closeToggle="closeToggle"></EditAside>
+  <!-- <EditAside
+    :auth="documents.auth"
+    :toggle="toggle"
+    @closeToggle="closeToggle"
+  ></EditAside> -->
 
   <div class="h-screen overflow-hidden">
     <div
@@ -10,7 +14,7 @@
         class="px-6 flex items-center w-full justify-between space-x-4 2xl:container"
       >
         <div class="flex gap-3 items-center justify-center">
-          <svg
+          <!-- <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5 text-slate-500 cursor-pointer"
             @click="toggleAside"
@@ -24,7 +28,7 @@
               stroke-width="2"
               d="M4 6h16M4 12h16M4 18h16"
             />
-          </svg>
+          </svg> -->
 
           <div>
             <h3 class="font-bold text-sm mb-1">

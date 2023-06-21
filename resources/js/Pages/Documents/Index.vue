@@ -158,12 +158,11 @@
               </div>
             </TdCol>
             <TdCol>
-              <Link
-                href="/"
+              <div
                 class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-red-500 bg-red-100/60 dark:bg-gray-800"
               >
                 <h2 class="text-xs font-normal">{{ document.doc_name }}</h2>
-              </Link>
+              </div>
             </TdCol>
 
             <TdCol>
@@ -173,11 +172,11 @@
                   :class="
                     document.doc_status == 3
                       ? 'text-green-500 bg-green-100/60'
-                      : 'text-blue-500 bg-blue-100/60'
+                      : 'text-gray-500 bg-gray-200/60'
                   "
                 >
                   <h2 class="text-xs font-normal">
-                    {{ document.doc_status == 3 ? "Completed" : "Sent" }}
+                    {{ document.doc_status == 3 ? "Completed" : "Draft" }}
                   </h2>
                 </div>
               </TdCol>

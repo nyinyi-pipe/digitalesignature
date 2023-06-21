@@ -75,12 +75,12 @@
               <TdCol>
                 <div class="flex gap-1 flex-wrap">
                   <div
-                    v-for="recipient of sendDoc.sends"
+                    v-for="recipient of itemUnique(sendDoc.sends)"
                     :key="recipient.id"
                     class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
                   >
                     <h2 class="text-xs font-normal">
-                      {{ recipient.recipient.name }}
+                      {{ recipient }}
                     </h2>
                   </div>
                 </div>
@@ -91,9 +91,7 @@
                     class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-green-500 bg-green-100/60"
                   >
                     <h2 class="text-xs font-normal">
-                      {{
-                        sendDoc.sends[0]?.status == "1" ? "Completed" : "Sent"
-                      }}
+                      {{ sendDoc.sends[0]?.status == "1" ? "Sent" : "Draft" }}
                     </h2>
                   </div>
                 </TdCol>
@@ -192,9 +190,7 @@
                     class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-green-500 bg-green-100/60"
                   >
                     <h2 class="text-xs font-normal">
-                      {{
-                        sendDoc.sends[0]?.status == "1" ? "Completed" : "Sent"
-                      }}
+                      {{ sendDoc.sends[0]?.status == "1" ? "Sent" : "Draft" }}
                     </h2>
                   </div>
                 </TdCol>

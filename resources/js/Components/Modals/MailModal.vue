@@ -300,7 +300,7 @@ const sendMailSubmit = () => {
   form.toMails.push(...docuements.recipientEmails);
   form.post(route("document.send.mail", docuements.document.id), {
     onSuccess: () => {
-      router.get(route("document.view.document", docuements.document.id));
+      location.href = `/documents/v/${docuements.document.id}`;
     },
   });
 };

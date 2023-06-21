@@ -46,7 +46,8 @@ class EditDocumentMail extends Mailable
             with: [
                 'subject' => $this->document->doc_name." "." document has been completed by "." ".$this->document->name,
                 'message' => $this->document->doc_name." "." document has been completed by "." ".$this->document->name,
-                'link'=>$this->document->link
+                'link'=>$this->document->link,
+                'name'=>$this->document->name
             ],
         );
     }

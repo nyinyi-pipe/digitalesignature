@@ -1,22 +1,8 @@
 <template>
-  <a
-    v-if="title == 'Dashboard'"
-    :href="route(go)"
-    class="flex w-full justify-between text-gray-400 hover:bg-gray-500 hover:text-green-500 focus:bg-gray-200 focus:text-green-500 cursor-pointer items-center p-2 rounded duration-200"
-  >
-    <p
-      class="flex items-center outline-none focus:outline-none focus:ring-2 focus:ring-white"
-    >
-      <slot />
-      <span class="text-sm ml-2 outline-none focus:outline-none">{{
-        title
-      }}</span>
-    </p>
-  </a>
   <Link
-    v-else
     :href="route(go)"
-    class="flex w-full justify-between text-gray-400 hover:bg-gray-500 hover:text-green-500 focus:bg-gray-200 focus:text-green-500 cursor-pointer items-center p-2 rounded duration-200"
+    :class="{ active: url === route(go) }"
+    class="flex items-center px-3 py-2 text-gray-400 transition-colors duration-300 transform rounded-sm hover:bg-gray-600 hover:text-gray-300"
   >
     <p
       class="flex items-center outline-none focus:outline-none focus:ring-2 focus:ring-white"
@@ -31,9 +17,16 @@
 
 <script setup>
 import { Link } from "@inertiajs/vue3";
-const { auth, go, title } = defineProps({
+import { ref } from "vue";
+const { go, title } = defineProps({
   go: String,
   title: String,
-  auth: Object,
 });
+const url = ref(location.href);
 </script>
+<style scoped>
+.active {
+  background: rgba(255, 255, 255, 0.163);
+  color: white;
+}
+</style>

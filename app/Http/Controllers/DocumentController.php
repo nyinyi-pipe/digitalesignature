@@ -253,9 +253,6 @@ class DocumentController extends Controller
 
     public function view(Document $document, Request $request) : Response
     {
-        // dd($document->update([
-        //     'doc_status'=>0
-        // ]));
         $data = DocumentResult::where('document_id', $document->id)->get();
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");
@@ -271,7 +268,6 @@ class DocumentController extends Controller
             'documents'=>$document,
             'reference'=>Str::upper(Str::random(20))
         ]);
-
     }
 
     public function ccview(Document $document, Request $request) : Response

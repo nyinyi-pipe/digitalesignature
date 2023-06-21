@@ -48,6 +48,7 @@ class DocumentResultController extends Controller
 
     public function edit(Document $document, $recipient) : Response
     {
+
         $data = DocumentResult::where('document_id', $document->id)->where('nonuser_id', $recipient)->get();
         foreach($data as $key) {
             if($key->view == null) {

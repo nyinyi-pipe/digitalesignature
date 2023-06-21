@@ -46,7 +46,8 @@ class SendDocumentMail extends Mailable
             with: [
                 'subject' => $this->document->subject?? $this->document->doc_name,
                 'message' => $this->document->message??"Nothing...,",
-                'link'=>$this->document->link
+                'link'=>$this->document->link,
+                'name'=>auth()->user()->name
             ],
         );
     }

@@ -1,5 +1,7 @@
 <template >
   <Aside :auth="auth.user" :toggle="toggle" @closeToggle="closeToggle"></Aside>
+  <!-- component -->
+
   <div class="ml-auto h-screen lg:w-[82%] xl:w-[82%] 2xl:w-[85%] relative">
     <Navbar :auth="auth" :title="title" @toggleAside="toggleAside"></Navbar>
 
