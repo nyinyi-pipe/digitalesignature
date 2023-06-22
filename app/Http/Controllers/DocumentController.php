@@ -45,9 +45,11 @@ class DocumentController extends Controller
         $folder = uniqid();
         $pdf = $request->file('document')->store('documents');
         $imagick = new Imagick();
-        $imagick->readImage(public_path("storage/".$pdf));
+        $imagick->setResolution(300, 300);
         mkdir($folder);
         $filename = uniqid();
+        $imagick->readImage(public_path("storage/".$pdf));
+        // $imagick->setImageCompressionQuality(100);
         $saveImagePath = public_path($folder."/".$filename.".jpeg");
         $imagick->writeImages($saveImagePath, true);
 
@@ -180,24 +182,6 @@ class DocumentController extends Controller
 
             $doc_docs = $converted;
         }
-
-        // $doc_docs = $document->doc_docs;
-        // $docs = [];
-        // if($request->newDocument != null) {
-
-        //     if(is_array($doc_docs)) {
-        //         $docs = $doc_docs;
-        //         foreach ($request->newDocument as $doc) {
-        //             $docs[] = $doc;
-        //         }
-        //     }
-        //     // } else {
-        //     //     $docs[] = $doc_docs;
-        //     //     foreach ($request->newDocument as $doc) {
-        //     //         $docs[] = $doc;
-        //     //     }
-        //     // }
-        // }
 
         $document->update([
             'doc_name'=>$request->newDocumentName??$document->doc_name,

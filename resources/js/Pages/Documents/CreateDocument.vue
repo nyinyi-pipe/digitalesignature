@@ -1,7 +1,10 @@
 <template>
   <AuthLayout title="Bulk Import" :auth="auth">
     <Head title="Document" />
-    <h1 class="text-xl mb-3">Select documents</h1>
+    <h1 class="text-xl mb-3">
+      Select documents
+      <span class="text-xs text-gray-600">(Maximum file size : 50MB)</span>
+    </h1>
     <div class="flex items-center justify-center w-full">
       <label
         for="dropzone-file"

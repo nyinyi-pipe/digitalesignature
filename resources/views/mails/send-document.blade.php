@@ -4,13 +4,12 @@
             <div class="company-name">
                 <img src="https://images.pexels.com/photos/325044/pexels-photo-325044.jpeg?cs=srgb&dl=pexels-chevanon-photography-325044.jpg&fm=jpg"
                     alt="">
-                <h2>E-signature</h2>
+                <h2> {{env('APP_NAME')}}</h2>
             </div>
             <div class="content-container">
                 <div class="sender-main">
                     <img class="sender-img"
-                        src="https://images.pexels.com/photos/325044/pexels-photo-325044.jpeg?cs=srgb&dl=pexels-chevanon-photography-325044.jpg&fm=jpg"
-                        alt="">
+                        src="https://i.pinimg.com/564x/ff/5f/78/ff5f78476f0edf5b1bf7840f84342ebd.jpg" alt="">
                     <div class="sender-container">
                         <h4>{{$name}}</h4>
                         <span>sent you</span>

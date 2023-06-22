@@ -43,7 +43,7 @@
           </ThCol>
           <ThCol>Document Name</ThCol>
           <ThCol>Recipient Name </ThCol>
-          <ThCol class="text-center">Status</ThCol>
+          <ThCol>Status</ThCol>
           <ThCol>Sent Date </ThCol>
         </template>
         <template #td>
@@ -86,15 +86,13 @@
                 </div>
               </TdCol>
               <TdCol>
-                <TdCol>
-                  <div
-                    class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-green-500 bg-green-100/60"
-                  >
-                    <h2 class="text-xs font-normal">
-                      {{ sendDoc.sends[0]?.status == "1" ? "Sent" : "Draft" }}
-                    </h2>
-                  </div>
-                </TdCol>
+                <div
+                  class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-green-500 bg-green-100/60"
+                >
+                  <h2 class="text-xs text-center font-normal">
+                    {{ sendDoc.sends[0]?.status == "1" ? "Sent" : "Draft" }}
+                  </h2>
+                </div>
               </TdCol>
               <TdCol> {{ sendDoc.sends[0]?.created_at }} </TdCol>
             </tr>
@@ -142,7 +140,7 @@
           </ThCol>
           <ThCol>Document Name</ThCol>
           <ThCol>Recipient Name </ThCol>
-          <ThCol class="text-center">Status</ThCol>
+          <ThCol>Status</ThCol>
           <ThCol>Sent Date </ThCol>
         </template>
         <template #td>
@@ -185,15 +183,13 @@
                 </div>
               </TdCol>
               <TdCol>
-                <TdCol>
-                  <div
-                    class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-green-500 bg-green-100/60"
-                  >
-                    <h2 class="text-xs font-normal">
-                      {{ sendDoc.sends[0]?.status == "1" ? "Sent" : "Draft" }}
-                    </h2>
-                  </div>
-                </TdCol>
+                <div
+                  class="inline-flex items-center px-3 py-0.5 rounded-full gap-x-2 text-green-500 bg-green-100/60"
+                >
+                  <h2 class="text-xs text-center font-normal">
+                    {{ sendDoc.sends[0]?.status == "1" ? "Sent" : "Draft" }}
+                  </h2>
+                </div>
               </TdCol>
               <TdCol> {{ sendDoc.sends[0]?.created_at }} </TdCol>
             </tr>
