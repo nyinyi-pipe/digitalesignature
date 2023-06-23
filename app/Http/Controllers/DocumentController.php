@@ -45,11 +45,14 @@ class DocumentController extends Controller
         $folder = uniqid();
         $pdf = $request->file('document')->store('documents');
         $imagick = new Imagick();
-        $imagick->setResolution(300, 300);
+        $imagick->setResolution(150, 150);
         mkdir($folder);
         $filename = uniqid();
         $imagick->readImage(public_path("storage/".$pdf));
-        // $imagick->setImageCompressionQuality(100);
+        $imagick->setImageFormat('jpeg');
+        $imagick->setImageResolution(150, 150);
+        $imagick->setImageCompression(imagick::COMPRESSION_JPEG);
+        $imagick->setImageCompressionQuality(64);
         $saveImagePath = public_path($folder."/".$filename.".jpeg");
         $imagick->writeImages($saveImagePath, true);
 
@@ -153,8 +156,10 @@ class DocumentController extends Controller
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");
         $dates = $this->signments($data, "date");
+        $initials = $this->signments($data, "initial");
         $document['user'] = $document->user->name;
         $document['signatures'] = $signatures;
+        $document['initials'] = $initials;
         $document['texts'] = $texts;
         $document['dates'] = $dates;
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
@@ -223,8 +228,10 @@ class DocumentController extends Controller
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");
         $dates = $this->signments($data, "date");
+        $initials = $this->signments($data, "initial");
         $document['user'] = $document->user->name;
         $document['signatures'] = $signatures;
+        $document['initials'] = $initials;
         $document['texts'] = $texts;
         $document['dates'] = $dates;
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
@@ -238,6 +245,7 @@ class DocumentController extends Controller
     public function view(Document $document, Request $request) : Response
     {
         $data = DocumentResult::where('document_id', $document->id)->get();
+        $initials = $this->signments($data, "initial");
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");
         $dates = $this->signments($data, "date");
@@ -245,6 +253,7 @@ class DocumentController extends Controller
         $document['signatures'] = $signatures;
         $document['texts'] = $texts;
         $document['dates'] = $dates;
+        $document['initials'] = $initials;
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
         $request->session()->forget('editDoc');
 
@@ -260,10 +269,12 @@ class DocumentController extends Controller
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");
         $dates = $this->signments($data, "date");
+        $initials = $this->signments($data, "initial");
         $document['user'] = $document->user->name;
         $document['signatures'] = $signatures;
         $document['texts'] = $texts;
         $document['dates'] = $dates;
+        $document['initials'] = $initials;
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
         $request->session()->forget('editDoc');
 

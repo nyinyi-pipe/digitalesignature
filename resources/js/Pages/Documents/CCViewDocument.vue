@@ -267,6 +267,65 @@
             </div>
           </div>
 
+          <div
+            v-for="(sign, index) of documents.documents.initials"
+            :key="index"
+          >
+            <div
+              draggable="true"
+              class="fields absolute initial select-none userSign"
+              :index="index"
+            >
+              <div
+                :class="[sign.result ? 'hidden' : 'flex']"
+                class="border signImg items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
+              >
+                <svg
+                  height="21"
+                  viewBox="0 0 21 21"
+                  width="21"
+                  class="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g
+                    fill="none"
+                    fill-rule="evenodd"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    transform="translate(3 3)"
+                  >
+                    <path
+                      d="m14 1c.8284271.82842712.8284271 2.17157288 0 3l-9.5 9.5-4 1 1-3.9436508 9.5038371-9.55252193c.7829896-.78700064 2.0312313-.82943964 2.864366-.12506788z"
+                    />
+                    <path d="m6.5 14.5h8" />
+                    <path d="m12.5 3.5 1 1" />
+                  </g>
+                </svg>
+                <span>Initial</span>
+              </div>
+              <div
+                :class="[sign.result ? 'flex' : 'hidden']"
+                class="border imgSign items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
+              >
+                <img
+                  :src="[sign.result ?? signatureResult]"
+                  alt=""
+                  class="h-14 w-24 img"
+                  :id="sign.id"
+                  :user_id="sign.user_id"
+                />
+              </div>
+              <div class="w-full user hidden items-center mt-3 justify-center">
+                <h1
+                  class="text-blue-500 m-0 w-auto px-3 shadow-lg rounded-xl text-sm"
+                >
+                  {{ sign.name }}
+                </h1>
+              </div>
+            </div>
+          </div>
+
           <div v-for="(text, index) of documents.documents.texts" :key="index">
             <div class="absolute fields w-[140px] text select-none userSign">
               <div
@@ -733,6 +792,7 @@ onUpdated(() => {
   const texts = document.querySelectorAll(".text");
   const signatures = document.querySelectorAll(".signature");
   const dates = document.querySelectorAll(".date");
+  const initials = document.querySelectorAll(".initial");
   window.Pusher = Pusher;
   window.Echo = new Echo({
     broadcaster: "pusher",
@@ -768,6 +828,17 @@ onUpdated(() => {
           }
         });
 
+        initials?.forEach((signature, index) => {
+          if (signature.style.top == data.data.document.initials[index].y) {
+            if (data.data.document.initials[index].result) {
+              signature.querySelector(".signImg").classList.add("hidden");
+              signature.querySelector(".imgSign").classList.remove("hidden");
+              signature.querySelector(".img").src =
+                data.data.document.initials[index].result;
+            }
+          }
+        });
+
         dates?.forEach((date, index) => {
           if (date.style.top == data.data.document.dates[index].y) {
             if (data.data.document.dates[index].result) {
@@ -788,6 +859,7 @@ onMounted(() => {
   const texts = document.querySelectorAll(".text");
   const signatures = document.querySelectorAll(".signature");
   const dates = document.querySelectorAll(".date");
+  const initials = document.querySelectorAll(".initial");
 
   window.Pusher = Pusher;
   window.Echo = new Echo({
@@ -803,6 +875,7 @@ onMounted(() => {
         const texts = document.querySelectorAll(".text");
         const signatures = document.querySelectorAll(".signature");
         const dates = document.querySelectorAll(".date");
+        const initials = document.querySelectorAll(".initial");
 
         texts.forEach((text, index) => {
           signatureResult.value = data.data.document.texts[index].result;
@@ -814,6 +887,10 @@ onMounted(() => {
 
         dates?.forEach((date, index) => {
           signatureResult.value = data.data.document.dates[index]?.result;
+        });
+
+        initials?.forEach((initial, index) => {
+          signatureResult.value = data.data.document.initials[index]?.result;
         });
       });
   });
@@ -839,6 +916,13 @@ onMounted(() => {
     mainTag[documents.documents.dates[index].index].append(date);
   });
 
+  initials?.forEach((initial, index) => {
+    initial.style.top = documents.documents.initials[index]?.y;
+    initial.style.left = documents.documents.initials[index]?.x;
+    signatureResult.value = documents.documents.initials[index]?.result;
+    mainTag[documents.documents.initials[index].index].append(initial);
+  });
+
   date.value = `Updated ${moment(documents.documents.updated_at).format("ll")}`;
   uploadedDocument.value =
     location.origin + "/storage/documents/" + documents.documents.doc_docs;
@@ -862,6 +946,24 @@ onMounted(() => {
                 ig,
                 documents.documents.signatures[i].x.replace("px", ""),
                 documents.documents.signatures[i].y.replace("px", ""),
+                75,
+                75
+              );
+            };
+            ig.src = sign.result;
+          }
+        });
+      }
+
+      if (documents.documents.initials) {
+        documents.documents.initials.forEach((sign, i) => {
+          if (sign.index == index) {
+            const ig = new Image();
+            ig.onload = () => {
+              ctx.drawImage(
+                ig,
+                documents.documents.initials[i].x.replace("px", ""),
+                documents.documents.initials[i].y.replace("px", ""),
                 75,
                 75
               );

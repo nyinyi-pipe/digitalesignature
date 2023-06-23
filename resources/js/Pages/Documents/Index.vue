@@ -1,6 +1,11 @@
 <template>
   <AuthLayout title="Documents" :auth="auth">
-    <div class="p-3 shadow-md py-5 rounded">
+    <div class="p-3 shadow-md py-5 mt-3 rounded">
+      <div
+        class="p-3 -translate-y-11 py-4 rounded-lg w-[95%] mx-auto bg-green-500"
+      >
+        <h1 class="text-white font-bold text-lg">Document Table</h1>
+      </div>
       <div class="px-4">
         <div class="relative flex">
           <div

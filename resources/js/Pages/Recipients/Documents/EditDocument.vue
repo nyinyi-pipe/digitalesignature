@@ -7,6 +7,10 @@
       @acceptSignature="acceptSignature"
       @closeSignatureModal="closeSignatureModal"
     />
+    <InitialModal
+      @acceptInitial="acceptInitial"
+      @closeInitialModal="closeInitialModal"
+    />
 
     <div
       class="sticky z-10 top-0 h-12 border-b bg-white flex items-center py-2 lg:py-2.5"
@@ -183,6 +187,72 @@
             </div>
           </div>
 
+          <div
+            v-for="(sign, index) of documents.documents.initials"
+            :key="index"
+          >
+            <div class="fields absolute initial select-none" :index="index">
+              <div
+                @click="openInitialModal"
+                :class="[sign.result ? 'hidden' : 'flex']"
+                class="border items-center fieldStatus justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
+              >
+                <svg
+                  height="21"
+                  viewBox="0 0 21 21"
+                  width="21"
+                  class="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g
+                    fill="none"
+                    fill-rule="evenodd"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    transform="translate(3 3)"
+                  >
+                    <path
+                      d="m14 1c.8284271.82842712.8284271 2.17157288 0 3l-9.5 9.5-4 1 1-3.9436508 9.5038371-9.55252193c.7829896-.78700064 2.0312313-.82943964 2.864366-.12506788z"
+                    />
+                    <path d="m6.5 14.5h8" />
+                    <path d="m12.5 3.5 1 1" />
+                  </g>
+                </svg>
+                <span>Initial</span>
+              </div>
+              <div
+                v-if="documents.documents.status"
+                :class="[sign.result ? 'flex' : 'hidden']"
+                class="border items-center field-container justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
+              >
+                <img
+                  :src="[sign.result ?? signatureResult]"
+                  alt=""
+                  class="h-14 w-24 img"
+                  :id="documents.documents.id"
+                  :user_id="sign.nonuser_id"
+                  :signId="sign.id"
+                />
+              </div>
+              <div
+                v-else
+                @click="openInitialModal"
+                :class="[sign.result ? 'flex' : 'hidden']"
+                class="border items-center field-container justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
+              >
+                <img
+                  :src="[sign.result ?? signatureResult]"
+                  alt=""
+                  class="h-14 w-24 img"
+                  :id="documents.documents.id"
+                  :user_id="sign.nonuser_id"
+                  :signId="sign.id"
+                />
+              </div>
+            </div>
+          </div>
+
           <div v-for="(text, index) of documents.documents.texts" :key="index">
             <div class="absolute fields w-[140px] text select-none">
               <div v-if="!text.result">
@@ -262,6 +332,7 @@ import { Head, useForm } from "@inertiajs/vue3";
 import { onMounted, reactive, ref } from "vue";
 import { initFlowbite, Modal } from "flowbite";
 import SignatureModal from "@/Components/Modals/SignatureModal.vue";
+import InitialModal from "@/Components/Modals/InitialModal.vue";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 import EditToolBar from "@/Components/Documents/EditToolBar.vue";
 import Swal from "sweetalert2";
@@ -269,6 +340,7 @@ const finish = ref(false);
 const toggle = ref(false);
 const signatureModal = ref(null);
 const signatureResult = ref(false);
+const initialModal = ref(null);
 
 const form = useForm({
   _method: "PUT",
@@ -319,6 +391,10 @@ const closeSignatureModal = () => {
   signatureModal.value.hide();
 };
 
+const closeInitialModal = () => {
+  initialModal.value.hide();
+};
+
 const closeToggle = () => {
   toggle.value = !toggle.value;
 };
@@ -357,6 +433,41 @@ const u_ip = ref("");
 const u_city = ref("");
 const u_country = ref("");
 const indexs = ref(null);
+
+const openInitialModal = (e) => {
+  indexs.value = e.target.closest(".fields").getAttribute("index");
+  let target = e.target.closest(".fields").querySelector(".field-container");
+  if (target.classList.contains("hidden")) {
+    target.classList.remove("hidden");
+    e.target
+      .closest(".fields")
+      .querySelector(".fieldStatus")
+      .classList.add("hidden");
+  }
+  if (documents.documents.initials[0].result) {
+    const signatures = document.querySelectorAll(".initial");
+    signatures[indexs.value].querySelector(".img").src =
+      documents.documents.initials[0].result;
+    const form = useForm({
+      signature: documents.documents.initials[0].result,
+      doc_id: documents.documents.id,
+      id: signatures[indexs.value].querySelector(".img").getAttribute("signId"),
+      type: "initial",
+      _method: "PUT",
+      ip: u_ip.value,
+      city: u_city.value,
+      country: u_country.value,
+    });
+    form.post(
+      route("recipient.update.document", [
+        signatures[indexs.value].querySelector(".img").getAttribute("id"),
+        signatures[indexs.value].querySelector(".img").getAttribute("user_id"),
+      ])
+    );
+  } else {
+    initialModal.value.show();
+  }
+};
 const openSignatureModal = (e) => {
   indexs.value = e.target.closest(".fields").getAttribute("index");
   let target = e.target.closest(".fields").querySelector(".field-container");
@@ -405,12 +516,15 @@ const changeWriteStatus = (e) => {
 
 onMounted(() => {
   const modalSignature = document.querySelector("#signature-modal");
+  const modalInitial = document.querySelector("#initial-modal");
   signatureModal.value = new Modal(modalSignature);
+  initialModal.value = new Modal(modalInitial);
 
   const mainTag = document.querySelectorAll("#main");
   const texts = document.querySelectorAll(".text");
   const signatures = document.querySelectorAll(".signature");
   const dates = document.querySelectorAll(".date");
+  const initials = document.querySelectorAll(".initial");
 
   texts.forEach((text, index) => {
     text.style.top = documents.documents.texts[index].y;
@@ -424,6 +538,13 @@ onMounted(() => {
     signature.style.left = documents.documents.signatures[index]?.x;
     signatureResult.value = documents.documents.signatures[index]?.result;
     mainTag[documents.documents.signatures[index].index].append(signature);
+  });
+
+  initials?.forEach((signature, index) => {
+    signature.style.top = documents.documents.initials[index]?.y;
+    signature.style.left = documents.documents.initials[index]?.x;
+    signatureResult.value = documents.documents.initials[index]?.result;
+    mainTag[documents.documents.initials[index].index].append(signature);
   });
 
   dates?.forEach((date, index) => {
@@ -470,6 +591,29 @@ const acceptSignature = (data) => {
     route("recipient.update.document", [
       signatures[indexs.value].querySelector(".img").getAttribute("id"),
       signatures[indexs.value].querySelector(".img").getAttribute("user_id"),
+    ])
+  );
+};
+
+const acceptInitial = (data) => {
+  //   signatureResult.value = data;
+  initialModal.value.hide();
+  const initials = document.querySelectorAll(".initial");
+  initials[indexs.value].querySelector(".img").src = data;
+  const form = useForm({
+    signature: data,
+    doc_id: documents.documents.id,
+    id: initials[indexs.value].querySelector(".img").getAttribute("signId"),
+    type: "initial",
+    _method: "PUT",
+    ip: u_ip.value,
+    city: u_city.value,
+    country: u_country.value,
+  });
+  form.post(
+    route("recipient.update.document", [
+      initials[indexs.value].querySelector(".img").getAttribute("id"),
+      initials[indexs.value].querySelector(".img").getAttribute("user_id"),
     ])
   );
 };

@@ -61,6 +61,8 @@ class DocumentResultController extends Controller
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");
         $dates = $this->signments($data, "date");
+        $initials = $this->signments($data, "initial");
+        $document['initials'] = $initials;
         $document['user'] = $document->user->name;
         $document['signatures'] = $signatures;
         $document['texts'] = $texts;

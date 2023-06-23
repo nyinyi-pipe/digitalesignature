@@ -67,6 +67,13 @@
 
         <div v-if="user">
           <Link
+            v-if="user.roles[0]?.name == 'admin'"
+            href="/admin/dashboard"
+            class="py-1 sm:py-0.5 font-bold text-sm hover:bg-teal-500 sm:text-md px-2 transition-colors sm:px-3 rounded-full bg-teal-400 text-white"
+            >Dashboard</Link
+          >
+          <Link
+            v-else
             href="/dashboard"
             class="py-1 sm:py-0.5 font-bold text-sm hover:bg-teal-500 sm:text-md px-2 transition-colors sm:px-3 rounded-full bg-teal-400 text-white"
             >Dashboard</Link

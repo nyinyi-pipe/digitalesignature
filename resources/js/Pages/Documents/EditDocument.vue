@@ -566,6 +566,179 @@
             </div>
           </div>
 
+          <div v-for="(initial, index) of initials" :key="index">
+            <div
+              :doc="initial"
+              :index="index"
+              types="initial"
+              draggable="true"
+              @dragstart="editInitial"
+              class="absolute fields hidden initial select-none"
+              name="initial"
+              data-modal-target="initialModal"
+              data-modal-toggle="initialModal"
+              :count="index"
+            >
+              <div
+                class="cursor-pointer px-2 py-1.5 m-0 mb-2 text-sm text-white bg-gray-800"
+              >
+                <div class="flex gap-2 items-center">
+                  <div
+                    @click="initialAssignRecipent"
+                    class="flex items-center pr-2 border-r"
+                  >
+                    <svg
+                      v-if="recipientName == 'Assign' && nameStatus"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 mr-2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                      />
+                    </svg>
+                    <svg
+                      v-else
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-3.5 h-3.5 mr-1.5 mb-0.5 text-blue-500 bg-blue-500 rounded-full"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span
+                      class="font-bold text-gray-200"
+                      id="recipientName"
+                      :recipientEmail="recipientEmail"
+                      >{{ recipientName }}</span
+                    >
+                  </div>
+
+                  <div>
+                    <svg
+                      @click="deleteField"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5 text-gray-200"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                v-if="!signatureResult"
+                @click="openSignatureModal"
+                class="border flex items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
+              >
+                <svg
+                  height="21"
+                  viewBox="0 0 21 21"
+                  width="21"
+                  class="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g
+                    fill="none"
+                    fill-rule="evenodd"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    transform="translate(3 3)"
+                  >
+                    <path
+                      d="m14 1c.8284271.82842712.8284271 2.17157288 0 3l-9.5 9.5-4 1 1-3.9436508 9.5038371-9.55252193c.7829896-.78700064 2.0312313-.82943964 2.864366-.12506788z"
+                    />
+                    <path d="m6.5 14.5h8" />
+                    <path d="m12.5 3.5 1 1" />
+                  </g>
+                </svg>
+                <span>Initial</span>
+              </div>
+              <div
+                v-else
+                @click="openInitialModal"
+                class="border flex items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
+              >
+                <img :src="initialResult" alt="" class="h-8 w-8" />
+              </div>
+              <div
+                class="shadow rounded-sm mt-1.5 bg-white hidden"
+                id="recipients"
+              >
+                <div
+                  v-for="(recipient, index) of documents.documents.recipients"
+                  :key="index"
+                >
+                  <div
+                    class="px-2 recipient flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-200"
+                    @click="chooseInitialRecipients"
+                  >
+                    <img
+                      src="https://media.istockphoto.com/id/1393750072/vector/flat-white-icon-man-for-web-design-silhouette-flat-illustration-vector-illustration-stock.jpg?s=612x612&w=0&k=20&c=s9hO4SpyvrDIfELozPpiB_WtzQV9KhoMUP9R9gVohoU="
+                      class="w-6 h-6 rounded-full"
+                      alt=""
+                    />
+                    <div id="recipientContainer">
+                      <h5 class="m-0 text-xs font-bold recipientName">
+                        {{ recipient.name }}
+                      </h5>
+                      <h4
+                        class="m-0 text-xs font-thin text-slate-500 recipientEmail"
+                      >
+                        {{ recipient.email }}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  @click="openNewRecipientModal"
+                  class="px-2 flex py-0.5 items-center space-x-1.5 cursor-pointer hover:bg-gray-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6 rounded-full text-center text-green-500 bg-green-100 p-1"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                    />
+                  </svg>
+
+                  <div>
+                    <h5 class="m-0 text-xs font-bold text-green-500">
+                      Add recipient
+                    </h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div v-for="(text, index) of texts" :key="index">
             <div
               draggable="true"
@@ -868,6 +1041,8 @@
             </div>
           </div>
 
+          <!-- edit -->
+
           <div
             v-for="(sign, index) of documents.documents.signatures"
             :key="index"
@@ -904,6 +1079,65 @@
                   </g>
                 </svg>
                 <span>Signature</span>
+              </div>
+              <div
+                :class="[sign.result ? 'flex' : 'hidden']"
+                class="border imgSign items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-blue-400 bg-transparent border-blue-400"
+              >
+                <img
+                  :src="[sign.result ?? signatureResult]"
+                  alt=""
+                  class="h-14 w-24 img"
+                  :id="sign.id"
+                  :user_id="sign.user_id"
+                />
+              </div>
+              <div class="w-full user hidden items-center m2-3 justify-center">
+                <h1
+                  class="text-blue-500 m-0 w-auto px-3 shadow-lg bg-white rounded-xl text-sm"
+                >
+                  {{ sign.name }}
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-for="(sign, index) of documents.documents.initials"
+            :key="index"
+          >
+            <div
+              class="absolute initialedit select-none userSign"
+              id="recipientName"
+              :recipientEmail="sign.email"
+            >
+              <div
+                :class="[sign.result ? 'hidden' : 'flex']"
+                class="border signImg items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm text-[#19C2B9] bg-transparent border-[#19C2B9]"
+              >
+                <svg
+                  height="21"
+                  viewBox="0 0 21 21"
+                  width="21"
+                  class="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g
+                    fill="none"
+                    fill-rule="evenodd"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    transform="translate(3 3)"
+                  >
+                    <path
+                      d="m14 1c.8284271.82842712.8284271 2.17157288 0 3l-9.5 9.5-4 1 1-3.9436508 9.5038371-9.55252193c.7829896-.78700064 2.0312313-.82943964 2.864366-.12506788z"
+                    />
+                    <path d="m6.5 14.5h8" />
+                    <path d="m12.5 3.5 1 1" />
+                  </g>
+                </svg>
+                <span>Initial</span>
               </div>
               <div
                 :class="[sign.result ? 'flex' : 'hidden']"
@@ -1016,6 +1250,7 @@
             @increaseText="increaseText"
             @increaseSignature="increaseSignature"
             @increaseDate="increaseDate"
+            @increaseInitial="increaseInitial"
             :recipientName="recipientName"
           />
         </template>
@@ -1047,12 +1282,23 @@ import ToolBar from "@/Components/Documents/ToolBar.vue";
 import Fillabes from "@/Components/Documents/Fillabes.vue";
 import moment from "moment";
 import axios from "axios";
-import Cookies from "js-cookie";
 
 const documents = defineProps({
   documents: Object,
   auth: Object,
 });
+
+const initialAssignRecipent = (e) => {
+  let recipientStatus = e.target
+    .closest(".initial")
+    .querySelector("#recipients");
+  if (recipientStatus.classList.contains("hidden")) {
+    recipientStatus.classList.remove("hidden");
+  } else {
+    recipientStatus.classList.add("hidden");
+  }
+  recipientStatus.classList.add("block");
+};
 
 const assignRecipent = (e) => {
   let recipientStatus = e.target
@@ -1127,18 +1373,27 @@ const chooseRecipients = (e) => {
   }
   recipientStatus.classList.add("block");
   nameStatus.value = false;
-  //   let form = useForm({
-  //     docId: documents.documents.id,
-  //     index: main.getAttribute("index"),
-  //     y: main.style.top,
-  //     x: main.style.left,
-  //     email: e.target
-  //       .closest("#recipientContainer")
-  //       .querySelector(".recipientEmail").innerText,
-  //   });
-  //   form.post(route("documents.store.document.result"));
 };
-
+const chooseInitialRecipients = (e) => {
+  let main = e.target.closest(".fields");
+  let recipient = e.target.closest(".initial").querySelector("#recipientName");
+  recipient.innerText = e.target
+    .closest("#recipientContainer")
+    .querySelector(".recipientName").innerText;
+  recipient.setAttribute(
+    "recipientEmail",
+    e.target.closest("#recipientContainer").querySelector(".recipientEmail")
+      .innerText
+  );
+  let recipientStatus = e.target.closest("#recipients");
+  if (recipientStatus.classList.contains("hidden")) {
+    recipientStatus.classList.remove("hidden");
+  } else {
+    recipientStatus.classList.add("hidden");
+  }
+  recipientStatus.classList.add("block");
+  nameStatus.value = false;
+};
 const chooseTextRecipients = (e) => {
   let main = e.target.closest(".fields");
   let recipient = e.target.closest(".text").querySelector("#recipientName");
@@ -1190,11 +1445,14 @@ const uploadedDocument = ref("");
 const signatures = ref([]);
 const texts = ref([]);
 const dates = ref([]);
+const initials = ref([]);
 const WriteStatus = ref(true);
 const signatureEdit = ref(null);
+const initialEdit = ref(null);
 const TextEdit = ref(null);
 const editDate = ref(null);
 const signatureEditStatus = ref(false);
+const initialEditStatus = ref(false);
 const TextEditStatus = ref(false);
 const DateEditStatus = ref(false);
 const dragText = ref("");
@@ -1290,7 +1548,10 @@ const editSignature = (e) => {
   signatureEdit.value = e.target.getAttribute("count");
   signatureEditStatus.value = true;
 };
-
+const editInitial = (e) => {
+  initialEdit.value = e.target.getAttribute("count");
+  initialEditStatus.value = true;
+};
 const editText = (e) => {
   TextEdit.value = e.target.getAttribute("count");
   TextEditStatus.value = true;
@@ -1309,6 +1570,11 @@ const increaseSignature = () => {
 const increaseDate = () => {
   dates.value.push(dates.value.length);
   dragText.value = "date";
+};
+
+const increaseInitial = () => {
+  initials.value.push(initials.value.length);
+  dragText.value = "initial";
 };
 moment(documents.documents.updated_at).format("ll");
 
@@ -1505,6 +1771,8 @@ onMounted(() => {
 
       const documentTextFieldsContainer = document.querySelectorAll(".text");
       const documentDateFieldsContainer = document.querySelectorAll(".date");
+      const documentInitialFieldsContainer =
+        document.querySelectorAll(".initial");
 
       const documentSignatureField =
         documentSignatureFieldsContainer[signatures.value.length - 1];
@@ -1514,6 +1782,9 @@ onMounted(() => {
 
       const documentDateField =
         documentDateFieldsContainer[dates.value.length - 1];
+
+      const documentInitialField =
+        documentInitialFieldsContainer[initials.value.length - 1];
 
       if (
         !signatureEditStatus.value &&
@@ -1534,7 +1805,8 @@ onMounted(() => {
       } else if (
         signatureEditStatus.value &&
         !TextEditStatus.value &&
-        !DateEditStatus.value
+        !DateEditStatus.value &&
+        !initialEditStatus.value
       ) {
         const editSignatureField =
           documentSignatureFieldsContainer[signatureEdit.value];
@@ -1555,7 +1827,6 @@ onMounted(() => {
           documentTextField.getAttribute("count") ==
           texts.value[texts.value.length - 1]
         ) {
-          console.log(mainTag);
           documentTextField.classList.remove("hidden");
           documentTextField.style.top = `${e.offsetY - 40}px`;
           documentTextField.style.left = `${e.offsetX - 40}px`;
@@ -1566,7 +1837,8 @@ onMounted(() => {
       } else if (
         TextEditStatus.value &&
         !signatureEditStatus.value &&
-        !DateEditStatus.value
+        !DateEditStatus.value &&
+        !initialEditStatus.value
       ) {
         const editTextField = documentTextFieldsContainer[TextEdit.value];
         if (
@@ -1586,7 +1858,6 @@ onMounted(() => {
           documentDateField.getAttribute("count") ==
           dates.value[dates.value.length - 1]
         ) {
-          console.log(mainTag);
           documentDateField.classList.remove("hidden");
           documentDateField.style.top = `${e.offsetY - 40}px`;
           documentDateField.style.left = `${e.offsetX - 40}px`;
@@ -1597,7 +1868,8 @@ onMounted(() => {
       } else if (
         DateEditStatus.value &&
         !signatureEditStatus.value &&
-        !TextEditStatus.value
+        !TextEditStatus.value &&
+        !initialEditStatus.value
       ) {
         const editDateField = documentDateFieldsContainer[editDate.value];
         if (
@@ -1608,6 +1880,38 @@ onMounted(() => {
           editDateField.style.left = `${e.offsetX - 40}px`;
         }
         DateEditStatus.value = !DateEditStatus.value;
+      } else if (
+        !initialEditStatus.value &&
+        documentInitialField &&
+        dragText.value == "initial"
+      ) {
+        if (
+          documentInitialField.getAttribute("count") ==
+          initials.value[initials.value.length - 1]
+        ) {
+          documentInitialField.classList.remove("hidden");
+          documentInitialField.style.top = `${e.offsetY - 40}px`;
+          documentInitialField.style.left = `${e.offsetX - 40}px`;
+          documentInitialField.setAttribute("x", e.offsetX - 40);
+          documentInitialField.setAttribute("y", e.offsetY - 40);
+          mainTag.append(documentInitialField);
+        }
+      } else if (
+        initialEditStatus.value &&
+        !signatureEditStatus.value &&
+        !TextEditStatus.value &&
+        !DateEditStatus.value
+      ) {
+        const editInitialField =
+          documentInitialFieldsContainer[initialEdit.value];
+        if (
+          editInitialField &&
+          editInitialField.getAttribute("count") == initialEdit.value
+        ) {
+          editInitialField.style.top = `${e.offsetY - 40}px`;
+          editInitialField.style.left = `${e.offsetX - 40}px`;
+        }
+        initialEditStatus.value = !initialEditStatus.value;
       }
     });
 
@@ -1622,6 +1926,7 @@ onMounted(() => {
 
   const mainTag = document.querySelectorAll("#main");
   const signatureedit = document.querySelectorAll(".signatureedit");
+  const initialedit = document.querySelectorAll(".initialedit");
   const dateedit = document.querySelectorAll(".dateedit");
   const textedit = document.querySelectorAll(".textedit");
   signatureedit?.forEach((signature, index) => {
@@ -1629,6 +1934,13 @@ onMounted(() => {
     signature.style.left = documents.documents.signatures[index]?.x;
     signatureResult.value = documents.documents.signatures[index]?.result;
     mainTag[documents.documents.signatures[index].index].append(signature);
+  });
+
+  initialedit?.forEach((signature, index) => {
+    signature.style.top = documents.documents.initials[index]?.y;
+    signature.style.left = documents.documents.initials[index]?.x;
+    signatureResult.value = documents.documents.initials[index]?.result;
+    mainTag[documents.documents.initials[index].index].append(signature);
   });
 
   dateedit?.forEach((date, index) => {

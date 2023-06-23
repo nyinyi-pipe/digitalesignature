@@ -1,6 +1,6 @@
 <template>
   <div
-    id="signature-modal"
+    id="initial-modal"
     tabindex="-1"
     class="fixed top-0 left-0 right-0 z-50 hidden p-3 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
   >
@@ -8,7 +8,7 @@
       <!-- Modal content -->
       <div class="relative bg-white rounded-xs shadow-xl">
         <button
-          @click="$emit('closeSignatureModal')"
+          @click="$emit('closeInitialModal')"
           type="button"
           class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
         >
@@ -112,7 +112,7 @@
         </div>
         <div class="flex justify-between px-6 py-3 border-t">
           <button
-            @click="$emit('closeSignatureModal')"
+            @click="$emit('closeInitialModal')"
             type="button"
             class="text-gray-500 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded border border-gray-200 text-sm font-medium px-6 py-1.5 hover:text-gray-900 focus:z-10"
           >
@@ -120,7 +120,7 @@
           </button>
           <button
             type="button"
-            @click="$emit('acceptSignature', signature)"
+            @click="$emit('acceptInitial', signature)"
             class="text-white duration-200 bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded text-sm inline-flex items-center px-6 py-1.5 text-center mr-2"
           >
             Accept and sign
@@ -130,7 +130,7 @@
     </div>
   </div>
 </template>
-<script setup>
+  <script setup>
 import { onBeforeMount, onMounted, onActivated, ref } from "vue";
 import DrawSign from "@/Components/DrawSign.vue";
 import UploadSign from "@/Components/UploadSign.vue";
