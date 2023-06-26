@@ -1115,6 +1115,7 @@ const finishPdf = async () => {
             size: 8,
           }
         );
+        signatures.push(documents.documents.signatures[index].email);
       }
     }
 
@@ -1164,6 +1165,27 @@ const finishPdf = async () => {
       color: rgb(0, 0, 0),
     });
     pdfBytes = await pdfDoc.saveAsBase64();
+
+    let fileData = dataURLtoFile(
+      "data:application/pdf;base64," + pdfBytes,
+      documents.documents.doc_name
+    );
+
+    finished.value = true;
+    const formStatus = useForm({
+      doc_status: 3,
+      _method: "PUT",
+      file: fileData,
+    });
+
+    formStatus.post(
+      route("document.finish.update.document", documents.documents.id),
+      {
+        onSuccess: () => {
+          location.reload();
+        },
+      }
+    );
   } catch (error) {
     location.reload();
   }
@@ -1181,26 +1203,27 @@ const finishPdf = async () => {
     return new File([u8arr], filename, { type: mime });
   }
 
-  let fileData = dataURLtoFile(
-    "data:application/pdf;base64," + pdfBytes,
-    documents.documents.doc_name
-  );
+  //   let fileData = dataURLtoFile(
+  //     "data:application/pdf;base64," + pdfBytes,
+  //     documents.documents.doc_name
+  //   );
 
-  finished.value = true;
-  const formStatus = useForm({
-    doc_status: 3,
-    _method: "PUT",
-    file: fileData,
-  });
+  //   console.log(fileData);
+  //   finished.value = true;
+  //   const formStatus = useForm({
+  //     doc_status: 3,
+  //     _method: "PUT",
+  //     file: fileData,
+  //   });
 
-  formStatus.post(
-    route("document.finish.update.document", documents.documents.id),
-    {
-      onSuccess: () => {
-        location.reload();
-      },
-    }
-  );
+  //   formStatus.post(
+  //     route("document.finish.update.document", documents.documents.id),
+  //     {
+  //       onSuccess: () => {
+  //         location.reload();
+  //       },
+  //     }
+  //   );
 };
 const height = (doc) => {
   const img = new Image();
