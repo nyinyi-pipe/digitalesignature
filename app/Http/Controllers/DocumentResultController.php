@@ -120,6 +120,7 @@ class DocumentResultController extends Controller
         $doc['link'] = route('document.view.document', $doc->id);
         $doc['email'] = $recipient->email;
         $doc['name'] = $recipient->name;
+        $doc['avatar'] = $recipient->avatar ?? null;
         Mail::to($doc->user->email)->send(new EditDocumentMail($doc));
 
 

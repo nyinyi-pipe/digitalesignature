@@ -8,8 +8,8 @@
             </div>
             <div class="content-container">
                 <div class="sender-main">
-                    <img class="sender-img"
-                        src="https://i.pinimg.com/564x/ff/5f/78/ff5f78476f0edf5b1bf7840f84342ebd.jpg" alt="">
+                    <img class="sender-img" @if ($avatar) src='{{asset("storage/".$avatar)}}' @else
+                        src="https://i.pinimg.com/564x/ff/5f/78/ff5f78476f0edf5b1bf7840f84342ebd.jpg" @endif alt="">
                     <div class="sender-container">
                         <h4>{{$name}}</h4>
                         <span>sent you</span>

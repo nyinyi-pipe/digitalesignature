@@ -55,7 +55,7 @@ class DocumentController extends Controller
         $imagick->setImageCompressionQuality(64);
         $saveImagePath = public_path($folder."/".$filename.".jpeg");
         $imagick->writeImages($saveImagePath, true);
-
+        Storage::delete($pdf);
         $converted = [];
         $files = FacadesFile::allFiles(public_path($folder));
         foreach ($files as $file) {
@@ -174,17 +174,20 @@ class DocumentController extends Controller
         if($request->file('newDocument')) {
             $pdf = $request->file('newDocument')->store('documents');
             $imagick = new Imagick();
+            $imagick->setResolution(150, 150);
             $imagick->readImage(public_path("storage/".$pdf));
+            $imagick->setImageFormat('jpeg');
+            $imagick->setImageResolution(150, 150);
+            $imagick->setImageCompression(imagick::COMPRESSION_JPEG);
+            $imagick->setImageCompressionQuality(64);
             $filename = uniqid();
             $saveImagePath = public_path($document->folder."/".$filename.".jpeg");
             $imagick->writeImages($saveImagePath, true);
-
             $converted = [];
             $files = FacadesFile::allFiles(public_path($document->folder));
             foreach ($files as $file) {
                 $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
             }
-
             $doc_docs = $converted;
         }
 
@@ -287,6 +290,7 @@ class DocumentController extends Controller
     public function finishUpdate(Document $document, Request $request) : void
     {
         $pdf = $request->file('file')->store('documents');
+        FacadesFile::deleteDirectory(public_path($document->folder));
         $document->update([
             'doc_status'=>$request->doc_status,
             'finish_datetime'=>Carbon::now("Asia/Yangon")->toDateTimeString()
