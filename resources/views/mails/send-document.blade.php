@@ -2,7 +2,8 @@
     <div class="main-container">
         <div class="container">
             <div class="company-name">
-                <img src="https://images.pexels.com/photos/325044/pexels-photo-325044.jpeg?cs=srgb&dl=pexels-chevanon-photography-325044.jpg&fm=jpg"
+                <img src="{{url("images/certificate_logo.png")}}"
+                    src="https://images.pexels.com/photos/325044/pexels-photo-325044.jpeg?cs=srgb&dl=pexels-chevanon-photography-325044.jpg&fm=jpg"
                     alt="">
                 <h2> {{env('APP_NAME')}}</h2>
             </div>
