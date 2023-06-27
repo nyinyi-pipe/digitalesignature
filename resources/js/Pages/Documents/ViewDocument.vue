@@ -423,7 +423,7 @@
 </template>
     <script setup>
 import { Link, router, Head, useForm } from "@inertiajs/vue3";
-import { onMounted, onUpdated, reactive, ref } from "vue";
+import { onBeforeMount, onMounted, onUpdated, reactive, ref } from "vue";
 import { initFlowbite, Dismiss } from "flowbite";
 import EditAside from "@/Components/Layouts/EditAside.vue";
 import ViewToolBar from "@/Components/Documents/ViewToolBar.vue";
@@ -434,6 +434,19 @@ import Pusher from "pusher-js";
 import { PDFDocument, StandardFonts, degrees, rgb } from "pdf-lib";
 import download from "downloadjs";
 import moment from "moment-timezone";
+import { useLoading } from "vue-loading-overlay";
+
+const loading = useLoading({
+  color: "#909090",
+  loader: "dots",
+  width: 64,
+  height: 64,
+  backgroundColor: "#ffffff",
+  opacity: 1,
+  zIndex: 999,
+});
+
+const loader = ref(null);
 
 const documents = defineProps({
   documents: Object,
@@ -458,8 +471,7 @@ const createPdf = async () => {
   // Get the width and height of the page
   let pdfBytes = null;
   main.forEach(async (c, i) => {
-    const page = pdfDoc.addPage();
-
+    const pages = pdfDoc.addPage();
     c.classList.remove("hidden");
     const canvas = c.querySelector("#canvas");
     const img = canvas.toDataURL("image/jpeg");
@@ -473,11 +485,20 @@ const createPdf = async () => {
     // Add a blank page to the document
 
     // Get the width and height of the page
-    page.drawImage(jpgImage, {
+
+    pages.setSize(
+      parseFloat(c.querySelector("canvas").width) > pages.getWidth()
+        ? c.querySelector("canvas").width
+        : pages.getWidth(),
+      parseFloat(c.querySelector("canvas").height) > pages.getHeight()
+        ? c.querySelector("canvas").height
+        : pages.getHeight()
+    );
+    pages.drawImage(jpgImage, {
       x: 0,
       y: 0,
-      width: c.width ?? page.getWidth(),
-      height: c.height ?? page.getHeight(),
+      width: pages.getWidth(),
+      height: pages.getHeight(),
     });
     // pdfBytes = await pdfDoc.save();
   });
@@ -833,11 +854,19 @@ const finishPdf = async () => {
       // Add a blank page to the document
 
       // Get the width and height of the page
+      page.setSize(
+        parseFloat(c.querySelector("canvas").width) > page.getWidth()
+          ? parseFloat(c.querySelector("canvas").width)
+          : page.getWidth(),
+        parseFloat(c.querySelector("canvas").height) > page.getHeight()
+          ? parseFloat(c.querySelector("canvas").height)
+          : page.getHeight()
+      );
       page.drawImage(jpgImage, {
         x: 0,
         y: 0,
-        width: c.width ?? page.getWidth(),
-        height: c.height ?? page.getHeight(),
+        width: page.getWidth(),
+        height: page.getHeight(),
       });
     });
     main.forEach((c) => {
@@ -1181,6 +1210,12 @@ const finishPdf = async () => {
     formStatus.post(
       route("document.finish.update.document", documents.documents.id),
       {
+        onStart: () => {
+          loader.value = loading.show();
+        },
+        onError: () => {
+          loader.value.hide();
+        },
         onSuccess: () => {
           location.reload();
         },
@@ -1324,7 +1359,16 @@ onUpdated(() => {
   });
 });
 
+onBeforeMount(() => {
+  //   loader.value = loading.show();
+});
+
 onMounted(() => {
+  //   router.visit(url, {
+  //     only: ["documents"],
+  //   });
+  //   loader.value.hide();
+
   if (documents.documents.doc_status == 3) finished.value = true;
   const mainTag = document.querySelectorAll("#main");
   const texts = document.querySelectorAll(".text");

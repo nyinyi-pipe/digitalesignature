@@ -64,9 +64,22 @@
 <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { Link, router, Head } from "@inertiajs/vue3";
+import { ref } from "vue";
+import { useLoading } from "vue-loading-overlay";
+
+const loading = useLoading({
+  color: "#ffffff",
+  loader: "dots",
+  width: 64,
+  height: 64,
+  backgroundColor: "#000000",
+  opacity: 0.5,
+  zIndex: 999,
+});
 defineProps({
   auth: Object,
 });
+const loader = ref(null);
 const upload = async (event) => {
   const file = event.target.files[0];
   const form = {
@@ -74,6 +87,16 @@ const upload = async (event) => {
     type: "png",
     name: file.name,
   };
-  router.post(route("document.add-document"), form);
+  router.post(route("document.add-document"), form, {
+    onStart: () => {
+      loader.value = loading.show();
+    },
+    onFinish: () => {
+      loader.value.hide();
+    },
+    onError: () => {
+      loader.value.hide();
+    },
+  });
 };
 </script>

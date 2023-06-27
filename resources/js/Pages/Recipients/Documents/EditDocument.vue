@@ -341,6 +341,19 @@ const toggle = ref(false);
 const signatureModal = ref(null);
 const signatureResult = ref(false);
 const initialModal = ref(null);
+import { useLoading } from "vue-loading-overlay";
+
+const loading = useLoading({
+  color: "#909090",
+  loader: "dots",
+  width: 64,
+  height: 64,
+  backgroundColor: "#ffffff",
+  opacity: 1,
+  zIndex: 999,
+});
+
+const loader = ref(null);
 
 const form = useForm({
   _method: "PUT",
@@ -362,7 +375,15 @@ const finished = () => {
   formStatus.post(
     route("recipient.update.status.document", documents.documents.doc_res_id),
     {
+      onStart: () => {
+        loader.value = loading.show();
+      },
+      onError: () => {
+        loader.value.hide();
+      },
       onSuccess: () => {
+        loader.value.hide();
+
         const Toast = Swal.mixin({
           toast: true,
           position: "top-end",

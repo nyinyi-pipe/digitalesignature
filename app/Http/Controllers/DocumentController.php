@@ -44,23 +44,34 @@ class DocumentController extends Controller
         $request->validated();
         $folder = uniqid();
         $pdf = $request->file('document')->store('documents');
-        $imagick = new Imagick();
-        $imagick->setResolution(150, 150);
+        $imagick = new Imagick(public_path("storage/".$pdf));
+        $pages = $imagick->getNumberImages();
         mkdir($folder);
         $filename = uniqid();
-        $imagick->readImage(public_path("storage/".$pdf));
-        $imagick->setImageFormat('jpeg');
-        $imagick->setImageResolution(150, 150);
-        $imagick->setImageCompression(imagick::COMPRESSION_JPEG);
-        $imagick->setImageCompressionQuality(64);
-        $saveImagePath = public_path($folder."/".$filename.".jpeg");
-        $imagick->writeImages($saveImagePath, true);
-        Storage::delete($pdf);
-        $converted = [];
-        $files = FacadesFile::allFiles(public_path($folder));
-        foreach ($files as $file) {
-            $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
+
+        for ($i = 0; $i < $pages; $i++) {
+            $url = public_path("storage/".$pdf.'['.$i.']');
+            $imagick = new Imagick();
+            $imagick->readimage($url);
+            $imagick->setImageFormat("jpg");
+            $imagick->flattenImages();
+
+            $imagick->writeImage(
+                public_path($folder."/".($i+1).'-'.$filename.".jpg")
+            );
         }
+        Storage::delete($pdf);
+
+        $converted = [];
+        $files = FacadesFile::allFiles(public_path($folder));//10
+
+        foreach ($files as $key=>$file) {
+            $file = ($key+1)."-".$filename.".jpg";
+            $getFile = public_path($folder."/".$file);
+            $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
+        }
+        FacadesFile::deleteDirectory(public_path($folder));
+
         $doc_type = $request->type;
         $newDocument = Document::create([
             'user_id'=>auth()->user()->id,
@@ -73,6 +84,41 @@ class DocumentController extends Controller
         $request->session()->put('editDoc', $newDocument);
         return to_route('document.add-recipients', ['document'=>$newDocument->id]);
     }
+    // public function store(DocumentRequest $request) :RedirectResponse
+    // {
+    //     $request->validated();
+    //     $folder = uniqid();
+    //     $pdf = $request->file('document')->store('documents');
+    //     $imagick = new Imagick();
+    //     mkdir($folder);
+    //     $filename = uniqid();
+    //     $imagick->readImage(public_path("storage/".$pdf));
+    //     $imagick->setImageFormat('jpeg');
+    //     $saveImagePath = public_path($folder."/".$filename.".jpeg");
+    //     $imagick->writeImages($saveImagePath, true);
+    //     $imagick->clear();
+    //     Storage::delete($pdf);
+
+    //     $converted = [];
+    //     $files = FacadesFile::allFiles(public_path($folder));
+
+    //     foreach ($files as $file) {
+    //         $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
+    //     }
+    //     FacadesFile::deleteDirectory(public_path($folder));
+
+    //     $doc_type = $request->type;
+    //     $newDocument = Document::create([
+    //         'user_id'=>auth()->user()->id,
+    //         'doc_name'=> $request->name,
+    //         'doc_docs'=> $converted,
+    //         'folder'=>$folder,
+    //         'doc_type'=> $doc_type,
+    //         'doc_key'=>'TEST'
+    //     ]);
+    //     $request->session()->put('editDoc', $newDocument);
+    //     return to_route('document.add-recipients', ['document'=>$newDocument->id]);
+    // }
 
     public function send() : Response
     {
@@ -173,27 +219,53 @@ class DocumentController extends Controller
         $doc_docs = null;
         if($request->file('newDocument')) {
             $pdf = $request->file('newDocument')->store('documents');
-            $imagick = new Imagick();
-            $imagick->setResolution(150, 150);
-            $imagick->readImage(public_path("storage/".$pdf));
-            $imagick->setImageFormat('jpeg');
-            $imagick->setImageResolution(150, 150);
-            $imagick->setImageCompression(imagick::COMPRESSION_JPEG);
-            $imagick->setImageCompressionQuality(64);
+
+
+            $imagick = new Imagick(public_path("storage/".$pdf));
+            // $imagick = new Imagick();
             $filename = uniqid();
-            $saveImagePath = public_path($document->folder."/".$filename.".jpeg");
-            $imagick->writeImages($saveImagePath, true);
-            $converted = [];
-            $files = FacadesFile::allFiles(public_path($document->folder));
-            foreach ($files as $file) {
-                $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
+            $pages = $imagick->getNumberImages();
+            mkdir($document->folder);
+
+            for ($i = 0; $i < $pages; $i++) {
+                $url = public_path("storage/".$pdf.'['.$i.']');
+                $imagick = new Imagick();
+                $imagick->readimage($url);
+                $imagick->setImageFormat("jpg");
+                $imagick->flattenImages();
+                $imagick->writeImage(
+                    public_path($document->folder."/".($i+1).'-'.$filename.".jpg")
+                );
             }
+
+            // $imagick->readImage(public_path("storage/".$pdf));
+
+
+            // $saveImagePath = public_path($document->folder."/".$filename.".jpeg");
+            // $imagick->writeImages($saveImagePath, true);
+            $converted = [];
+
+            $files = FacadesFile::allFiles(public_path($document->folder));
+            foreach ($files as $key=>$file) {
+                $file = ($key+1)."-".$filename.".jpg";
+                $getFile = public_path($document->folder."/".$file);
+                $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
+                // $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
+            }
+
+            FacadesFile::deleteDirectory(public_path($document->folder));
             $doc_docs = $converted;
+        }
+
+        if($doc_docs!=null) {
+            $doc_docs = [...$document->doc_docs,...$doc_docs];
+        } else {
+            $doc_docs = $document->doc_docs;
         }
 
         $document->update([
             'doc_name'=>$request->newDocumentName??$document->doc_name,
-            'doc_docs'=>$request->newDocument != null?$doc_docs :$document->doc_docs
+            'doc_docs'=>$doc_docs
         ]);
         // return back();
         return response()->json([
@@ -247,6 +319,7 @@ class DocumentController extends Controller
 
     public function view(Document $document, Request $request) : Response
     {
+
         $data = DocumentResult::where('document_id', $document->id)->get();
         $initials = $this->signments($data, "initial");
         $signatures = $this->signments($data, "signature");
@@ -290,7 +363,6 @@ class DocumentController extends Controller
     public function finishUpdate(Document $document, Request $request) : void
     {
         $pdf = $request->file('file')->store('documents');
-        FacadesFile::deleteDirectory(public_path($document->folder));
         $document->update([
             'doc_status'=>$request->doc_status,
             'finish_datetime'=>Carbon::now("Asia/Yangon")->toDateTimeString()

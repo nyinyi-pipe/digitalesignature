@@ -257,6 +257,19 @@
 import { router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
 import { ref, onMounted, watch, reactive } from "vue";
+import { useLoading } from "vue-loading-overlay";
+
+const loading = useLoading({
+  color: "#909090",
+  loader: "dots",
+  width: 64,
+  height: 64,
+  backgroundColor: "#ffffff",
+  opacity: 1,
+  zIndex: 999,
+});
+
+const loader = ref(null);
 const docuements = defineProps({
   auth: Object,
   document: Object,
@@ -299,8 +312,15 @@ const sendMailSubmit = () => {
   });
   form.toMails.push(...docuements.recipientEmails);
   form.post(route("document.send.mail", docuements.document.id), {
+    onStart: () => {
+      loader.value = loading.show();
+    },
     onSuccess: () => {
-      location.href = `/documents/v/${docuements.document.id}`;
+      location.href = route("document.view.document", docuements.document.id);
+      //   loader.value.hide();
+    },
+    onError: () => {
+      loader.value.hide();
     },
   });
 };
