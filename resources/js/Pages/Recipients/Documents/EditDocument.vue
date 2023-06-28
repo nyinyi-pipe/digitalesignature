@@ -322,6 +322,200 @@
               </div>
             </div>
           </div>
+
+          <div
+            v-for="(sign, index) of documents.documents.vsignatures"
+            :key="index"
+          >
+            <div
+              draggable="true"
+              class="fields absolute vsignature select-none vuserSign"
+              :index="index"
+            >
+              <div
+                :class="[sign.result ? 'hidden' : 'flex']"
+                class="border-0 text-gray-400 signImg items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm bg-gray-200"
+              >
+                <svg
+                  height="21"
+                  viewBox="0 0 21 21"
+                  width="21"
+                  class="w-5 h-5 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g
+                    fill="none"
+                    fill-rule="evenodd"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    transform="translate(3 3)"
+                  >
+                    <path
+                      d="m14 1c.8284271.82842712.8284271 2.17157288 0 3l-9.5 9.5-4 1 1-3.9436508 9.5038371-9.55252193c.7829896-.78700064 2.0312313-.82943964 2.864366-.12506788z"
+                    />
+                    <path d="m6.5 14.5h8" />
+                    <path d="m12.5 3.5 1 1" />
+                  </g>
+                </svg>
+                <span>Signature</span>
+              </div>
+              <div
+                :class="[sign.result ? 'flex' : 'hidden']"
+                class="border-0 text-gray-400 imgSign items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm bg-gray-200"
+              >
+                <img
+                  :src="[sign.result ?? signatureResult]"
+                  alt=""
+                  class="h-14 w-24 img text-gray-400"
+                  :id="sign.id"
+                  :user_id="sign.user_id"
+                />
+              </div>
+              <div
+                class="w-full vuser relative z-50 hidden items-center mt-3 justify-center"
+              >
+                <h1
+                  class="text-gray-400 m-0 w-auto bg-white px-3 shadow-lg rounded-xl text-sm"
+                >
+                  {{ sign.name }}
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-for="(initial, index) of documents.documents.vinitials"
+            :key="index"
+          >
+            <div
+              draggable="true"
+              class="fields absolute vinitial select-none vuserSign"
+              :index="index"
+            >
+              <div
+                :class="[initial.result ? 'hidden' : 'flex']"
+                class="border-0 text-gray-400 signImg items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm bg-gray-200"
+              >
+                <svg
+                  height="21"
+                  viewBox="0 0 21 21"
+                  width="21"
+                  class="w-5 h-5 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g
+                    fill="none"
+                    fill-rule="evenodd"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    transform="translate(3 3)"
+                  >
+                    <path
+                      d="m14 1c.8284271.82842712.8284271 2.17157288 0 3l-9.5 9.5-4 1 1-3.9436508 9.5038371-9.55252193c.7829896-.78700064 2.0312313-.82943964 2.864366-.12506788z"
+                    />
+                    <path d="m6.5 14.5h8" />
+                    <path d="m12.5 3.5 1 1" />
+                  </g>
+                </svg>
+                <span>Initial</span>
+              </div>
+              <div
+                :class="[initial.result ? 'flex' : 'hidden']"
+                class="border-0 text-gray-400 imgSign items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm bg-gray-200"
+              >
+                <img
+                  :src="[initial.result ?? initialResult]"
+                  alt=""
+                  class="h-14 w-24 img text-gray-400"
+                  :id="initial.id"
+                  :user_id="initial.user_id"
+                />
+              </div>
+              <div class="w-full vuser hidden items-center mt-3 justify-center">
+                <h1
+                  class="text-gray-400 bg-white m-0 w-auto px-3 shadow-lg rounded-xl text-sm"
+                >
+                  {{ initial.name }}
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          <div v-for="(text, index) of documents.documents.vtexts" :key="index">
+            <div class="absolute fields w-[140px] vtext select-none vuserSign">
+              <div
+                @click="changeWriteStatus"
+                :class="[text.result ? 'hidden' : 'flex']"
+                class="border-0 text-gray-400 signText items-center justify-center gap-2 cursor-pointer p-2 m-0 font-thin text-sm bg-gray-200"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5 text-gray-400"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                  />
+                </svg>
+                <span>Text</span>
+              </div>
+              <div
+                :class="[text.result ? 'flex' : 'hidden']"
+                class="p-1 overflow-hidden border-0 bg-gray-200 textField justify-center items-center"
+              >
+                <h1 class="w-full m-0 break-words text-gray-400">
+                  {{ text.result }}
+                </h1>
+              </div>
+
+              <div class="w-full vuser hidden items-center mt-3 justify-center">
+                <h1
+                  class="bg-white text-gray-400 m-0 w-auto px-3 shadow-lg rounded-xl text-sm"
+                >
+                  {{ text.name }}
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          <div v-for="(date, index) of documents.documents.vdates" :key="index">
+            <div class="absolute fields vdate select-none vuserSign">
+              <div>
+                <div
+                  :class="[date.result ? 'hidden' : 'flex']"
+                  class="signDate"
+                >
+                  <input
+                    @change="saveDate"
+                    :user_id="date.nonuser_id"
+                    type="date"
+                    disabled
+                    class="bg-gray-200 border-0 text-gray-400"
+                  />
+                </div>
+                <div
+                  :class="[date.result ? 'flex' : 'hidden']"
+                  class="p-1.5 border-0 bg-gray-200 dateSign justify-center items-center"
+                >
+                  <h1 class="m-0 text-gray-400">{{ date.result }}</h1>
+                </div>
+              </div>
+              <div class="w-full vuser hidden items-center mt-3 justify-center">
+                <h1
+                  class="text-gray-400 bg-white m-0 w-auto px-3 shadow-lg rounded-xl text-sm"
+                >
+                  {{ date.name }}
+                </h1>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -532,6 +726,11 @@ onMounted(() => {
   const dates = document.querySelectorAll(".date");
   const initials = document.querySelectorAll(".initial");
 
+  const vtexts = document.querySelectorAll(".vtext");
+  const vsignatures = document.querySelectorAll(".vsignature");
+  const vdates = document.querySelectorAll(".vdate");
+  const vinitials = document.querySelectorAll(".vinitial");
+
   texts.forEach((text, index) => {
     text.style.top = documents.documents.texts[index].y;
     text.style.left = documents.documents.texts[index].x;
@@ -559,8 +758,53 @@ onMounted(() => {
     signatureResult.value = documents.documents.dates[index]?.result;
     mainTag[documents.documents.dates[index].index].append(date);
   });
+
+  vtexts.forEach((text, index) => {
+    text.style.top = documents.documents.vtexts[index].y;
+    text.style.left = documents.documents.vtexts[index].x;
+    signatureResult.value = documents.documents.vtexts[index].result;
+    mainTag[documents.documents.vtexts[index].index].append(text);
+  });
+
+  vsignatures?.forEach((signature, index) => {
+    signature.style.top = documents.documents.vsignatures[index]?.y;
+    signature.style.left = documents.documents.vsignatures[index]?.x;
+    signatureResult.value = documents.documents.vsignatures[index]?.result;
+    mainTag[documents.documents.vsignatures[index].index].append(signature);
+  });
+
+  vinitials?.forEach((initial, index) => {
+    initial.style.top = documents.documents.vinitials[index]?.y;
+    initial.style.left = documents.documents.vinitials[index]?.x;
+    signatureResult.value = documents.documents.vinitials[index]?.result;
+    mainTag[documents.documents.vinitials[index].index].append(initial);
+  });
+
+  vdates?.forEach((date, index) => {
+    date.style.top = documents.documents.vdates[index]?.y;
+    date.style.left = documents.documents.vdates[index]?.x;
+    signatureResult.value = documents.documents.vdates[index]?.result;
+    mainTag[documents.documents.vdates[index].index].append(date);
+  });
+
   initFlowbite();
   getAddress();
+  const userSigns = document.querySelectorAll(".vuserSign");
+  userSigns.forEach((sign) => {
+    let user = sign.querySelector(".vuser");
+    sign.addEventListener("mousemove", (e) => {
+      if (user.classList.contains("hidden")) {
+        user.classList.remove("hidden");
+        user.classList.add("flex");
+      }
+    });
+    sign.addEventListener("mouseout", (e) => {
+      if (user.classList.contains("flex")) {
+        user.classList.remove("flex");
+        user.classList.add("hidden");
+      }
+    });
+  });
 });
 
 const getAddress = async () => {

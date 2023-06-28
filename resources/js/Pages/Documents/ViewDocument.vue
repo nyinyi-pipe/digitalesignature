@@ -421,7 +421,7 @@
     </div>
   </div>
 </template>
-    <script setup>
+      <script setup>
 import { Link, router, Head, useForm } from "@inertiajs/vue3";
 import { onBeforeMount, onMounted, onUpdated, reactive, ref } from "vue";
 import { initFlowbite, Dismiss } from "flowbite";
@@ -1374,16 +1374,7 @@ onUpdated(() => {
   });
 });
 
-onBeforeMount(() => {
-  //   loader.value = loading.show();
-});
-
 onMounted(() => {
-  //   router.visit(url, {
-  //     only: ["documents"],
-  //   });
-  //   loader.value.hide();
-
   if (documents.documents.doc_status == 3) finished.value = true;
   const mainTag = document.querySelectorAll("#main");
   const texts = document.querySelectorAll(".text");
@@ -1552,7 +1543,7 @@ onMounted(() => {
   });
 });
 </script>
-  <style>
+    <style scoped>
 .view {
   width: 10px;
   height: 10px;

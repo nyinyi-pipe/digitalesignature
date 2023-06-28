@@ -42,6 +42,8 @@ class DocumentResultController extends Controller
         });
         $datas = [];
         foreach ($array as $key => $value) {
+            $value['name'] = $value->recipient->name;
+            $value['email'] = $value->recipient->email;
             $datas[] = $value;
         }
         return ($datas);
@@ -51,8 +53,7 @@ class DocumentResultController extends Controller
     {
 
         $data = DocumentResult::where('document_id', $document->id)->where('nonuser_id', $recipient)->get();
-        // $data = DocumentResult::where('document_id', $document->id)->get();
-        // dd($data);
+        $datas = DocumentResult::where('document_id', $document->id)->where('nonuser_id', '!=', $recipient)->get();
         foreach($data as $key) {
             if($key->view == null) {
                 $view = Carbon::now("Asia/Yangon");
@@ -62,14 +63,22 @@ class DocumentResultController extends Controller
             }
         }
         $signatures = $this->signments($data, "signature");
+        $vsignatures = $this->signments($datas, "signature");
         $texts = $this->signments($data, "text");
+        $vtexts = $this->signments($datas, "text");
         $dates = $this->signments($data, "date");
+        $vdates = $this->signments($datas, "date");
         $initials = $this->signments($data, "initial");
+        $vinitials = $this->signments($datas, "initial");
         $document['initials'] = $initials;
+        $document['vinitials'] = $vinitials;
         $document['user'] = $document->user->name;
         $document['signatures'] = $signatures;
+        $document['vsignatures'] = $vsignatures;
         $document['texts'] = $texts;
+        $document['vtexts'] = $vtexts;
         $document['dates'] = $dates;
+        $document['vdates'] = $vdates;
         $document['doc_res_id'] = $data->first()->id;
         $document['doc_user_id'] = $data->first()->nonuser_id;
         $document['status'] = $data->first()->status;
