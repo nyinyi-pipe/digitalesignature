@@ -9,7 +9,7 @@
         class="bg-gray-50 border text-xs bg-teal-100/50 border-gray-300 text-gray-600 rounded-l border-l focus:ring-teal-500 focus:border-teal-500 block w-full p-1.5"
         v-model="toSign"
       >
-        <option selected>From Connect</option>
+        <option selected>From Permission</option>
         <template v-for="recipient of recipients" :key="recipient.id">
           <option :value="recipient.email">{{ recipient.name }}</option>
         </template>
@@ -20,13 +20,15 @@
         class="bg-gray-50 border text-xs border-gray-300 text-gray-600 rounded-r border-l-gray-100 border-l focus:ring-teal-500 focus:border-teal-500 block w-full p-1.5"
         v-model="selectConnect"
       >
-        <option selected>To Connect</option>
+        <option selected>To Permission</option>
         <template v-for="recipient of recipients" :key="recipient.id">
           <option :value="recipient.email">{{ recipient.name }}</option>
         </template>
       </select>
     </div>
-    <template v-if="toSign != 'From Connect' && selectConnect != 'To Connect'">
+    <template
+      v-if="toSign != 'From Permission' && selectConnect != 'To Permission'"
+    >
       <button
         @click="saveConnection"
         :class="[
@@ -47,10 +49,10 @@ const { recipients } = defineProps({
   recipients: Array,
 });
 const emit = defineEmits(["signConnection"]);
-const selectConnect = ref("To Connect");
+const selectConnect = ref("To Permission");
 const connect = ref("Connect");
 
-const toSign = ref("From Connect");
+const toSign = ref("From Permission");
 const saveConnection = () => {
   emit("signConnection", {
     fromConnect: toSign.value,
