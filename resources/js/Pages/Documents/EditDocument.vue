@@ -16,6 +16,7 @@
     <MailModal
       :auth="documents.auth"
       :document="documents.documents"
+      :signConnects="signConnects"
       @closeSendMailModal="closeSendMailModal"
       :recipientEmails="recipientEmails"
     />
@@ -1261,6 +1262,12 @@
             @openNewRecipientModal="openNewRecipientModal"
           />
         </template>
+        <template #connectinitail>
+          <ConnectInitial
+            :recipients="documents.documents.recipients"
+            @signConnection="signConnection"
+          />
+        </template>
       </ToolBar>
     </div>
   </div>
@@ -1280,6 +1287,7 @@ import EditAside from "@/Components/Layouts/EditAside.vue";
 import Tools from "@/Components/Documents/Tools.vue";
 import ToolBar from "@/Components/Documents/ToolBar.vue";
 import Fillabes from "@/Components/Documents/Fillabes.vue";
+import ConnectInitial from "@/Components/Documents/ConnectInitial.vue";
 import moment from "moment";
 import axios from "axios";
 
@@ -1287,7 +1295,10 @@ const documents = defineProps({
   documents: Object,
   auth: Object,
 });
-
+const signConnects = ref(null);
+const signConnection = (data) => {
+  signConnects.value = data;
+};
 const initialAssignRecipent = (e) => {
   let recipientStatus = e.target
     .closest(".initial")

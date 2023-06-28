@@ -208,7 +208,7 @@ class DocumentController extends Controller
         $document['initials'] = $initials;
         $document['texts'] = $texts;
         $document['dates'] = $dates;
-        $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
+        $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['id'=>$doc->id,'name'=>$doc->name,'email'=>$doc->email])->toArray();
         return Inertia::render("Documents/EditDocument", [
             'documents'=>$document
         ]);

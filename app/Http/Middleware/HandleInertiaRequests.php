@@ -37,9 +37,11 @@ class HandleInertiaRequests extends Middleware
                     if($user) {
                         $user['roles'] = $request->user()->getRoleNames()->toArray();
                     }
+                    $user['app'] = env('APP_NAME');
                     return $user;
                 },
             ],
+
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),

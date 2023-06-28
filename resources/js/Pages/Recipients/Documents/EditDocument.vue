@@ -465,34 +465,8 @@ const openInitialModal = (e) => {
       .querySelector(".fieldStatus")
       .classList.add("hidden");
   }
-  let have;
-  documents.documents.initials.forEach((sign) => {
-    if (sign.result) {
-      have = sign.result;
-    }
-  });
-  if (have) {
-    const signatures = document.querySelectorAll(".initial");
-    signatures[indexs.value].querySelector(".img").src = have;
-    const form = useForm({
-      signature: have,
-      doc_id: documents.documents.id,
-      id: signatures[indexs.value].querySelector(".img").getAttribute("signId"),
-      type: "initial",
-      _method: "PUT",
-      ip: u_ip.value,
-      city: u_city.value,
-      country: u_country.value,
-    });
-    form.post(
-      route("recipient.update.document", [
-        signatures[indexs.value].querySelector(".img").getAttribute("id"),
-        signatures[indexs.value].querySelector(".img").getAttribute("user_id"),
-      ])
-    );
-  } else {
-    initialModal.value.show();
-  }
+
+  initialModal.value.show();
 };
 const openSignatureModal = (e) => {
   indexs.value = e.target.closest(".fields").getAttribute("index");

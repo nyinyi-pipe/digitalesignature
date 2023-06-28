@@ -274,6 +274,7 @@ const docuements = defineProps({
   auth: Object,
   document: Object,
   recipientEmails: Array,
+  signConnects: Object,
 });
 const useCc = ref(false);
 
@@ -305,7 +306,13 @@ const sendMailSubmit = () => {
       email: main
         .querySelector("#recipientName")
         .getAttribute("recipientEmail"),
+      connect:
+        main.querySelector("#recipientName").getAttribute("recipientEmail") ==
+        docuements.signConnects?.fromConnect
+          ? docuements.signConnects?.toConnect
+          : "",
     });
+
     axios
       .post(route("documents.store.document.result", signDatas))
       .then((res) => console.log(res.data));

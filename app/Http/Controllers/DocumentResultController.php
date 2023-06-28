@@ -29,6 +29,7 @@ class DocumentResultController extends Controller
             'type'=>$request->type,
             'x'=>$request->x,
             'y'=>$request->y,
+            'connect'=>$request->connect
         ]);
         return response()->json('successfully', 200, );
         // return to_route('document.edit.document', $request->docId);
@@ -82,12 +83,25 @@ class DocumentResultController extends Controller
         $view = $document->id;
         $doc_name = $document->doc_name;
         $document = $document->results()->where('type', $request->type)->where('id', $request->id)->first();
+        $initials = DocumentResult::where('document_id', $document->document_id)->where('type', 'signature')->where('connect', Nonuser::where('id', $recipient)->first()->email)->get();
+
         $document->update([
             'result'=>$request->signature,
             'ip'=>$request->ip,
             'city'=>$request->city,
             'country'=>$request->country,
         ]);
+        if($initials->count()) {
+            foreach ($initials as $initial) {
+                $initial->update([
+                    'result'=>$document->result,
+                    'ip'=>$document->ip,
+                    'city'=>$document->city,
+                    'country'=>$document->country,
+                ]);
+            }
+        }
+
         $documents = Document::where('id', $document->document_id)->first();
         $ress = DocumentResult::where('document_id', $document->document_id)->get();
         $signments = $ress->map(function ($res) {

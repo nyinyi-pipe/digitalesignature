@@ -20,6 +20,7 @@ defineProps({
   title: String,
   auth: Object,
 });
+
 const toggle = ref(false);
 const toggleAside = () => {
   toggle.value = !toggle.value;

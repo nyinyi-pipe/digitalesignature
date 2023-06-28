@@ -9,7 +9,7 @@
           :href="route('admin.dashboard')"
           class="text-green-500 text-2xl md:text-3xl font-bold"
         >
-          E-Signature
+          {{ auth.app }}
         </Link>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -180,7 +180,7 @@
           :href="route('dashboard')"
           class="text-green-500 text-2xl md:text-3xl font-bold"
         >
-          E-Signature
+          {{ auth.app }}
         </Link>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -324,8 +324,9 @@
 </template>
 <script setup>
 import { Link } from "@inertiajs/vue3";
+import { onMounted } from "vue";
 import AsideLink from "./AsideLink.vue";
-defineProps({
+const { toggle, auth } = defineProps({
   toggle: String,
   auth: Object,
 });

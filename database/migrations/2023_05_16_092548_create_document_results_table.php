@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('y');
             $table->string('type')->nullable();
             $table->longText('result')->nullable();
+            $table->string('connect')->nullable();
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentResult extends Model
 {
     use HasFactory;
-    protected $fillable = ['document_id','status','view','nonuser_id','x','y','type','result','index','ip','city','country'];
+    protected $fillable = ['document_id','status','connect','view','nonuser_id','x','y','type','result','index','ip','city','country'];
 
     public function recipient()
     {

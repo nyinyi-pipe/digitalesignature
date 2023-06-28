@@ -42,6 +42,7 @@
       </div>
       <slot name="tools" />
       <slot name="fillabes" />
+      <slot name="connectinitail" />
     </aside>
   </div>
 </template>
