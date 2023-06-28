@@ -7,8 +7,9 @@
       <div class="flex justify-between items-center px-3">
         <Link
           :href="route('admin.dashboard')"
-          class="text-green-500 text-2xl md:text-3xl font-bold"
+          class="text-green-500 text-xl md:text-2xl font-bold items-center gap-2 flex"
         >
+          <img src="/images/logo.png" alt="" class="w-12 h-12" />
           {{ auth.app }}
         </Link>
         <svg
@@ -178,8 +179,10 @@
       <div class="flex justify-between px-3 items-center">
         <Link
           :href="route('dashboard')"
-          class="text-green-500 text-2xl md:text-3xl font-bold"
+          class="text-green-500 text-xl md:text-2xl font-bold items-center gap-2 flex"
         >
+          <img src="/images/logo.png" alt="" class="w-12 h-12" />
+
           {{ auth.app }}
         </Link>
         <svg

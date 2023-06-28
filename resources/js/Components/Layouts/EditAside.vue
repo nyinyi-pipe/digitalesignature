@@ -5,11 +5,12 @@
     class="fixed transition-all top-0 pb-3 px-6 w-[60%] sm:w-[35%] md:w-[25%] lg:w-[20%] flex flex-col justify-between h-screen border-r bg-slate-800 duration-500"
   >
     <nav class="-mx-3 space-y-6 mt-3" v-if="auth.roles[0].name == 'admin'">
-      <div class="flex justify-between items-center px-3">
+      <div class="flex justify-between px-3 items-center">
         <Link
-          :href="route('admin.dashboard')"
-          class="text-green-500 text-2xl md:text-3xl font-bold"
+          :href="route('dashboard')"
+          class="text-green-500 text-xl md:text-2xl font-bold items-center gap-2 flex"
         >
+          <img src="/images/logo.png" alt="" class="w-12 h-12" />
           {{ auth.app }}
         </Link>
         <svg
@@ -178,10 +179,11 @@
     <nav class="-mx-3 space-y-6 mt-3" v-else>
       <div class="flex justify-between px-3 items-center">
         <Link
-          :href="route('dashboard')"
-          class="text-green-500 text-2xl md:text-3xl font-bold"
+          :href="route('admin.dashboard')"
+          class="text-green-500 text-xl md:text-2xl font-bold items-center gap-2 flex"
         >
-          {{}}
+          <img src="/images/logo.png" alt="" class="w-12 h-12" />
+          {{ auth.app }}
         </Link>
         <svg
           xmlns="http://www.w3.org/2000/svg"

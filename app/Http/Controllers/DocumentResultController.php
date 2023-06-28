@@ -51,6 +51,8 @@ class DocumentResultController extends Controller
     {
 
         $data = DocumentResult::where('document_id', $document->id)->where('nonuser_id', $recipient)->get();
+        // $data = DocumentResult::where('document_id', $document->id)->get();
+        // dd($data);
         foreach($data as $key) {
             if($key->view == null) {
                 $view = Carbon::now("Asia/Yangon");

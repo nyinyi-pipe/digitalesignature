@@ -552,9 +552,10 @@ const createPdf = async () => {
   let sent = 19;
   let view = 22;
   let sign = 25;
+  let initial = 28;
   let signature = 26;
-  let recipientVer = 30;
-  let emailVer = 33;
+  let recipientVer = 33;
+  let emailVer = 36;
   let watermask = 5;
   for (let index = 0; index < 20; index++) {
     watermask += 45;
@@ -644,6 +645,7 @@ const createPdf = async () => {
   for (let index = 0; index < documents.documents.signatures.length; index++) {
     if (!signatures.includes(documents.documents.signatures[index].email)) {
       signatures.push(documents.documents.signatures[index].email);
+      console.log(documents.documents.signatures[index]);
 
       const jpgUrl = documents.documents.signatures[index].result;
       const jpgImageBytes = await fetch(jpgUrl).then((res) =>
@@ -657,6 +659,7 @@ const createPdf = async () => {
       sent += 30;
       view += 30;
       sign += 30;
+      initial += 30;
       signature += 30;
       recipientVer += 30;
       emailVer += 30;
@@ -696,6 +699,11 @@ const createPdf = async () => {
         y: height - 4 * sign,
         size: 8,
       });
+      page.drawText("Initial By:", {
+        x: 30,
+        y: height - 4 * initial,
+        size: 8,
+      });
 
       page.drawText(
         `${moment(documents.documents.signatures[index].created_at).format(
@@ -727,6 +735,13 @@ const createPdf = async () => {
           size: 8,
         }
       );
+
+      let initialby = documents.documents.signatures[index].connect ?? "";
+      page.drawText(`${initialby}`, {
+        x: 220,
+        y: height - 4 * initial,
+        size: 8,
+      });
 
       page.drawImage(jpgImage, {
         x: 430,
@@ -779,7 +794,7 @@ const createPdf = async () => {
 
   page.drawText("Document completed by all parties on:", {
     x: 30,
-    y: height - 4 * (lineHeight + 35),
+    y: height - 4 * (lineHeight + 37),
     size: 10,
     color: rgb(0, 0, 0),
   });
@@ -789,7 +804,7 @@ const createPdf = async () => {
       .format("D MMM YYYY, h:mm:ss A")}`,
     {
       x: 30,
-      y: height - 4 * (lineHeight + 39),
+      y: height - 4 * (lineHeight + 41),
       size: 11,
       color: rgb(0, 0, 0),
     }

@@ -5,7 +5,7 @@
       class="min-h-screen mt-7 sm:-mt-10 flex flex-col gap-5 sm:gap-0 sm:flex-row items-center"
     >
       <div class="w-full px-5 sm:px-0 sm:w-[40%]">
-        <h1 class="uppercase font-extrabold text-4xl text-teal-500">
+        <h1 class="uppercase font-extrabold text-4xl text-green-500">
           Secure Sign
         </h1>
         <p class="text-gray-400 mt-7">
@@ -15,7 +15,7 @@
         </p>
         <div class="mt-9">
           <button
-            class="uppercase hover:opacity-80 get-started font-bold flex items-center py-1 rounded-full text-sm px-4 bg-teal-500"
+            class="uppercase hover:opacity-80 get-started font-bold flex items-center py-1 rounded-full text-sm px-4 bg-green-500"
           >
             get started
             <svg
@@ -45,7 +45,7 @@
     </div>
     <div class="mb-10">
       <h1
-        class="text-center text-3xl underline font-extrabold text-teal-500 mb-7"
+        class="text-center text-3xl underline font-extrabold text-green-500 mb-7"
       >
         About Us
       </h1>
