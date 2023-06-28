@@ -34,10 +34,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => function () use ($request) {
                     $user = $request->user();
+
                     if($user) {
                         $user['roles'] = $request->user()->getRoleNames()->toArray();
+                        $user['app'] = env('APP_NAME');
                     }
-                    $user['app'] = env('APP_NAME');
                     return $user;
                 },
             ],
