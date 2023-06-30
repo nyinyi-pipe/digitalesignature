@@ -15,6 +15,7 @@
         </p>
         <div class="mt-9">
           <button
+            @click="go_login"
             class="uppercase hover:opacity-80 get-started font-bold flex items-center py-1 rounded-full text-sm px-4 bg-green-500"
           >
             get started
@@ -76,11 +77,15 @@
   </div>
 </template>
 <script setup>
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import Navbar from "@/Components/Navbar.vue";
 defineProps({
   auth: Object,
 });
+
+const go_login = () => {
+  router.get(route("login"));
+};
 </script>
 
   <style scoped>

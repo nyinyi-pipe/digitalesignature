@@ -1,11 +1,11 @@
 <template>
-  <GuestLayout>
+  <GuestLayout :auth="auth">
     <Head title="Sign In" />
-    <template #sub-label>Sign in to continue in E-Signature. </template>
+    <template #sub-label>Sign in to continue in SecureSign. </template>
     <template #loginOrRegister>
       <h4 class="text-center mb-4">
         Don't have an account?
-        <Link :href="route('register')" class="text-teal-500 font-medium"
+        <Link :href="route('register')" class="text-green-500 font-medium"
           >Signup</Link
         >
       </h4>
@@ -100,6 +100,7 @@ defineProps({
   status: {
     type: String,
   },
+  auth: Object,
 });
 
 const form = useForm({

@@ -1,5 +1,5 @@
 <template>
-  <GuestLayout>
+  <GuestLayout :auth="auth">
     <Head title="Sign Up" />
     <template #sub-label>Get your account now. </template>
     <template #loginOrRegister>
@@ -197,6 +197,9 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import { reactive } from "vue";
 
+defineProps({
+  auth: Object,
+});
 const form = useForm({
   first_name: "",
   last_name: "",

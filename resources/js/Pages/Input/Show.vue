@@ -87,13 +87,9 @@
       </div>
 
       <div class="ml-12 p-20 py-8 bg-gray-200">
-        <div class="flex gap-3 mb-7">
-          <img
-            class="w-10 h-10 object-cover"
-            src="https://i.pinimg.com/236x/b1/ce/04/b1ce0471c959d3f471b306079c9b7b18.jpg"
-            alt=""
-          />
-          <h1 class="font-bold text-lg">SecureSign</h1>
+        <div class="flex gap-3 mb-7 items-center">
+          <img class="w-10 h-10 object-cover" src="/images/logo.png" alt="" />
+          <h1 class="font-bold text-lg text-green-500">{{ auth.user.app }}</h1>
         </div>
         <div class="p-7 bg-white">
           <div class="w-full flex gap-4 pb-2 border-0 border-b-2">

@@ -104,12 +104,15 @@ class DocumentResultController extends Controller
         ]);
         if($initials->count()) {
             foreach ($initials as $initial) {
-                $initial->update([
-                    'result'=>$document->result,
-                    'ip'=>$document->ip,
-                    'city'=>$document->city,
-                    'country'=>$document->country,
-                ]);
+                if($document->type == "initial") {
+                    $initial->update([
+                        'result'=>$document->result,
+                        'ip'=>$document->ip,
+                        'city'=>$document->city,
+                        'country'=>$document->country,
+                        'view'=>$document->view,
+                    ]);
+                }
             }
         }
 

@@ -290,11 +290,33 @@
               </div>
               <div
                 v-else
-                class="border-yellow-500 p-1 overflow-hidden border flex justify-center items-center"
+                @click="
+                  () => {
+                    if (!documents.documents.status) {
+                      openText = !openText;
+                    }
+                  }
+                "
+                :class="[openText ? 'hidden' : 'flex']"
+                class="border-yellow-500 p-1 overflow-hidden cursor-pointer border flex justify-center items-center"
               >
                 <h1 class="w-full m-0 text-yellow-500 break-words">
                   {{ text.result }}
                 </h1>
+              </div>
+              <div
+                v-if="!documents.documents.status"
+                :class="[openText ? 'flex' : 'hidden']"
+              >
+                <input
+                  type="text"
+                  @focusout="saveText"
+                  v-model="form.signature"
+                  :user_id="text.nonuser_id"
+                  :id="text.id"
+                  placeholder="something..."
+                  class="p-0 py-1.5 px-2 w-full focus:ring-yellow-600 border-yellow-600 hover:border-yellow-600 focus:border-yellow-600 focus:outline-none"
+                />
               </div>
             </div>
           </div>
@@ -546,7 +568,7 @@ const loading = useLoading({
   opacity: 1,
   zIndex: 999,
 });
-
+const openText = ref(false);
 const loader = ref(null);
 
 const form = useForm({
@@ -615,6 +637,7 @@ const closeToggle = () => {
 };
 
 const saveText = (e) => {
+  openText.value = false;
   form.id = e.target.getAttribute("id");
   form.post(
     route("recipient.update.document", [
