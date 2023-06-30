@@ -45,6 +45,7 @@ class DocumentController extends Controller
         $folder = uniqid();
         $pdf = $request->file('document')->store('documents');
         $imagick = new Imagick(public_path("storage/".$pdf));
+        $imagick->setBackgroundColor('white');
         $pages = $imagick->getNumberImages();
         mkdir($folder);
         $filename = uniqid();
@@ -52,12 +53,15 @@ class DocumentController extends Controller
         for ($i = 0; $i < $pages; $i++) {
             $url = public_path("storage/".$pdf.'['.$i.']');
             $imagick = new Imagick();
+            $imagick->setBackgroundColor('white');
             $imagick->readimage($url);
-            $imagick->setImageFormat("jpg");
-            $imagick->flattenImages();
+            $imagick->setImageFormat("png");
+            $imagick->setImageBackgroundColor('white');
+            $imagick->setImageAlphaChannel(imagick::ALPHACHANNEL_REMOVE);
+            $imagick->mergeImageLayers(imagick::LAYERMETHOD_FLATTEN);
 
             $imagick->writeImage(
-                public_path($folder."/".($i+1).'-'.$filename.".jpg")
+                public_path($folder."/".($i+1).'-'.$filename.".png")
             );
         }
         Storage::delete($pdf);
@@ -66,7 +70,7 @@ class DocumentController extends Controller
         $files = FacadesFile::allFiles(public_path($folder));//10
 
         foreach ($files as $key=>$file) {
-            $file = ($key+1)."-".$filename.".jpg";
+            $file = ($key+1)."-".$filename.".png";
             $getFile = public_path($folder."/".$file);
             $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
         }
@@ -224,17 +228,21 @@ class DocumentController extends Controller
             $imagick = new Imagick(public_path("storage/".$pdf));
             // $imagick = new Imagick();
             $filename = uniqid();
+            $imagick->setBackgroundColor('white');
             $pages = $imagick->getNumberImages();
             mkdir($document->folder);
 
             for ($i = 0; $i < $pages; $i++) {
                 $url = public_path("storage/".$pdf.'['.$i.']');
                 $imagick = new Imagick();
+                $imagick->setBackgroundColor('white');
                 $imagick->readimage($url);
-                $imagick->setImageFormat("jpg");
-                $imagick->flattenImages();
+                $imagick->setImageFormat("png");
+                $imagick->setImageBackgroundColor('white');
+                $imagick->setImageAlphaChannel(imagick::ALPHACHANNEL_REMOVE);
+                $imagick->mergeImageLayers(imagick::LAYERMETHOD_FLATTEN);
                 $imagick->writeImage(
-                    public_path($document->folder."/".($i+1).'-'.$filename.".jpg")
+                    public_path($document->folder."/".($i+1).'-'.$filename.".png")
                 );
             }
 
@@ -247,7 +255,7 @@ class DocumentController extends Controller
 
             $files = FacadesFile::allFiles(public_path($document->folder));
             foreach ($files as $key=>$file) {
-                $file = ($key+1)."-".$filename.".jpg";
+                $file = ($key+1)."-".$filename.".png";
                 $getFile = public_path($document->folder."/".$file);
                 $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
                 // $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
