@@ -53,9 +53,12 @@ class DocumentController extends Controller
         for ($i = 0; $i < $pages; $i++) {
             $url = public_path("storage/".$pdf.'['.$i.']');
             $imagick = new Imagick();
+            $imagick->setResolution(300, 300);
             $imagick->setBackgroundColor('white');
             $imagick->readimage($url);
             $imagick->setImageFormat("png");
+            $imagick->setImageCompression(imagick::COMPRESSION_JPEG);
+            $imagick->setImageCompressionQuality(100);
             $imagick->setImageBackgroundColor('white');
             $imagick->setImageAlphaChannel(imagick::ALPHACHANNEL_REMOVE);
             $imagick->mergeImageLayers(imagick::LAYERMETHOD_FLATTEN);
@@ -88,41 +91,7 @@ class DocumentController extends Controller
         $request->session()->put('editDoc', $newDocument);
         return to_route('document.add-recipients', ['document'=>$newDocument->id]);
     }
-    // public function store(DocumentRequest $request) :RedirectResponse
-    // {
-    //     $request->validated();
-    //     $folder = uniqid();
-    //     $pdf = $request->file('document')->store('documents');
-    //     $imagick = new Imagick();
-    //     mkdir($folder);
-    //     $filename = uniqid();
-    //     $imagick->readImage(public_path("storage/".$pdf));
-    //     $imagick->setImageFormat('jpeg');
-    //     $saveImagePath = public_path($folder."/".$filename.".jpeg");
-    //     $imagick->writeImages($saveImagePath, true);
-    //     $imagick->clear();
-    //     Storage::delete($pdf);
 
-    //     $converted = [];
-    //     $files = FacadesFile::allFiles(public_path($folder));
-
-    //     foreach ($files as $file) {
-    //         $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
-    //     }
-    //     FacadesFile::deleteDirectory(public_path($folder));
-
-    //     $doc_type = $request->type;
-    //     $newDocument = Document::create([
-    //         'user_id'=>auth()->user()->id,
-    //         'doc_name'=> $request->name,
-    //         'doc_docs'=> $converted,
-    //         'folder'=>$folder,
-    //         'doc_type'=> $doc_type,
-    //         'doc_key'=>'TEST'
-    //     ]);
-    //     $request->session()->put('editDoc', $newDocument);
-    //     return to_route('document.add-recipients', ['document'=>$newDocument->id]);
-    // }
 
     public function send() : Response
     {
@@ -235,9 +204,12 @@ class DocumentController extends Controller
             for ($i = 0; $i < $pages; $i++) {
                 $url = public_path("storage/".$pdf.'['.$i.']');
                 $imagick = new Imagick();
+                $imagick->setResolution(300, 300);
                 $imagick->setBackgroundColor('white');
                 $imagick->readimage($url);
                 $imagick->setImageFormat("png");
+                $imagick->setImageCompression(imagick::COMPRESSION_JPEG);
+                $imagick->setImageCompressionQuality(100);
                 $imagick->setImageBackgroundColor('white');
                 $imagick->setImageAlphaChannel(imagick::ALPHACHANNEL_REMOVE);
                 $imagick->mergeImageLayers(imagick::LAYERMETHOD_FLATTEN);

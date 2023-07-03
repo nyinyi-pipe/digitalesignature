@@ -1463,13 +1463,17 @@ onMounted(() => {
           if (sign.index == index) {
             const ig = new Image();
             ig.onload = () => {
-              ctx.drawImage(
-                ig,
-                documents.documents.signatures[i].x.replace("px", ""),
-                documents.documents.signatures[i].y.replace("px", ""),
-                100,
-                100
+              let width = parseFloat(
+                img.width -
+                  img.getBoundingClientRect().width -
+                  documents.documents.signatures[i].x.replace("px", "")
               );
+              let height = parseFloat(
+                img.height -
+                  img.getBoundingClientRect().height -
+                  documents.documents.signatures[i].y.replace("px", "")
+              );
+              ctx.drawImage(ig, width, height, 200, 200);
             };
             ig.src = sign.result;
           }

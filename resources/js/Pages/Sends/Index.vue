@@ -51,7 +51,7 @@
             v-for="(sendDoc, index) of sendDocs.documents.data"
             :key="sendDoc.id"
           >
-            <tr v-if="sendDoc.sends.length">
+            <tr v-if="sendDoc.sends">
               <TdCol
                 class="px-4 py-4 text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap"
               >
@@ -74,15 +74,24 @@
               </TdCol>
               <TdCol>
                 <div class="flex gap-1 flex-wrap">
-                  <div
-                    v-for="recipient of itemUnique(sendDoc.sends)"
-                    :key="recipient.id"
-                    class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
-                  >
-                    <h2 class="text-xs font-normal">
-                      {{ recipient }}
-                    </h2>
-                  </div>
+                  <template v-if="sendDoc.sends.length">
+                    <div
+                      v-for="recipient of itemUnique(sendDoc.sends)"
+                      :key="recipient.id"
+                      class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
+                    >
+                      <h2 class="text-xs font-normal">
+                        {{ recipient }}
+                      </h2>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <div
+                      class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
+                    >
+                      <h2 class="text-xs font-normal">-</h2>
+                    </div>
+                  </template>
                 </div>
               </TdCol>
               <TdCol>
@@ -94,7 +103,12 @@
                   </h2>
                 </div>
               </TdCol>
-              <TdCol> {{ sendDoc.sends[0]?.created_at }} </TdCol>
+              <TdCol>
+                <template v-if="sendDoc.sends[0]?.created_at">
+                  {{ sendDoc.sends[0]?.created_at }}
+                </template>
+                <template v-else> - </template>
+              </TdCol>
             </tr>
           </template>
         </template>
@@ -148,7 +162,7 @@
             v-for="(sendDoc, index) of sendDocs.documents"
             :key="sendDoc.id"
           >
-            <tr v-if="sendDoc.sends.length">
+            <tr v-if="sendDoc.sends">
               <TdCol
                 class="px-4 py-4 text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap"
               >
@@ -171,15 +185,24 @@
               </TdCol>
               <TdCol>
                 <div class="flex gap-1 flex-wrap">
-                  <div
-                    v-for="recipient of itemUnique(sendDoc.sends)"
-                    :key="recipient.id"
-                    class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
-                  >
-                    <h2 class="text-xs font-normal">
-                      {{ recipient }}
-                    </h2>
-                  </div>
+                  <template v-if="sendDoc.sends.length">
+                    <div
+                      v-for="recipient of itemUnique(sendDoc.sends)"
+                      :key="recipient.id"
+                      class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
+                    >
+                      <h2 class="text-xs font-normal">
+                        {{ recipient }}
+                      </h2>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <div
+                      class="inline-flex items-center px-3 py-0.5 rounded-full text-blue-500 bg-blue-100/60"
+                    >
+                      <h2 class="text-xs font-normal">-</h2>
+                    </div>
+                  </template>
                 </div>
               </TdCol>
               <TdCol>
@@ -191,7 +214,12 @@
                   </h2>
                 </div>
               </TdCol>
-              <TdCol> {{ sendDoc.sends[0]?.created_at }} </TdCol>
+              <TdCol>
+                <template v-if="sendDoc.sends[0]?.created_at">
+                  {{ sendDoc.sends[0]?.created_at }}
+                </template>
+                <template v-else> - </template>
+              </TdCol>
             </tr>
           </template>
         </template>
