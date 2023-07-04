@@ -98,8 +98,9 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
 import axios from "axios";
-import { onMounted, reactive } from "vue";
-
+import { onMounted, reactive, ref } from "vue";
+import { useLoading } from "vue-loading-overlay";
+const loader = ref(null);
 const documents = defineProps({
   id: Number,
 });
@@ -108,8 +109,18 @@ const form = useForm({
   newDocument: null,
   _method: "PUT",
 });
+const loading = useLoading({
+  color: "#ffffff",
+  loader: "dots",
+  width: 64,
+  height: 64,
+  backgroundColor: "#000000",
+  opacity: 0.5,
+  zIndex: 999,
+});
 
 const upload = async (event) => {
+  loader.value = loading.show();
   const file = event.target.files[0];
   const reader = new FileReader();
 
@@ -125,6 +136,7 @@ const upload = async (event) => {
         },
       })
       .then(({ data }) => {
+        loader.value.hide();
         document.querySelector("#upload-text").innerHTML = `
             <svg
                   aria-hidden="true"

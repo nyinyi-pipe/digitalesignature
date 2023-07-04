@@ -256,6 +256,7 @@ class DocumentController extends Controller
 
     public function deleteDoc(Document $document, Request $request)
     {
+        dd($request->all());
         $docs = array_filter($document->doc_docs, fn ($doc) => $doc != $request->doc);
         $document->update([
             'doc_docs'=>$docs

@@ -30,8 +30,6 @@ Route::middleware(['auth','approv'])->group(function () {
     Route::put('/profile', [ProfileController::class, 'avatar'])->name('profile.avatar');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-});
-Route::middleware(['auth','approv'])->group(function () {
     Route::get('/documents/{document}/add-recipients', [DocumentController::class,'recipients'])->name('document.add-recipients');
     Route::put('/documents/{document}/add-recipients', [DocumentController::class,'storeRecipients'])->name('document.store-recipients');
     Route::put('/documents/{document}/add-recipient', [DocumentController::class,'addRecipients'])->name('document.add.recipients');
@@ -41,24 +39,18 @@ Route::middleware(['auth','approv'])->group(function () {
     Route::post('/documents/document/result', [DocumentResultController::class,'store'])->name('documents.store.document.result');
     Route::put('/documents/edit/{document}', [DocumentController::class,'newDocumentName'])->name('document.new.document-name');
     Route::get('/documents/send', [DocumentController::class,'send'])->name('document.send');
-});
-
-
-Route::middleware(['auth','approv'])->group(function () {
     Route::get('/send-documents', [SendController::class,'index'])->name('send-document.index');
     Route::get('/send-documents/{document}', [SendController::class,'show'])->name('send-document.show');
     Route::put('/send-documents/{document}', [SendController::class,'update'])->name('send-document.update');
-
     Route::get('/inputs', [InputController::class,'index'])->name('input.index');
     Route::get('/inputs/{input}', [InputController::class,'show'])->name('input.show');
+    Route::get('/documents/v/{document}', [DocumentController::class,'view'])->name('document.view.document');
+    Route::get('/document/v/{document}', [DocumentController::class,'viewUpdate'])->name('document.view.update.document');
+    Route::put('/document/v/{document}', [DocumentController::class,'finishUpdate'])->name('document.finish.update.document');
 
 });
 
-
-Route::get('/documents/v/{document}', [DocumentController::class,'view'])->name('document.view.document');
 Route::get('/documents/c/v/{document}', [DocumentController::class,'ccview'])->name('document.cc.view.document');
-Route::get('/document/v/{document}', [DocumentController::class,'viewUpdate'])->name('document.view.update.document');
-Route::put('/document/v/{document}', [DocumentController::class,'finishUpdate'])->name('document.finish.update.document');
 
 Route::get('/u/{document}/{recipient}', [DocumentResultController::class,'edit'])->name('recipient.edit.document');
 Route::put('/u/{document}/{recipient}', [DocumentResultController::class,'update'])->name('recipient.update.document');

@@ -357,9 +357,10 @@
                   >
                     <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
                       <li
-                        @click="deleteDocument(doc)"
+                        :id="index"
                         :doc="doc"
-                        class="px-2 py-1 flex gap-2 text-gray-500 hover:text-red-500 duration-300 hover:bg-gray-100 items-center cursor-pointer"
+                        onclick="deleteDocs()"
+                        class="px-2 py-1 deleteDoc flex gap-2 text-gray-500 hover:text-red-500 duration-300 hover:bg-gray-100 items-center cursor-pointer"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1734,6 +1735,15 @@ onUpdated(() => {
     );
   });
   initFlowbite();
+  //   const deleteDocs = document.querySelectorAll(".deleteDoc");
+  //   deleteDocs.forEach((doc) => {
+  //     doc.addEventListener("click", (e) => {
+  //       console.log(e.target);
+  //     });
+  //   });
+  function deleteDocs(e) {
+    console.log(e.target);
+  }
 });
 
 onMounted(() => {
