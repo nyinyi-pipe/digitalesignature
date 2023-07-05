@@ -39,52 +39,24 @@ class DocumentController extends Controller
         return Inertia::render('Documents/CreateDocument');
     }
 
+    public function saveFile(Request $request)
+    {
+        $path = $request->file('file')->store('documents');
+        return response()->json([
+            'msg'=>'successfully',
+            'path'=>url("storage/".$path)
+        ]);
+    }
+
     public function store(DocumentRequest $request) :RedirectResponse
     {
         $request->validated();
-        $folder = uniqid();
-        $pdf = $request->file('document')->store('documents');
-        $imagick = new Imagick(public_path("storage/".$pdf));
-        $imagick->setBackgroundColor('white');
-        $pages = $imagick->getNumberImages();
-        mkdir($folder);
-        $filename = uniqid();
-
-        for ($i = 0; $i < $pages; $i++) {
-            $url = public_path("storage/".$pdf.'['.$i.']');
-            $imagick = new Imagick();
-            $imagick->setResolution(300, 300);
-            $imagick->setBackgroundColor('white');
-            $imagick->readimage($url);
-            $imagick->setImageFormat("png");
-            $imagick->setImageCompression(imagick::COMPRESSION_JPEG);
-            $imagick->setImageCompressionQuality(100);
-            $imagick->setImageBackgroundColor('white');
-            $imagick->setImageAlphaChannel(imagick::ALPHACHANNEL_REMOVE);
-            $imagick->mergeImageLayers(imagick::LAYERMETHOD_FLATTEN);
-
-            $imagick->writeImage(
-                public_path($folder."/".($i+1).'-'.$filename.".png")
-            );
-        }
-        Storage::delete($pdf);
-
-        $converted = [];
-        $files = FacadesFile::allFiles(public_path($folder));//10
-
-        foreach ($files as $key=>$file) {
-            $file = ($key+1)."-".$filename.".png";
-            $getFile = public_path($folder."/".$file);
-            $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
-        }
-        FacadesFile::deleteDirectory(public_path($folder));
-
         $doc_type = $request->type;
         $newDocument = Document::create([
             'user_id'=>auth()->user()->id,
             'doc_name'=> $request->name,
-            'doc_docs'=> $converted,
-            'folder'=>$folder,
+            'doc_docs'=> $request->document,
+            'folder'=>'test',
             'doc_type'=> $doc_type,
             'doc_key'=>'TEST'
         ]);
@@ -189,54 +161,7 @@ class DocumentController extends Controller
 
     public function newDocumentName(Document $document, Request $request)
     {
-        $doc_docs = null;
-        if($request->file('newDocument')) {
-            $pdf = $request->file('newDocument')->store('documents');
-
-
-            $imagick = new Imagick(public_path("storage/".$pdf));
-            // $imagick = new Imagick();
-            $filename = uniqid();
-            $imagick->setBackgroundColor('white');
-            $pages = $imagick->getNumberImages();
-            mkdir($document->folder);
-
-            for ($i = 0; $i < $pages; $i++) {
-                $url = public_path("storage/".$pdf.'['.$i.']');
-                $imagick = new Imagick();
-                $imagick->setResolution(300, 300);
-                $imagick->setBackgroundColor('white');
-                $imagick->readimage($url);
-                $imagick->setImageFormat("png");
-                $imagick->setImageCompression(imagick::COMPRESSION_JPEG);
-                $imagick->setImageCompressionQuality(100);
-                $imagick->setImageBackgroundColor('white');
-                $imagick->setImageAlphaChannel(imagick::ALPHACHANNEL_REMOVE);
-                $imagick->mergeImageLayers(imagick::LAYERMETHOD_FLATTEN);
-                $imagick->writeImage(
-                    public_path($document->folder."/".($i+1).'-'.$filename.".png")
-                );
-            }
-
-            // $imagick->readImage(public_path("storage/".$pdf));
-
-
-            // $saveImagePath = public_path($document->folder."/".$filename.".jpeg");
-            // $imagick->writeImages($saveImagePath, true);
-            $converted = [];
-
-            $files = FacadesFile::allFiles(public_path($document->folder));
-            foreach ($files as $key=>$file) {
-                $file = ($key+1)."-".$filename.".png";
-                $getFile = public_path($document->folder."/".$file);
-                $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
-                // $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
-            }
-
-            FacadesFile::deleteDirectory(public_path($document->folder));
-            $doc_docs = $converted;
-        }
-
+        $doc_docs = $request->document;
         if($doc_docs!=null) {
             $doc_docs = [...$document->doc_docs,...$doc_docs];
         } else {

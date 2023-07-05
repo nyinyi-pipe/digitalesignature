@@ -64,9 +64,11 @@
 <script setup>
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { Link, router, Head } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useLoading } from "vue-loading-overlay";
 
+const imageDataList = ref([]);
+const pdfPages = ref(null);
 const loading = useLoading({
   color: "#ffffff",
   loader: "dots",
@@ -79,24 +81,94 @@ const loading = useLoading({
 defineProps({
   auth: Object,
 });
+const PDFJS = ref(null);
 const loader = ref(null);
 const upload = async (event) => {
+  loader.value = loading.show();
   const file = event.target.files[0];
-  const form = {
-    document: file,
-    type: "png",
-    name: file.name,
-  };
-  router.post(route("document.add-document"), form, {
-    onStart: () => {
-      loader.value = loading.show();
-    },
-    onFinish: () => {
-      loader.value.hide();
-    },
-    onError: () => {
-      loader.value.hide();
-    },
-  });
+  const reader = new FileReader();
+
+  if (file.type == "application/pdf") {
+    const { data } = await axios({
+      method: "POST",
+      url: route("document.save.file"),
+      data: { file },
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (data.msg) {
+      let url = data.path;
+      let loadingTask = PDFJS.value.getDocument(url);
+      const pdf = await loadingTask.promise;
+      let totalPages = pdf.numPages;
+      pdfPages.value = totalPages;
+      for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+        const page = await pdf.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: 1.3 });
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        const renderTask = page.render({
+          canvasContext: context,
+          viewport: viewport,
+        });
+        await renderTask.promise;
+        imageDataList.value.push(canvas.toDataURL());
+      }
+      if (pdfPages.value == imageDataList.value.length) {
+        const form = {
+          document: imageDataList.value,
+          type: "pdf",
+          name: file.name,
+        };
+        router.post(route("document.add-document"), form, {
+          onFinish: () => {
+            loader.value.hide();
+          },
+        });
+      }
+    }
+  } else {
+    reader.onloadstart = (evt) => {
+      document.querySelector("#upload-text").innerHTML = `
+            <h1 class="mb-1">Uploading...</h1>
+            <p>${file.name}</p>
+            <p class="py-1.5 hover:bg-slate-100 hover:shadow-md duration-300 px-2 bg-white rounded text-sm shadow-xl mt-3 flex items-center gap-1 justify-center">Cancel</p>
+        `;
+    };
+
+    reader.onprogress = () => {
+      setTimeout(() => {
+        document.querySelector("#upload-text").innerHTML = `
+            <h1 class="mb-1">Progress...</h1>
+            <p>${file.name}</p>
+        `;
+      }, 2000);
+    };
+
+    reader.onloadend = (evt) => {
+      setTimeout(() => {
+        const form = {
+          document: [evt.target.result],
+          type: "png",
+          name: file.name,
+        };
+        router.post(route("document.add-document"), form, {
+          onFinish: () => {
+            loader.value.hide();
+          },
+        });
+      }, 4000);
+    };
+
+    reader.readAsDataURL(file);
+  }
 };
+
+onMounted(() => {
+  PDFJS.value = window["pdfjs-dist/build/pdf"];
+
+  PDFJS.value.GlobalWorkerOptions.workerSrc =
+    "//mozilla.github.io/pdf.js/build/pdf.worker.js";
+});
 </script>

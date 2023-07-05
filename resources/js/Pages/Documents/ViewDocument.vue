@@ -439,12 +439,12 @@ import moment from "moment-timezone";
 import { useLoading } from "vue-loading-overlay";
 
 const loading = useLoading({
-  color: "#909090",
+  color: "#ffffff",
   loader: "dots",
   width: 64,
   height: 64,
-  backgroundColor: "#ffffff",
-  opacity: 1,
+  backgroundColor: "#000000",
+  opacity: 0.5,
   zIndex: 999,
 });
 
@@ -461,6 +461,8 @@ const res_name = ref("");
 const pdfWidth = ref(2480);
 const pdfHeight = ref(3508);
 const createPdf = async () => {
+  loader.value = loading.show();
+
   const main = document.querySelectorAll("#mainCanvas");
 
   // Create a new PDFDocument
@@ -878,6 +880,7 @@ const createPdf = async () => {
   pdfBytes = await pdfDoc.save();
 
   // Trigger the browser to download the PDF document
+  loader.value.hide();
   download(pdfBytes, `${documents.documents.doc_name}.pdf`, "application/pdf");
 };
 
