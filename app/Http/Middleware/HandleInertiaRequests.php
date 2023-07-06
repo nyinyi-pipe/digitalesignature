@@ -43,7 +43,7 @@ class HandleInertiaRequests extends Middleware
                     return $user;
                 },
             ],
-
+            'csrf_token'=> csrf_token(),
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),

@@ -50,6 +50,10 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function upload(Request $request)
+    {
+        dd($request->all());
+    }
     /**
      * Delete the user's account.
      */

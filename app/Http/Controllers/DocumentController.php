@@ -161,16 +161,20 @@ class DocumentController extends Controller
 
     public function newDocumentName(Document $document, Request $request)
     {
-        $doc_docs = $request->document;
-        if($doc_docs!=null) {
-            $doc_docs = [...$document->doc_docs,...$doc_docs];
-        } else {
-            $doc_docs = $document->doc_docs;
+
+        $doc_docs = null;
+        if($request->has('document')) {
+            $doc_docs = $request->document;
+            if($doc_docs!=null) {
+                $doc_docs = [...$document->doc_docs,...$doc_docs];
+            } else {
+                $doc_docs = $document->doc_docs;
+            }
         }
 
         $document->update([
             'doc_name'=>$request->newDocumentName??$document->doc_name,
-            'doc_docs'=>$doc_docs
+            'doc_docs'=>$doc_docs ?? $document->doc_docs
         ]);
         // return back();
         return response()->json([

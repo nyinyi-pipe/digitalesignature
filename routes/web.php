@@ -8,6 +8,7 @@ use App\Http\Controllers\DocumentResultController;
 use App\Http\Controllers\InputController;
 use App\Http\Controllers\Mail\MailController;
 use App\Http\Controllers\SendController;
+use App\Http\Controllers\ThumbnailpreviewController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -27,6 +28,8 @@ Route::middleware(['auth','approv'])->group(function () {
 
     //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ThumbnailpreviewController::class, 'upload'])->name('thumbnail.upload');
+    Route::delete('/previewimage/{folder}/{path}', [ThumbnailpreviewController::class, 'destroy'])->name('thumbnail.delete');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile', [ProfileController::class, 'avatar'])->name('profile.avatar');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
