@@ -143,7 +143,9 @@ const Draw = () => {
 const Upload = () => {
   selectedComponent.value = UploadSign;
 };
-const saveSignature = (data) => {};
+const saveSignature = (data) => {
+  signature.value = data;
+};
 const uploadFile = (data) => {
   signature.value = data;
 };

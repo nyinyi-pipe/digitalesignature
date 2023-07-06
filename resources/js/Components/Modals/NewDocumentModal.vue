@@ -140,7 +140,7 @@ const upload = async (event) => {
       data: { file },
       headers: { "Content-Type": "multipart/form-data" },
     });
-    if (data.msg) {
+    if (data.msg == "successfully") {
       let url = data.path;
       let loadingTask = PDFJS.value.getDocument(url);
       const pdf = await loadingTask.promise;
@@ -166,6 +166,7 @@ const upload = async (event) => {
             document: imageDataList.value,
           })
           .then(({ data }) => {
+            console.log(data);
             document.querySelector("#upload-text").innerHTML = `
                     <svg
                           aria-hidden="true"
@@ -211,7 +212,9 @@ const upload = async (event) => {
                           Select files
                         </p>
             `;
+
             emit("closeNewDocumentUpload", data.document);
+            imageDataList.value = [];
             loader.value.hide();
           });
       }

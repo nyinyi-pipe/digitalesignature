@@ -176,7 +176,6 @@ class DocumentController extends Controller
             'doc_name'=>$request->newDocumentName??$document->doc_name,
             'doc_docs'=>$doc_docs ?? $document->doc_docs
         ]);
-        // return back();
         return response()->json([
             'document'=>$document
         ]);
