@@ -14,7 +14,6 @@
     </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
-    <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
 
     {{-- <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script> --}}
 

@@ -20,7 +20,7 @@
       >
         <div class="flex gap-3 items-center justify-center">
           <div>
-            <h1 class="text-2xl font-bold text-green-500">E-signature</h1>
+            <h1 class="text-2xl font-bold text-green-500">SecureSign</h1>
           </div>
           <div>
             <h3 class="font-semibold text-sm">
@@ -60,7 +60,9 @@
           class="w-full fixed bg-white px-5 flex user-select-none"
           style="z-index: 20"
         >
-          <div class="flex items-center justify-between py-1.5 gap-2 pr-3">
+          <div
+            class="flex items-center w-[80%] justify-between py-1.5 gap-2 pr-3"
+          >
             <div class="flex gap-2">
               <div class="flex items-center gap-1 px-1.5 rounded h-7">
                 <svg
@@ -78,11 +80,11 @@
                   />
                 </svg>
               </div>
-              <div class="flex items-center gap-1 px-1.5 h-7">
+              <!-- <div class="flex items-center gap-1 px-1.5 h-7">
                 <span class="text-gray-500 font-thin text-sm"
                   >Please fill in 1 required field.</span
                 >
-              </div>
+              </div> -->
             </div>
             <div>
               <button

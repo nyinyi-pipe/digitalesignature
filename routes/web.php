@@ -21,7 +21,6 @@ Route::middleware(['auth','approv'])->group(function () {
     Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
     //document
     Route::get('/documents', [DocumentController::class,'index'])->name('document.index');
-    Route::post('/documents', [DocumentController::class,'saveFile'])->name('document.save.file');
     Route::get('/documents/add-document', [DocumentController::class,'create'])->name('document.add-document');
     Route::post('/documents/add-document', [DocumentController::class,'store'])->name('documents.add-document');
     Route::delete('/documents/{document}', [DocumentController::class,'destroy'])->name('documents.delete-document');

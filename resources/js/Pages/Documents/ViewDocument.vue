@@ -458,23 +458,13 @@ const documents = defineProps({
 const finished = ref(false);
 const ipAdd = ref();
 const res_name = ref("");
-const pdfWidth = ref(2480);
-const pdfHeight = ref(3508);
 const createPdf = async () => {
   loader.value = loading.show();
-
   const main = document.querySelectorAll("#mainCanvas");
-
-  // Create a new PDFDocument
   const pdfDoc = await PDFDocument.create();
-
-  // Embed the Times Roman font
   const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
-
-  // Add a blank page to the document
-
-  // Get the width and height of the page
   let pdfBytes = null;
+
   main.forEach(async (c, i) => {
     const pages = pdfDoc.addPage();
     const canvas = c.querySelector("#canvas");
@@ -484,38 +474,33 @@ const createPdf = async () => {
     const imageType = await pdfDoc.embedJpg(jpgImageBytes);
     let jpgImage =
       imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
-    const jpgDims = jpgImage.scale(1);
-
-    // Add a blank page to the document
-
-    // Get the width and height of the page
-
-    pages.setSize(
-      parseFloat(c.querySelector("canvas").width) > pages.getWidth()
-        ? c.querySelector("canvas").width
-        : pages.getWidth(),
-      parseFloat(c.querySelector("canvas").height) > pages.getHeight()
-        ? c.querySelector("canvas").height
-        : pages.getHeight()
-    );
-
-    pages.drawImage(jpgImage, {
-      x: 0,
-      y: 0,
-      width: pages.getWidth(),
-      height: pages.getHeight(),
-    });
+    let jpgDims;
+    if (parseFloat(c.querySelector("canvas").width) > 1000) {
+      jpgDims = jpgImage.scale(0.3);
+      pages.drawImage(jpgImage, {
+        x: page.getWidth() / 2 - jpgDims.width / 2,
+        y: page.getHeight() / 2 - jpgDims.height / 2 + 250,
+        width: jpgDims.width,
+        height: jpgDims.height,
+      });
+    } else {
+      jpgDims = jpgImage.scale(1);
+      pages.drawImage(jpgImage, {
+        x: 0,
+        y: 0,
+        width: jpgDims.width,
+        height: jpgDims.height,
+      });
+    }
   });
 
-  // Draw a string of text toward the top of the page
   const page = pdfDoc.addPage();
-  page.setSize(pdfWidth.value, pdfHeight.value);
   const { width, height } = page.getSize();
 
-  const fontSize = 120;
+  const fontSize = 30;
   page.drawText("Signature Certificate", {
-    x: 130,
-    y: height - 4 * 50,
+    x: 30,
+    y: height - 4 * 13,
     size: fontSize,
     font: timesRomanFont,
     color: rgb(0, 0, 0),
@@ -523,146 +508,121 @@ const createPdf = async () => {
 
   let reference = "Reference number: " + documents.reference;
   page.drawText(reference, {
-    x: 130,
-    y: height - 4 * 80,
-    size: 40,
+    x: 30,
+    y: height - 4 * 20,
+    size: 10,
     color: rgb(0, 0, 0),
   });
 
   page.drawText("Signer", {
-    x: 130,
-    y: height - 4 * 150,
-    size: 40,
+    x: 30,
+    y: height - 4 * 35,
+    size: 10,
     font: timesRomanFont,
   });
   page.drawText("Timestamp", {
-    x: 900,
-    y: height - 4 * 150,
-    size: 40,
+    x: 220,
+    y: height - 4 * 35,
+    size: 10,
     font: timesRomanFont,
   });
   page.drawText("Signature", {
-    x: 1900,
-    y: height - 4 * 150,
-    size: 40,
+    x: 430,
+    y: height - 4 * 35,
+    size: 10,
     font: timesRomanFont,
   });
 
-  let lineHeight = 105;
-  let signer = 120;
-  let signerEmail = 135;
-  let sent = 160;
-  let view = 174;
-  let sign = 188;
-  let initial = 203;
-  let signature = 203;
-  let recipientVer = 225;
-  let emailVer = 240;
-
-  let watermasky = 70;
-  for (let index = 0; index < 50; index++) {
-    watermasky += 130;
+  let lineHeight = 8;
+  let signer = 12;
+  let signerEmail = 15;
+  let sent = 19;
+  let view = 22;
+  let sign = 25;
+  let initial = 28;
+  let signature = 26;
+  let recipientVer = 33;
+  let emailVer = 36;
+  let watermask = 5;
+  for (let index = 0; index < 20; index++) {
+    watermask += 45;
 
     page.drawText("SecureSign", {
       x: 5,
-      y: watermasky,
-      size: 40,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 200,
-      y: watermasky,
-      size: 40,
+      x: 65,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 395,
-      y: watermasky,
-      size: 40,
+      x: 125,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 590,
-      y: watermasky,
-      size: 40,
+      x: 185,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 785,
-      y: watermasky,
-      size: 40,
+      x: 245,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 980,
-      y: watermasky,
-      size: 40,
+      x: 305,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 1175,
-      y: watermasky,
-      size: 40,
+      x: 365,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 1370,
-      y: watermasky,
-      size: 40,
+      x: 425,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 1565,
-      y: watermasky,
-      size: 40,
+      x: 485,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
     });
     page.drawText("SecureSign", {
-      x: 1760,
-      y: watermasky,
-      size: 40,
-      color: rgb(0.1, 0.95, 0.1),
-      opacity: 0.2,
-      rotate: degrees(-45),
-    });
-    page.drawText("SecureSign", {
-      x: 1955,
-      y: watermasky,
-      size: 40,
-      color: rgb(0.1, 0.95, 0.1),
-      opacity: 0.2,
-      rotate: degrees(-45),
-    });
-    page.drawText("SecureSign", {
-      x: 2150,
-      y: watermasky,
-      size: 40,
-      color: rgb(0.1, 0.95, 0.1),
-      opacity: 0.2,
-      rotate: degrees(-45),
-    });
-    page.drawText("SecureSign", {
-      x: 2345,
-      y: watermasky,
-      size: 40,
+      x: 545,
+      y: watermask,
+      size: 10,
       color: rgb(0.1, 0.95, 0.1),
       opacity: 0.2,
       rotate: degrees(-45),
@@ -673,63 +633,62 @@ const createPdf = async () => {
     if (!signatures.includes(documents.documents.signatures[index].email)) {
       signatures.push(documents.documents.signatures[index].email);
 
-      lineHeight += 60;
-      signer += 60;
-      signerEmail += 60;
-      sent += 60;
-      view += 60;
-      sign += 60;
-      initial += 60;
-      signature += 60;
-      recipientVer += 60;
-      emailVer += 60;
-
       const jpgUrl = documents.documents.signatures[index].result;
       const jpgImageBytes = await fetch(jpgUrl).then((res) =>
         res.arrayBuffer()
       );
       const jpgImage = await pdfDoc.embedPng(jpgImageBytes);
       const jpgDims = jpgImage.scale(0.5);
+      lineHeight += 30;
+      signer += 30;
+      signerEmail += 30;
+      sent += 30;
+      view += 30;
+      sign += 30;
+      initial += 30;
+      signature += 30;
+      recipientVer += 30;
+      emailVer += 30;
 
       page.drawLine({
-        start: { x: 130, y: height - 4 * lineHeight },
-        end: { x: 2340, y: height - 4 * lineHeight },
+        start: { x: 25, y: height - 4 * lineHeight },
+        end: { x: 570, y: height - 4 * lineHeight },
         thickness: 0.3,
         color: rgb(0, 0, 0),
         opacity: 0.55,
       });
 
       page.drawText(`${documents.documents.signatures[index].name}`, {
-        x: 130,
+        x: 30,
         y: height - 4 * signer,
-        size: 41,
+        size: 11,
         font: timesRomanFont,
       });
       page.drawText(`Email: ${documents.documents.signatures[index].email}`, {
-        x: 130,
+        x: 30,
         y: height - 4 * signerEmail,
-        size: 38,
+        size: 9,
       });
 
       page.drawText("Sent:", {
-        x: 130,
+        x: 30,
         y: height - 4 * sent,
-        size: 35,
+        size: 8,
       });
       page.drawText("Viewed:", {
-        x: 130,
+        x: 30,
         y: height - 4 * view,
-        size: 35,
+        size: 8,
       });
       page.drawText("Signed:", {
-        x: 130,
+        x: 30,
         y: height - 4 * sign,
-        size: 35,
+        size: 8,
       });
       page.drawText("Initial By:", {
-        x: 130,
+        x: 30,
         y: height - 4 * initial,
-        size: 35,
+        size: 8,
       });
 
       page.drawText(
@@ -737,9 +696,9 @@ const createPdf = async () => {
           "D MMM YYYY, h:mm:ss A"
         )}`,
         {
-          x: 900,
+          x: 220,
           y: height - 4 * sent,
-          size: 35,
+          size: 8,
         }
       );
       page.drawText(
@@ -747,9 +706,9 @@ const createPdf = async () => {
           "D MMM YYYY, h:mm:ss A"
         )}`,
         {
-          x: 900,
+          x: 220,
           y: height - 4 * view,
-          size: 35,
+          size: 8,
         }
       );
       page.drawText(
@@ -757,44 +716,44 @@ const createPdf = async () => {
           "D MMM YYYY, h:mm:ss A"
         )}`,
         {
-          x: 900,
+          x: 220,
           y: height - 4 * sign,
-          size: 35,
+          size: 8,
         }
       );
 
       let initialby = documents.documents.signatures[index].connect ?? "";
       page.drawText(`${initialby}`, {
-        x: 900,
+        x: 220,
         y: height - 4 * initial,
-        size: 35,
+        size: 8,
       });
 
       page.drawImage(jpgImage, {
-        x: 1900,
+        x: 430,
         y: height - 4 * signature,
-        width: 400,
-        height: 300,
+        width: 130,
+        height: 65,
         opacity: 0.75,
       });
 
       page.drawText("Recipient Verification:", {
-        x: 130,
+        x: 30,
         y: height - 4 * recipientVer,
-        size: 40,
+        size: 10,
         font: timesRomanFont,
       });
 
       page.drawText(`IP address: ${documents.documents.signatures[index].ip}`, {
-        x: 1900,
+        x: 430,
         y: height - 4 * recipientVer,
-        size: 35,
+        size: 8,
       });
 
       page.drawText("Email verified ", {
-        x: 130,
+        x: 30,
         y: height - 4 * emailVer,
-        size: 35,
+        size: 8,
       });
 
       page.drawText(
@@ -802,38 +761,27 @@ const createPdf = async () => {
           "D MMM YYYY, h:mm:ss A"
         )}`,
         {
-          x: 900,
+          x: 220,
           y: height - 4 * emailVer,
-          size: 35,
+          size: 8,
         }
       );
 
       page.drawText(
         `Location: ${documents.documents.signatures[index].city} ${documents.documents.signatures[index].country}`,
         {
-          x: 1900,
+          x: 430,
           y: height - 4 * emailVer,
-          size: 35,
+          size: 8,
         }
       );
-
-      lineHeight += 90;
-      signer += 90;
-      signerEmail += 90;
-      sent += 90;
-      view += 90;
-      sign += 90;
-      initial += 90;
-      signature += 90;
-      recipientVer += 90;
-      emailVer += 90;
     }
   }
 
   page.drawText("Document completed by all parties on:", {
-    x: 130,
-    y: height - 4 * (lineHeight + 90),
-    size: 40,
+    x: 30,
+    y: height - 4 * (lineHeight + 37),
+    size: 10,
     color: rgb(0, 0, 0),
   });
   page.drawText(
@@ -841,9 +789,9 @@ const createPdf = async () => {
       .tz("Asia/Yangon")
       .format("D MMM YYYY, h:mm:ss A")}`,
     {
-      x: 130,
-      y: height - 4 * (lineHeight + 108),
-      size: 42,
+      x: 30,
+      y: height - 4 * (lineHeight + 41),
+      size: 11,
       color: rgb(0, 0, 0),
     }
   );
@@ -856,26 +804,26 @@ const createPdf = async () => {
     imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
   const jpgDims = jpgImage.scale(1);
   page.drawImage(jpgImage, {
-    x: 130,
-    y: 150,
-    width: 230,
-    height: 200,
+    x: 30,
+    y: 40,
+    width: 60,
+    height: 60,
   });
   page.drawText("Certificate by SecureSign", {
-    x: 420,
-    y: 250,
+    x: 105,
+    y: 77,
     font: timesRomanFont,
-    size: 36,
+    size: 12,
     color: rgb(0, 0, 0),
   });
 
   page.drawText("SecureSign is a document workflow and certified ", {
-    x: 420,
-    y: 205,
-    size: 36,
+    x: 105,
+    y: 60,
+    size: 9,
     color: rgb(0, 0, 0),
   });
-
+  // }
   // Serialize the PDFDocument to bytes (a Uint8Array)
   pdfBytes = await pdfDoc.save();
 
@@ -891,36 +839,34 @@ const finishPdf = async () => {
     const pdfDoc = await PDFDocument.create();
     const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
     main.forEach(async (c, i) => {
-      const page = pdfDoc.addPage();
+      const pages = pdfDoc.addPage();
       const canvas = c.querySelector("#canvas");
       const img = canvas.toDataURL("image/jpeg");
       const jpgUrl = img;
       const jpgImageBytes = await fetch(jpgUrl).then((res) =>
         res.arrayBuffer()
       );
-
       const imageType = await pdfDoc.embedJpg(jpgImageBytes);
       let jpgImage =
         imageType != null ? imageType : await pdfDoc.embedPng(jpgImageBytes);
-      const jpgDims = jpgImage.scale(1);
-
-      // Add a blank page to the document
-
-      // Get the width and height of the page
-      page.setSize(
-        parseFloat(c.querySelector("canvas").width) > page.getWidth()
-          ? parseFloat(c.querySelector("canvas").width)
-          : page.getWidth(),
-        parseFloat(c.querySelector("canvas").height) > page.getHeight()
-          ? parseFloat(c.querySelector("canvas").height)
-          : page.getHeight()
-      );
-      page.drawImage(jpgImage, {
-        x: 0,
-        y: 0,
-        width: page.getWidth(),
-        height: page.getHeight(),
-      });
+      let jpgDims;
+      if (parseFloat(c.querySelector("canvas").width) > 1000) {
+        jpgDims = jpgImage.scale(0.3);
+        pages.drawImage(jpgImage, {
+          x: page.getWidth() / 2 - jpgDims.width / 2,
+          y: page.getHeight() / 2 - jpgDims.height / 2 + 250,
+          width: jpgDims.width,
+          height: jpgDims.height,
+        });
+      } else {
+        jpgDims = jpgImage.scale(1);
+        pages.drawImage(jpgImage, {
+          x: 0,
+          y: 0,
+          width: jpgDims.width,
+          height: jpgDims.height,
+        });
+      }
     });
 
     const page = pdfDoc.addPage();
@@ -1572,7 +1518,7 @@ onMounted(() => {
   });
 });
 </script>
-    <style scoped>
+<style scoped>
 .view {
   width: 10px;
   height: 10px;
