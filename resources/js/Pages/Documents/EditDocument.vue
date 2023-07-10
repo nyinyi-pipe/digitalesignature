@@ -14,6 +14,7 @@
     />
     <!-- mail modal -->
     <MailModal
+      :mails="recipientEmails"
       :auth="documents.auth"
       :document="documents.documents"
       :signConnects="signConnects"
@@ -1411,7 +1412,6 @@ const closeSendMailModal = () => {
   sendModal.value.hide();
 };
 
-
 const saveDocumentName = () => {
   axios
     .put(route("document.new.document-name", documents.documents.id), form)
@@ -1477,10 +1477,6 @@ const deleteField = (e) => {
   const name = e.target.closest(".fields").getAttribute("name");
   const target = e.target.closest(`.${name}`);
 
-  //   target
-  //     .querySelector("#recipientName")
-  //     .setAttribute("recipientemail", "unknown");
-
   let notSames = sendMails.value.filter(
     (mail) =>
       mail !=
@@ -1503,6 +1499,14 @@ const deleteField = (e) => {
   target.classList.add("hidden");
   target.style.top = `0px`;
   target.style.left = `0px`;
+  console.log(signatures.value);
+  const filter = signatures.value.filter((sign) => {
+    if (sign != parseFloat(target.getAttribute("index") + 1)) {
+      return sign;
+    }
+  });
+  signatures.value = filter;
+  target.remove();
 };
 onUpdated(() => {
   const newDocumentUploadModal = document.querySelector(
@@ -1872,10 +1876,7 @@ onMounted(() => {
   });
 
   initFlowbite();
-
-
 });
-
 
 const acceptSignature = (data) => {
   signatureResult.value = data;

@@ -272,6 +272,7 @@ const loading = useLoading({
 const loader = ref(null);
 const docuements = defineProps({
   auth: Object,
+  mails: Array,
   document: Object,
   recipientEmails: Array,
   signConnects: Object,
@@ -294,28 +295,33 @@ const newCCMail = (e) => {
 const sendMailSubmit = () => {
   const mainTag = document.querySelectorAll(".fields");
   mainTag.forEach((main) => {
-    let signDatas = reactive({
-      docId: docuements.document.id,
-      index: main
-        .closest("#main")
-        .querySelector("#image")
-        .getAttribute("index"),
-      type: main.getAttribute("types"),
-      y: main.style.top,
-      x: main.style.left,
-      email: main
-        .querySelector("#recipientName")
-        .getAttribute("recipientEmail"),
-      connect:
-        main.querySelector("#recipientName").getAttribute("recipientEmail") ==
-        docuements.signConnects?.fromConnect
-          ? docuements.signConnects?.toConnect
-          : "",
-    });
-
-    axios
-      .post(route("documents.store.document.result", signDatas))
-      .then((res) => console.log(res.data));
+    if (
+      docuements.mails.includes(
+        main.querySelector("#recipientName").getAttribute("recipientEmail")
+      )
+    ) {
+      let signDatas = reactive({
+        docId: docuements.document.id,
+        index: main
+          .closest("#main")
+          .querySelector("#image")
+          .getAttribute("index"),
+        type: main.getAttribute("types"),
+        y: main.style.top,
+        x: main.style.left,
+        email: main
+          .querySelector("#recipientName")
+          .getAttribute("recipientEmail"),
+        connect:
+          main.querySelector("#recipientName").getAttribute("recipientEmail") ==
+          docuements.signConnects?.fromConnect
+            ? docuements.signConnects?.toConnect
+            : "",
+      });
+      axios
+        .post(route("documents.store.document.result", signDatas))
+        .then((res) => console.log(res.data));
+    }
   });
   form.toMails.push(...docuements.recipientEmails);
   form.post(route("document.send.mail", docuements.document.id), {
