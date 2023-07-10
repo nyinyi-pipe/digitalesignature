@@ -80,30 +80,6 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <!-- <button
-              id="invite"
-              data-dropdown-toggle="invite-dropdown"
-              class="focus:outline-none rounded text-sm border focus:border-0 peer-focus:ring-0 px-4 py-1.5 shadow-md hover:bg-gray-100 hover:shadow-0 duration-200 text-center inline-flex items-center"
-              type="button"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-4 h-4 text-green-600 font-bold mr-1"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
-                />
-              </svg>
-
-              <span class="text-green-600 font-bold">Invite</span>
-            </button> -->
-          <!-- Invite Dropdown menu -->
           <div
             id="invite-dropdown"
             class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow-lg w-44 dark:bg-gray-700"
@@ -121,64 +97,12 @@
               </li>
             </ul>
           </div>
-          <!-- data-modal-target="popup-modal"
-              data-modal-toggle="popup-modal" -->
           <button
             @click="openEmailModal"
             class="focus:outline-none rounded bg-green-600 text-sm focus:border-0 peer-focus:ring-0 px-5 py-1.5 shadow-md hover:shadow-0 duration-200 text-center inline-flex items-center"
           >
             <span class="text-white font-bold">Send</span>
           </button>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
-            />
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
-            />
-          </svg>
         </div>
       </div>
     </div>
@@ -1364,11 +1288,14 @@ const choosedRecipient = ({ name, email }) => {
   recipientEmail.value = email;
 };
 
+const sendMails = ref([]);
+
 const chooseRecipients = (e) => {
   let main = e.target.closest(".fields");
   let recipient = e.target
     .closest(".signature")
     .querySelector("#recipientName");
+
   recipient.innerText = e.target
     .closest("#recipientContainer")
     .querySelector(".recipientName").innerText;
@@ -1377,6 +1304,8 @@ const chooseRecipients = (e) => {
     e.target.closest("#recipientContainer").querySelector(".recipientEmail")
       .innerText
   );
+
+  sendMails.value.push(recipient.getAttribute("recipientEmail"));
   let recipientStatus = e.target.closest("#recipients");
   if (recipientStatus.classList.contains("hidden")) {
     recipientStatus.classList.remove("hidden");
@@ -1479,14 +1408,12 @@ const newRecipientModal = ref(null);
 
 const openEmailModal = () => {
   documentNameModal.value.show();
-  let recipientEmail = document.querySelectorAll("#recipientName");
-  recipientEmail.forEach((email) => {
-    if (recipientEmails.value.includes(email.getAttribute("recipientemail"))) {
+  recipientEmails.value = [];
+  sendMails.value.forEach((email) => {
+    if (recipientEmails.value.includes(email)) {
       return;
     }
-    if (email.getAttribute("recipientemail") != "unknown") {
-      return recipientEmails.value.push(email.getAttribute("recipientemail"));
-    }
+    recipientEmails.value.push(email);
   });
 };
 
@@ -1598,6 +1525,30 @@ const increaseText = () => {
 const deleteField = (e) => {
   const name = e.target.closest(".fields").getAttribute("name");
   const target = e.target.closest(`.${name}`);
+
+  //   target
+  //     .querySelector("#recipientName")
+  //     .setAttribute("recipientemail", "unknown");
+
+  let notSames = sendMails.value.filter(
+    (mail) =>
+      mail !=
+      target.querySelector("#recipientName").getAttribute("recipientemail")
+  );
+  let Sames = sendMails.value.filter(
+    (mail) =>
+      mail ==
+      target.querySelector("#recipientName").getAttribute("recipientemail")
+  );
+
+  if (Sames.length) {
+    Sames.pop();
+  }
+  if (Sames.length) {
+    sendMails.value = [...notSames, ...Sames];
+  } else {
+    sendMails.value = [...notSames];
+  }
   target.classList.add("hidden");
   target.style.top = `0px`;
   target.style.left = `0px`;
