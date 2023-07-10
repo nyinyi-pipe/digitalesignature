@@ -256,12 +256,16 @@ class DocumentController extends Controller
 
     public function deleteDoc(Document $document, Request $request)
     {
-        dd($request->all());
+        foreach ($document->results as $doc) {
+            if($doc->index == $request->doc_id) {
+                $doc->delete();
+            }
+        }
         $docs = array_filter($document->doc_docs, fn ($doc) => $doc != $request->doc);
         $document->update([
             'doc_docs'=>$docs
         ]);
-        // return to_route('document.edit.document', $document->id);
+        return to_route('document.edit.document', $document->id);
     }
 
     public function signments($data, $type)

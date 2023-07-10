@@ -177,8 +177,8 @@
                     v-model="form.message"
                   ></textarea>
                 </div>
-                <div class="flex items-center justify-between mt-2">
-                  <div class="flex">
+                <div class="flex items-center justify-end mt-2">
+                  <!-- <div class="flex">
                     <button
                       type="button"
                       class="inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100"
@@ -236,7 +236,7 @@
                       </svg>
                       <span class="sr-only">Upload image</span>
                     </button>
-                  </div>
+                  </div> -->
                   <button
                     type="submit"
                     class="inline-flex cursor-pointer items-center py-2 px-3 text-xs font-medium text-center text-white bg-green-600 rounded-sm focus:ring-4 focus:ring-green-200 hover:bg-green-700"
