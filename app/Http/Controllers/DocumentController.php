@@ -62,7 +62,6 @@ class DocumentController extends Controller
             $imagick->setImageBackgroundColor('white');
             $imagick->setImageAlphaChannel(imagick::ALPHACHANNEL_REMOVE);
             $imagick->mergeImageLayers(imagick::LAYERMETHOD_FLATTEN);
-
             $imagick->writeImage(
                 public_path($folder."/".($i+1).'-'.$filename.".png")
             );
@@ -73,12 +72,8 @@ class DocumentController extends Controller
         $files = FacadesFile::allFiles(public_path($folder));//10
 
         foreach ($files as $key=>$file) {
-            $file = ($key+1)."-".$filename.".png";
-            $getFile = public_path($folder."/".$file);
-            $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
+            $converted[] = $file->getFilename();
         }
-        FacadesFile::deleteDirectory(public_path($folder));
-
         $doc_type = $request->type;
         $newDocument = Document::create([
             'user_id'=>auth()->user()->id,
@@ -199,7 +194,7 @@ class DocumentController extends Controller
             $filename = uniqid();
             $imagick->setBackgroundColor('white');
             $pages = $imagick->getNumberImages();
-            mkdir($document->folder);
+            // mkdir($document->folder);
 
             for ($i = 0; $i < $pages; $i++) {
                 $url = public_path("storage/".$pdf.'['.$i.']');
@@ -217,23 +212,18 @@ class DocumentController extends Controller
                     public_path($document->folder."/".($i+1).'-'.$filename.".png")
                 );
             }
-
-            // $imagick->readImage(public_path("storage/".$pdf));
-
-
-            // $saveImagePath = public_path($document->folder."/".$filename.".jpeg");
-            // $imagick->writeImages($saveImagePath, true);
             $converted = [];
 
             $files = FacadesFile::allFiles(public_path($document->folder));
             foreach ($files as $key=>$file) {
-                $file = ($key+1)."-".$filename.".png";
-                $getFile = public_path($document->folder."/".$file);
-                $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
-                // $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($file));
+                $converted[] = $file->getFilename();
             }
-
-            FacadesFile::deleteDirectory(public_path($document->folder));
+            // foreach ($files as $key=>$file) {
+            //     $file = ($key+1)."-".$filename.".png";
+            //     $getFile = public_path($document->folder."/".$file);
+            //     $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
+            // }
+            // FacadesFile::deleteDirectory(public_path($document->folder));
             $doc_docs = $converted;
         }
 
@@ -305,6 +295,12 @@ class DocumentController extends Controller
     public function view(Document $document, Request $request) : Response
     {
 
+        $converted = [];
+        foreach($document->doc_docs as $file) {
+            $getFile = public_path($document->folder."/".$file);
+            $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
+        }
+        $document->doc_docs = $converted;
         $data = DocumentResult::where('document_id', $document->id)->get();
         $initials = $this->signments($data, "initial");
         $signatures = $this->signments($data, "signature");

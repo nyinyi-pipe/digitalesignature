@@ -4,7 +4,7 @@
     style="z-index: 20"
   >
     <div class="border-r border-l w-[16%] py-3 h-full flex justify-center">
-      <div class="">
+      <!-- <div class="">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -20,7 +20,7 @@
             d="M12 6v12m6-6H6"
           />
         </svg>
-      </div>
+      </div> -->
     </div>
     <aside class="h-full w-full px-3 py-2">
       <div class="flex items-center justify-between mb-4">

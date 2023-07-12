@@ -26,22 +26,33 @@
       <div class="p-3 pl-4 overflow-scroll h-full">
         <div
           class="flex gap-4"
-          v-for="(document, index) of documents.documents"
+          v-for="(document, index) of documents"
           :key="index"
         >
           <h1 class="text-sm">{{ index + 1 }}</h1>
-          <img :src="document" class="w-[75%] mb-6 shadow" alt="document" />
+          <img
+            :src="showDoc(document)"
+            class="w-[75%] mb-6 shadow"
+            alt="document"
+          />
         </div>
       </div>
     </aside>
   </div>
 </template>
   <script setup>
-const documents = defineProps({
+import { onMounted } from "vue";
+
+const { documents, folder } = defineProps({
   documents: Array,
+  folder: String,
 });
 
-const docs = (doc) => {
-  return location.origin + "/storage/documents/" + doc;
+const showDoc = (doc) => {
+  return `${location.origin}/${folder}/${doc}`;
 };
+
+onMounted(() => {
+  showDoc();
+});
 </script>

@@ -270,7 +270,7 @@
                   :index="index"
                   :doc="doc"
                   class="w-full object-cover"
-                  :src="doc"
+                  :src="showDoc(doc)"
                   alt=""
                 />
               </div>
@@ -1643,7 +1643,12 @@ onUpdated(() => {
   initFlowbite();
 });
 
+const showDoc = (doc) => {
+  return `${location.origin}/${documents.documents.folder}/${doc}`;
+};
+
 onMounted(() => {
+  showDoc();
   const userSigns = document.querySelectorAll(".userSign");
   userSigns.forEach((sign) => {
     let user = sign.querySelector(".user");

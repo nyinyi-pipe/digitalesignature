@@ -1447,8 +1447,8 @@ onMounted(() => {
                 ig,
                 img.width / width,
                 img.height / height,
-                350,
-                200
+                120,
+                70
               );
             };
             ig.src = sign.result;
@@ -1465,8 +1465,8 @@ onMounted(() => {
                 ig,
                 documents.documents.initials[i].x.replace("px", ""),
                 documents.documents.initials[i].y.replace("px", ""),
-                100,
-                100
+                120,
+                70
               );
             };
             ig.src = sign.result;

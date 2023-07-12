@@ -32,7 +32,7 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <!-- <div class="flex items-center gap-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -47,11 +47,14 @@
               d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
             />
           </svg>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="flex relative">
-      <EditToolBar :documents="documents.documents.doc_docs" />
+      <EditToolBar
+        :folder="documents.documents.folder"
+        :documents="documents.documents.doc_docs"
+      />
 
       <div
         class="sm:w-[68%] pb-16 h-screen md:w-[78%] lg:w-[82%] mx-auto bg-gray-100 overflow-scroll"
@@ -117,7 +120,7 @@
                 id="image"
                 :doc="doc"
                 class="w-full object-cover"
-                :src="doc"
+                :src="showDoc(doc)"
                 alt=""
               />
             </div>
@@ -562,12 +565,20 @@ const initialModal = ref(null);
 import { useLoading } from "vue-loading-overlay";
 
 const loading = useLoading({
-  color: "#909090",
+  //   color: "#909090",
+  //   loader: "dots",
+  //   width: 64,
+  //   height: 64,
+  //   backgroundColor: "#ffffff",
+  //   opacity: 1,
+  //   zIndex: 999,
+
+  color: "#ffffff",
   loader: "dots",
   width: 64,
   height: 64,
-  backgroundColor: "#ffffff",
-  opacity: 1,
+  backgroundColor: "#000000",
+  opacity: 0.5,
   zIndex: 999,
 });
 const openText = ref(false);
@@ -583,6 +594,9 @@ const form = useForm({
 const documents = defineProps({
   documents: Object,
 });
+const showDoc = (doc) => {
+  return `${location.origin}/${documents.documents.folder}/${doc}`;
+};
 const finished = () => {
   const formStatus = useForm({
     status: true,
@@ -689,14 +703,14 @@ const openInitialModal = (e) => {
 };
 const openSignatureModal = (e) => {
   indexs.value = e.target.closest(".fields").getAttribute("index");
-  let target = e.target.closest(".fields").querySelector(".field-container");
-  if (target.classList.contains("hidden")) {
-    target.classList.remove("hidden");
-    e.target
-      .closest(".fields")
-      .querySelector(".fieldStatus")
-      .classList.add("hidden");
-  }
+  // let target = e.target.closest(".fields").querySelector(".field-container");
+  // if (target.classList.contains("hidden")) {
+  //   target.classList.remove("hidden");
+  //   e.target
+  //     .closest(".fields")
+  //     .querySelector(".fieldStatus")
+  //     .classList.add("hidden");
+  // }
   let have;
   documents.documents.signatures.forEach((sign) => {
     if (sign.result) {
@@ -740,6 +754,7 @@ const changeWriteStatus = (e) => {
 };
 
 onMounted(() => {
+  showDoc();
   const modalSignature = document.querySelector("#signature-modal");
   const modalInitial = document.querySelector("#initial-modal");
   signatureModal.value = new Modal(modalSignature);
@@ -850,7 +865,15 @@ const getAddress = async () => {
 const acceptSignature = (data) => {
   //   signatureResult.value = data;
   signatureModal.value.hide();
+
   const signatures = document.querySelectorAll(".signature");
+  let target = signatures[indexs.value].querySelector(".field-container");
+  if (target.classList.contains("hidden")) {
+    target.classList.remove("hidden");
+    signatures[indexs.value]
+      .querySelector(".fieldStatus")
+      .classList.add("hidden");
+  }
   signatures[indexs.value].querySelector(".img").src = data;
   const form = useForm({
     signature: data,
@@ -866,7 +889,15 @@ const acceptSignature = (data) => {
     route("recipient.update.document", [
       signatures[indexs.value].querySelector(".img").getAttribute("id"),
       signatures[indexs.value].querySelector(".img").getAttribute("user_id"),
-    ])
+    ]),
+    {
+      onStart: () => {
+        loader.value = loading.show();
+      },
+      onFinish: () => {
+        loader.value.hide();
+      },
+    }
   );
 };
 
@@ -874,6 +905,13 @@ const acceptInitial = (data) => {
   //   signatureResult.value = data;
   initialModal.value.hide();
   const initials = document.querySelectorAll(".initial");
+  let target = initials[indexs.value].querySelector(".field-container");
+  if (target.classList.contains("hidden")) {
+    target.classList.remove("hidden");
+    initials[indexs.value]
+      .querySelector(".fieldStatus")
+      .classList.add("hidden");
+  }
   initials[indexs.value].querySelector(".img").src = data;
   const form = useForm({
     signature: data,

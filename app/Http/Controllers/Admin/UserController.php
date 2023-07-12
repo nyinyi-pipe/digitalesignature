@@ -7,13 +7,14 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     public function approvement() : Response
     {
         return Inertia::render('Admin/User/Approvement', [
-            'users' => User::all()
+            'users' => User::with('roles')->get()
         ]);
     }
 
@@ -26,8 +27,8 @@ class UserController extends Controller
     }
 
 
-public function destory(User $user)
-{
-    $user->delete();
-}
+    public function destory(User $user)
+    {
+        $user->delete();
+    }
 }
