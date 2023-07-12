@@ -124,7 +124,7 @@ class DocumentResultController extends Controller
         $documents['signatures'] = $signments;
         $res['name'] = $user->name;
         $res['type'] = $request->type;
-        broadcast(new DocumentEvent($res));
+        broadcast(new DocumentEvent($res, $request->user()));
         // $document['link'] = route('document.view.document', $view);
         // $document['email'] = $user->email;
         // $document['name'] = $user->name;

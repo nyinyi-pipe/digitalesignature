@@ -49,7 +49,7 @@ const { documents, folder } = defineProps({
 });
 
 const showDoc = (doc) => {
-  return `${location.origin}/${folder}/${doc}`;
+  return `${location.origin}/${doc}`;
 };
 
 onMounted(() => {

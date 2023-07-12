@@ -72,7 +72,7 @@ class DocumentController extends Controller
         $files = FacadesFile::allFiles(public_path($folder));//10
 
         foreach ($files as $key=>$file) {
-            $converted[] = $file->getFilename();
+            $converted[] = $folder."/".$file->getFilename();
         }
         $doc_type = $request->type;
         $newDocument = Document::create([
@@ -188,16 +188,16 @@ class DocumentController extends Controller
         if($request->file('newDocument')) {
             $pdf = $request->file('newDocument')->store('documents');
 
-
+            $filename = uniqid();
             $imagick = new Imagick(public_path("storage/".$pdf));
             // $imagick = new Imagick();
-            $filename = uniqid();
             $imagick->setBackgroundColor('white');
             $pages = $imagick->getNumberImages();
-            // mkdir($document->folder);
-
+            $folder = uniqid();
+            mkdir($folder);
             for ($i = 0; $i < $pages; $i++) {
                 $url = public_path("storage/".$pdf.'['.$i.']');
+
                 $imagick = new Imagick();
                 // $imagick->setResolution(300, 300);
                 $imagick->setBackgroundColor('white');
@@ -209,14 +209,14 @@ class DocumentController extends Controller
                 $imagick->setImageAlphaChannel(imagick::ALPHACHANNEL_REMOVE);
                 $imagick->mergeImageLayers(imagick::LAYERMETHOD_FLATTEN);
                 $imagick->writeImage(
-                    public_path($document->folder."/".($i+1).'-'.$filename.".png")
+                    public_path($folder."/".($i+1).'-'.$filename.".png")
                 );
             }
             $converted = [];
 
-            $files = FacadesFile::allFiles(public_path($document->folder));
+            $files = FacadesFile::allFiles(public_path($folder));
             foreach ($files as $key=>$file) {
-                $converted[] = $file->getFilename();
+                $converted[] = $folder."/".$file->getFilename();
             }
             // foreach ($files as $key=>$file) {
             //     $file = ($key+1)."-".$filename.".png";
@@ -251,7 +251,14 @@ class DocumentController extends Controller
                 $doc->delete();
             }
         }
-        $docs = array_filter($document->doc_docs, fn ($doc) => $doc != $request->doc);
+        // $docs = array_filter($document->doc_docs, fn ($doc) => $doc != $request->doc);
+        $docs = [];
+        foreach ($document->doc_docs as $doc) {
+            if($doc != $request->doc) {
+                $docs[] = $doc;
+            }
+        }
+        unlink(public_path($request->doc));
         $document->update([
             'doc_docs'=>$docs
         ]);
@@ -286,6 +293,7 @@ class DocumentController extends Controller
         $document['dates'] = $dates;
         $document['recipients'] = $document->documentnonuser->map(fn ($doc) => ['name'=>$doc->name,'email'=>$doc->email])->toArray();
 
+
         return response()->json([
             'document'=>$document
         ]);
@@ -297,7 +305,7 @@ class DocumentController extends Controller
 
         $converted = [];
         foreach($document->doc_docs as $file) {
-            $getFile = public_path($document->folder."/".$file);
+            $getFile = public_path($file);
             $converted[] = "data:image/jpeg;base64,".base64_encode(file_get_contents($getFile));
         }
         $document->doc_docs = $converted;

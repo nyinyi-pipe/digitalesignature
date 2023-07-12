@@ -719,8 +719,8 @@ const createPdf = async () => {
       page.drawImage(jpgImage, {
         x: 430,
         y: height - 4 * signature,
-        width: 130,
-        height: 65,
+        width: 120,
+        height: 60,
         opacity: 0.75,
       });
 
@@ -1101,8 +1101,8 @@ const finishPdf = async () => {
         page.drawImage(jpgImage, {
           x: 430,
           y: height - 4 * signature,
-          width: 130,
-          height: 65,
+          width: 120,
+          height: 60,
           opacity: 0.75,
         });
 
@@ -1291,57 +1291,60 @@ onUpdated(() => {
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
     forceTLS: true,
   });
-  window.Echo.channel("document").listen("DocumentEvent", ({ res }) => {
-    axios
-      .get(route("document.view.update.document", documents.documents.id))
-      .then((data) => {
-        noti.value = true;
-        res_name.value = res.name + " " + res.type;
-        texts.forEach((text, index) => {
-          if (text.style.top == data.data.document.texts[index].y) {
-            if (data.data.document.texts[index].result) {
-              text.querySelector(".signText").classList.add("hidden");
-              text.querySelector(".textField").classList.remove("hidden");
-              text.querySelector("h1").innerText =
-                data.data.document.texts[index].result;
+  window.Echo.private(`document.${documents.auth.user.id}`).listen(
+    "DocumentEvent",
+    ({ res }) => {
+      axios
+        .get(route("document.view.update.document", documents.documents.id))
+        .then((data) => {
+          noti.value = true;
+          res_name.value = res.name + " " + res.type;
+          texts.forEach((text, index) => {
+            if (text.style.top == data.data.document.texts[index].y) {
+              if (data.data.document.texts[index].result) {
+                text.querySelector(".signText").classList.add("hidden");
+                text.querySelector(".textField").classList.remove("hidden");
+                text.querySelector("h1").innerText =
+                  data.data.document.texts[index].result;
+              }
             }
-          }
-        });
+          });
 
-        signatures?.forEach((signature, index) => {
-          if (signature.style.top == data.data.document.signatures[index].y) {
-            if (data.data.document.signatures[index].result) {
-              signature.querySelector(".signImg").classList.add("hidden");
-              signature.querySelector(".imgSign").classList.remove("hidden");
-              signature.querySelector(".img").src =
-                data.data.document.signatures[index].result;
+          signatures?.forEach((signature, index) => {
+            if (signature.style.top == data.data.document.signatures[index].y) {
+              if (data.data.document.signatures[index].result) {
+                signature.querySelector(".signImg").classList.add("hidden");
+                signature.querySelector(".imgSign").classList.remove("hidden");
+                signature.querySelector(".img").src =
+                  data.data.document.signatures[index].result;
+              }
             }
-          }
-        });
+          });
 
-        initials?.forEach((initial, index) => {
-          if (initial.style.top == data.data.document.initials[index].y) {
-            if (data.data.document.initials[index].result) {
-              initial.querySelector(".signImg").classList.add("hidden");
-              initial.querySelector(".imgSign").classList.remove("hidden");
-              initial.querySelector(".img").src =
-                data.data.document.initials[index].result;
+          initials?.forEach((initial, index) => {
+            if (initial.style.top == data.data.document.initials[index].y) {
+              if (data.data.document.initials[index].result) {
+                initial.querySelector(".signImg").classList.add("hidden");
+                initial.querySelector(".imgSign").classList.remove("hidden");
+                initial.querySelector(".img").src =
+                  data.data.document.initials[index].result;
+              }
             }
-          }
-        });
+          });
 
-        dates?.forEach((date, index) => {
-          if (date.style.top == data.data.document.dates[index].y) {
-            if (data.data.document.dates[index].result) {
-              date.querySelector(".signDate").classList.add("hidden");
-              date.querySelector(".dateSign").classList.remove("hidden");
-              date.querySelector("h1").innerText =
-                data.data.document.dates[index].result;
+          dates?.forEach((date, index) => {
+            if (date.style.top == data.data.document.dates[index].y) {
+              if (data.data.document.dates[index].result) {
+                date.querySelector(".signDate").classList.add("hidden");
+                date.querySelector(".dateSign").classList.remove("hidden");
+                date.querySelector("h1").innerText =
+                  data.data.document.dates[index].result;
+              }
             }
-          }
+          });
         });
-      });
-  });
+    }
+  );
 });
 
 onMounted(() => {
@@ -1352,39 +1355,43 @@ onMounted(() => {
   const dates = document.querySelectorAll(".date");
   const initials = document.querySelectorAll(".initial");
 
-  window.Pusher = Pusher;
-  window.Echo = new Echo({
-    broadcaster: "pusher",
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    forceTLS: true,
-  });
-  window.Echo.channel("document").listen("DocumentEvent", (res) => {
-    axios
-      .get(route("document.view.update.document", documents.documents.id))
-      .then((data) => {
-        const texts = document.querySelectorAll(".text");
-        const signatures = document.querySelectorAll(".signature");
-        const dates = document.querySelectorAll(".date");
-        const initials = document.querySelectorAll(".initial");
+  //   window.Pusher = Pusher;
+  //   window.Echo = new Echo({
+  //     broadcaster: "pusher",
+  //     key: import.meta.env.VITE_PUSHER_APP_KEY,
+  //     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+  //     forceTLS: true,
+  //   });
+  //   window.Echo.private(`document.${documents.auth.user.id}`).listen(
+  //     "DocumentEvent",
+  //     (res) => {
+  //       axios
+  //         .get(route("document.view.update.document", documents.documents.id))
+  //         .then((data) => {
+  //           const texts = document.querySelectorAll(".text");
+  //           const signatures = document.querySelectorAll(".signature");
+  //           const dates = document.querySelectorAll(".date");
+  //           const initials = document.querySelectorAll(".initial");
 
-        texts.forEach((text, index) => {
-          signatureResult.value = data.data.document.texts[index].result;
-        });
+  //           texts.forEach((text, index) => {
+  //             signatureResult.value = data.data.document.texts[index].result;
+  //           });
 
-        signatures?.forEach((signature, index) => {
-          signatureResult.value = data.data.document.signatures[index]?.result;
-        });
+  //           signatures?.forEach((signature, index) => {
+  //             signatureResult.value =
+  //               data.data.document.signatures[index]?.result;
+  //           });
 
-        dates?.forEach((date, index) => {
-          signatureResult.value = data.data.document.dates[index]?.result;
-        });
+  //           dates?.forEach((date, index) => {
+  //             signatureResult.value = data.data.document.dates[index]?.result;
+  //           });
 
-        initials?.forEach((initial, index) => {
-          signatureResult.value = data.data.document.initials[index]?.result;
-        });
-      });
-  });
+  //           initials?.forEach((initial, index) => {
+  //             signatureResult.value = data.data.document.initials[index]?.result;
+  //           });
+  //         });
+  //     }
+  //   );
 
   texts.forEach((text, index) => {
     text.style.top = documents.documents.texts[index].y;

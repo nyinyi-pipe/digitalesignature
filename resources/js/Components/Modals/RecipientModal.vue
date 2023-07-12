@@ -116,6 +116,9 @@ const addRecipient = () => {
     .put(route("document.add.recipients", documents.documents.id), form)
     .then(({ data: { data } }) => {
       emit("closeNewRecipientModal", data);
+      form.email = "";
+      form.firstName = "";
+      form.lastName = "";
     });
   // form.post(route("document.add.recipients", documents.documents.id));
 };

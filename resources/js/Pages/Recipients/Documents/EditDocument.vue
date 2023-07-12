@@ -284,7 +284,7 @@
                 <div class="textInput hidden">
                   <input
                     type="text"
-                    @keyup.enter="saveText"
+                    @focusout="saveText"
                     v-model="form.signature"
                     :user_id="text.nonuser_id"
                     :id="text.id"
@@ -595,7 +595,7 @@ const documents = defineProps({
   documents: Object,
 });
 const showDoc = (doc) => {
-  return `${location.origin}/${documents.documents.folder}/${doc}`;
+  return `${location.origin}/${doc}`;
 };
 const finished = () => {
   const formStatus = useForm({
@@ -661,8 +661,14 @@ const saveText = (e) => {
       e.target.getAttribute("user_id"),
     ]),
     {
+      onStart: () => {
+        loader.value = loading.show();
+      },
       onSuccess: () => {
         form.reset();
+      },
+      onFinish: () => {
+        loader.value.hide();
       },
     }
   );
@@ -677,8 +683,14 @@ const saveDate = (e) => {
       e.target.getAttribute("user_id"),
     ]),
     {
+      onStart: () => {
+        loader.value = loading.show();
+      },
       onSuccess: () => {
         form.reset();
+      },
+      onFinish: () => {
+        loader.value.hide();
       },
     }
   );
@@ -719,7 +731,17 @@ const openSignatureModal = (e) => {
   });
 
   if (have) {
+    loader.value = loading.show();
     const signatures = document.querySelectorAll(".signature");
+
+    let target = signatures[indexs.value].querySelector(".field-container");
+    if (target.classList.contains("hidden")) {
+      target.classList.remove("hidden");
+      signatures[indexs.value]
+        .querySelector(".fieldStatus")
+        .classList.add("hidden");
+    }
+
     signatures[indexs.value].querySelector(".img").src = have;
     const form = useForm({
       signature: have,
@@ -735,7 +757,12 @@ const openSignatureModal = (e) => {
       route("recipient.update.document", [
         signatures[indexs.value].querySelector(".img").getAttribute("id"),
         signatures[indexs.value].querySelector(".img").getAttribute("user_id"),
-      ])
+      ]),
+      {
+        onFinish: () => {
+          loader.value.hide();
+        },
+      }
     );
   } else {
     signatureModal.value.show();
@@ -927,7 +954,15 @@ const acceptInitial = (data) => {
     route("recipient.update.document", [
       initials[indexs.value].querySelector(".img").getAttribute("id"),
       initials[indexs.value].querySelector(".img").getAttribute("user_id"),
-    ])
+    ]),
+    {
+      onStart: () => {
+        loader.value = loading.show();
+      },
+      onFinish: () => {
+        loader.value.hide();
+      },
+    }
   );
 };
 </script>

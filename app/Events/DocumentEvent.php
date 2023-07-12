@@ -18,11 +18,9 @@ class DocumentEvent implements ShouldBroadcast
      * Create a new event instance.
      */
 
-    public $document;
 
-    public function __construct($document)
+    public function __construct(public $document, public $user)
     {
-        $this->document = $document;
     }
 
     /**
@@ -33,7 +31,7 @@ class DocumentEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('document'),
+            new PrivateChannel('document.'.$this->user->id),
         ];
     }
 
