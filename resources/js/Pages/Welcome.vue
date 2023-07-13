@@ -1,95 +1,130 @@
 <template>
-  <div class="min-h-screen w-full container mx-auto">
-    <Navbar :user="auth.user" />
+  <div>
     <div
-      class="min-h-screen mt-7 sm:-mt-10 flex flex-col gap-5 sm:gap-0 sm:flex-row items-center"
+      ref="navbar"
+      class="fixed bg-white z-50 transition-all duration-300 top-0 w-full -translate-y-[100%]"
     >
-      <div class="w-full px-5 sm:px-0 sm:w-[40%]">
-        <h1 class="uppercase font-extrabold text-4xl text-green-500">
-          Secure Sign
-        </h1>
-        <p class="text-gray-400 mt-7">
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Obcaecati
-          quo consequuntur nostrum itaque hic nesciunt quisquam delectus
-          deserunt ut,
-        </p>
-        <div class="mt-9">
-          <button
-            @click="go_login"
-            class="uppercase hover:opacity-80 get-started font-bold flex items-center py-1 rounded-full text-sm px-4 bg-green-500"
-          >
-            get started
+      <div class="container mx-auto relative">
+        <nav
+          class="h-24 bg-white w-full flex items-center relative z-50 justify-between"
+        >
+          <a href="/">
+            <img src="/images/home/securesign.png" class="h-16" alt="" />
+          </a>
+          <div>
             <svg
+              @click="openMenu"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-5 h-5 ml-1 transition-transform"
+              class="w-12 h-12 cursor-pointer"
             >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
               />
             </svg>
-          </button>
+          </div>
+        </nav>
+        <div
+          ref="menu"
+          class="bg-white absolute w-[40%] right-0 z-40 -translate-y-[100%] transition-all duration-300"
+        >
+          <ul class="flex flex-col">
+            <li class="hover:bg-gray-50 hover:text-teal-500 py-3 px-10">
+              <Link href="/" class="text-2xl">Home</Link>
+            </li>
+            <li class="hover:bg-gray-50 hover:text-teal-500 py-3 px-10">
+              <Link :href="route('login')" class="text-2xl">Sign In</Link>
+            </li>
+            <li class="hover:bg-gray-50 hover:text-teal-500 py-3 px-10">
+              <Link :href="route('register')" class="text-2xl">Sign Up</Link>
+            </li>
+          </ul>
         </div>
-      </div>
-      <div class="w-full sm:w-[60%]">
-        <img
-          src="/images/silky-signing-the-contract.png"
-          class="w-full object-cover"
-          alt=""
-        />
       </div>
     </div>
-    <div class="mb-10">
-      <h1
-        class="text-center text-3xl underline font-extrabold text-green-500 mb-7"
-      >
-        About Us
-      </h1>
-      <div class="grid sm:grid-cols-2 px-5 gap-3 sm:gap-0 sm:px-0 items-center">
-        <div class="flex justify-center">
-          <img
-            src="/images/3d-casual-life-signing-contract.png"
-            class="h-full"
-            alt=""
-          />
-        </div>
-        <div class="py-5">
-          <h1 class="mb-4 text-gray-600 text-xl font-bold uppercase">
-            Lorem ipsum dolor sit elit. Amet
+    <div class="hero h-screen w-full">
+      <div class="h-10 nav-tap-bar"></div>
+      <div class="flex justify-center pt-7 pb-16">
+        <img src="/images/home/securesign.png" class="h-24" alt="securesign" />
+      </div>
+      <div class="grid grid-cols-2 gap-2 w-[95%] mx-auto">
+        <div class="translate-x-28">
+          <h1 class="text-6xl font-semibold tracking-tight hero-title">
+            Everything you business <span class="text-[#4DD583]">needs</span> in
+            one place
           </h1>
-          <p class="tracking-wide text-gray-500">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis
-            rerum iusto alias illo tenetur ullam non voluptatem praesentium
-            accusamus, voluptates doloremque sunt minima nesciunt cumque
-            incidunt accusantium nostrum eius corporis beatae eaque vitae?
-            Beatae omnis, harum ipsum tenetur illum ratione eum voluptas eos
-            magni sint natus iusto excepturi voluptates, illo vero dignissimos
-            consequatur
-          </p>
+          <div class="flex items-center gap-8 mt-24">
+            <Link
+              :href="route('login')"
+              class="py-1 md:py-4 px-2 md:px-24 text-2xl rounded-full bg-gray-200"
+            >
+              Sign In
+            </Link>
+            <Link
+              :href="route('register')"
+              class="py-1 md:py-4 px-2 md:px-24 text-2xl rounded-full bg-gray-200"
+            >
+              Sign Up
+            </Link>
+          </div>
+        </div>
+        <div class="translate-x--5">
+          <img src="/images/home/Data.png" class="h-[77%]" alt="" />
         </div>
       </div>
+    </div>
+    <div class="my-32 mt-52 container mx-auto">
+      <h1 class="text-[1.4rem] text-end mr-20">
+        © 2023 SecureSign. by
+        <span class="text-teal-500">GENI</span>
+      </h1>
     </div>
   </div>
 </template>
 <script setup>
-import { Link, router } from "@inertiajs/vue3";
-import Navbar from "@/Components/Navbar.vue";
-defineProps({
-  auth: Object,
+import { onMounted, ref } from "vue";
+import { Link } from "@inertiajs/vue3";
+const menu = ref(null);
+const navbar = ref(null);
+onMounted(() => {
+  window.addEventListener("scroll", () => {
+    if (parseInt(window.scrollY) >= 50) {
+      navbar.value.classList.remove("-translate-y-[100%]");
+    } else {
+      navbar.value.classList.add("-translate-y-[100%]");
+    }
+  });
 });
-
-const go_login = () => {
-  router.get(route("login"));
+const openMenu = () => {
+  if (menu.value.classList.contains("-translate-y-[100%]")) {
+    menu.value.classList.remove("hidden");
+    menu.value.classList.remove("-translate-y-[100%]");
+  } else {
+    menu.value.classList.add("-translate-y-[100%]");
+  }
 };
 </script>
+<style scoped>
+.hero {
+  background-image: url("/public/images/home/firm2-slider-top-bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/public/fonts/Ubuntu/Ubuntu-Bold.ttf");
+}
+.hero-title {
+  font-family: "Ubuntu";
+  font-weight: 700;
+}
 
-  <style scoped>
-.get-started:hover svg {
-  transform: translateX(10px);
+.nav-tap-bar {
+  background-color: rgba(114, 114, 114, 0.078);
 }
 </style>
