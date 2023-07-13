@@ -1130,7 +1130,7 @@
           </div>
         </div>
       </div>
-      <ToolBar>
+      <ToolBar :document="documents.documents">
         <template #tools>
           <Tools
             @increaseText="increaseText"
@@ -1396,7 +1396,9 @@ const closeNewDocumentUpload = (data) => {
 };
 
 const closeNewRecipientModal = (data) => {
-  documents.documents.recipients = data;
+  if(data){
+        documents.documents.recipients = data;
+  }
   newRecipientModal.value.hide();
 };
 

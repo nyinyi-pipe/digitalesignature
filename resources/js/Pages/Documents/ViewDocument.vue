@@ -465,8 +465,10 @@ const createPdf = async () => {
     if (parseFloat(c.querySelector("canvas").width) > 1000) {
       jpgDims = jpgImage.scale(0.3);
       pages.drawImage(jpgImage, {
-        x: page.getWidth() / 2 - jpgDims.width / 2,
-        y: page.getHeight() / 2 - jpgDims.height / 2 + 250,
+        // x: page.getWidth() / 2 - jpgDims.width / 2,
+        // y: page.getHeight() / 2 - jpgDims.height / 2 + 250,
+        x: 0,
+        y: 0,
         width: jpgDims.width,
         height: jpgDims.height,
       });
@@ -796,6 +798,7 @@ const createPdf = async () => {
     width: 60,
     height: 60,
   });
+
   page.drawText("Certificate by SecureSign", {
     x: 105,
     y: 77,
@@ -1239,11 +1242,6 @@ const finishPdf = async () => {
     }
     return new File([u8arr], filename, { type: mime });
   }
-
-  //   let fileData = dataURLtoFile(
-  //     "data:application/pdf;base64," + pdfBytes,
-  //     documents.documents.doc_name
-  //   );
 };
 const height = (doc) => {
   const img = new Image();
@@ -1291,7 +1289,7 @@ onUpdated(() => {
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
     forceTLS: true,
   });
-  window.Echo.private(`document.${documents.auth.user.id}`).listen(
+  window.Echo.private(`document.${documents.documents.user_id}`).listen(
     "DocumentEvent",
     ({ res }) => {
       axios

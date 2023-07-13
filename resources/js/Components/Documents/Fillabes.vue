@@ -22,7 +22,7 @@
           <input
             type="text"
             v-model="form.chooseRecipient"
-            @focus="focusSearch"
+            @click="focusSearch"
             class="p-1 text-sm font-bold pl-6 border-0 border-b w-full peer-focus:border-0 focus:ring-0"
           />
         </div>
@@ -44,7 +44,7 @@
 
           <input
             type="text"
-            @focus="focusSearch"
+            @click="focusSearch"
             placeholder="Start typing name or email"
             class="p-1 text-sm text-gray-400 pl-7 border-0 border-b w-full peer-focus:border-0 focus:ring-0"
           />

@@ -7,6 +7,7 @@ use App\Http\Middleware\approvementMiddleware;
 use App\Http\Middleware\CompletedDocMiddleware;
 use App\Http\Middleware\DocumentEditMiddleware;
 use App\Http\Middleware\EmployeeMiddleware;
+use App\Http\Middleware\SetPasswordMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel

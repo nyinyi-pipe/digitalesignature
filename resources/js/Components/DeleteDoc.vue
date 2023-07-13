@@ -48,6 +48,8 @@
 </template>
 <script setup>
 import { useForm } from "@inertiajs/vue3";
+import Swal from "sweetalert2";
+
 import { initFlowbite } from "flowbite";
 import { onMounted, ref } from "vue";
 const { index, documents, doc } = defineProps(["index", "documents", "doc"]);
@@ -55,14 +57,30 @@ onMounted(() => {
   initFlowbite();
 });
 const deleteDoc = (e) => {
-  const doc = e.target.getAttribute("doc");
-  const form = useForm({
-    id: documents.documents.id,
-    doc: doc,
-    doc_id: e.target.getAttribute("index"),
-    _method: "DELETE",
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const doc = e.target.getAttribute("doc");
+      const form = useForm({
+        id: documents.documents.id,
+        doc: doc,
+        doc_id: e.target.getAttribute("index"),
+        _method: "DELETE",
+      });
+      form.post(route("documents.delete.document", form.id), {
+        onSuccess: () => {
+          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        },
+      });
+    }
   });
-  form.post(route("documents.delete.document", form.id));
 };
 const deleteDropDoc = (e) => {
   const deleteMenu = e.target

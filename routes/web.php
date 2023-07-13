@@ -27,8 +27,6 @@ Route::middleware(['auth','approv'])->group(function () {
 
     //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile', [ThumbnailpreviewController::class, 'upload'])->name('thumbnail.upload');
-    Route::delete('/previewimage/{folder}/{path}', [ThumbnailpreviewController::class, 'destroy'])->name('thumbnail.delete');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile', [ProfileController::class, 'avatar'])->name('profile.avatar');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -36,6 +34,7 @@ Route::middleware(['auth','approv'])->group(function () {
     Route::get('/documents/{document}/add-recipients', [DocumentController::class,'recipients'])->name('document.add-recipients');
     Route::put('/documents/{document}/add-recipients', [DocumentController::class,'storeRecipients'])->name('document.store-recipients');
     Route::put('/documents/{document}/add-recipient', [DocumentController::class,'addRecipients'])->name('document.add.recipients');
+    Route::put('/documents/{document}', [DocumentController::class,'setPwd'])->name('document.setPwd');
     Route::get('/documents/edit/{document}', [DocumentController::class,'editDocument'])->name('document.edit.document');
     Route::post('/documents/edit/{document}', [MailController::class,'sendMail'])->name('document.send.mail');
     Route::delete('/documents/edit/{document}', [DocumentController::class,'deleteDoc'])->name('documents.delete.document');
@@ -53,12 +52,16 @@ Route::middleware(['auth','approv'])->group(function () {
 
 });
 
-Route::get('/documents/c/v/{document}', [DocumentController::class,'ccview'])->name('document.cc.view.document');
 
+Route::get('/documents/c/v/{document}', [DocumentController::class,'ccview'])->name('document.cc.view.document');
 Route::get('/u/{document}/{recipient}', [DocumentResultController::class,'edit'])->name('recipient.edit.document');
+Route::get('documents/u/{document}/{recipient}', [DocumentResultController::class,'editDoc'])->name('doc.edit.verify');
+Route::get('/u/{document}/{recipient}/login', [DocumentResultController::class,'editLogin'])->name('doc.password');
+Route::post('/u/{document}/{recipient}/login', [DocumentResultController::class,'editLoginAttempt'])->name('doc.password.login');
 Route::put('/u/{document}/{recipient}', [DocumentResultController::class,'update'])->name('recipient.update.document');
 Route::put('/u/{document}', [DocumentResultController::class,'updateStatus'])->name('recipient.update.status.document');
-
+Route::post('/profile', [ThumbnailpreviewController::class, 'upload'])->name('thumbnail.upload');
+Route::delete('/previewimage/{folder}/{path}', [ThumbnailpreviewController::class, 'destroy'])->name('thumbnail.delete');
 
 Route::get('/wait-approve', [HomeController::class,'waitApprove'])->name('non.approve');
 

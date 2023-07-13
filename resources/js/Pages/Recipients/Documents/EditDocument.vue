@@ -91,10 +91,17 @@
             </div>
             <div>
               <button
+                v-if="!documents.documents.status"
                 @click="finished"
                 class="m-0 py-0.5 px-4 rounded-sm bg-yellow-500"
               >
                 Finish
+              </button>
+              <button
+                v-if="documents.documents.status"
+                class="m-0 py-0.5 px-4 rounded-sm cursor-not-allowed bg-gray-200 text-slate-500"
+              >
+                Finished
               </button>
             </div>
           </div>
@@ -702,14 +709,14 @@ const indexs = ref(null);
 
 const openInitialModal = (e) => {
   indexs.value = e.target.closest(".fields").getAttribute("index");
-  let target = e.target.closest(".fields").querySelector(".field-container");
-  if (target.classList.contains("hidden")) {
-    target.classList.remove("hidden");
-    e.target
-      .closest(".fields")
-      .querySelector(".fieldStatus")
-      .classList.add("hidden");
-  }
+//   let target = e.target.closest(".fields").querySelector(".field-container");
+//   if (target.classList.contains("hidden")) {
+//     target.classList.remove("hidden");
+//     e.target
+//       .closest(".fields")
+//       .querySelector(".fieldStatus")
+//       .classList.add("hidden");
+//   }
 
   initialModal.value.show();
 };

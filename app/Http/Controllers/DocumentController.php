@@ -81,7 +81,6 @@ class DocumentController extends Controller
             'doc_docs'=> $converted,
             'folder'=>$folder,
             'doc_type'=> $doc_type,
-            'doc_key'=>'TEST'
         ]);
         $request->session()->put('editDoc', $newDocument);
         return to_route('document.add-recipients', ['document'=>$newDocument->id]);
@@ -367,5 +366,18 @@ class DocumentController extends Controller
     public function destroy(Document $document) :void
     {
         $document->delete();
+    }
+
+    public function setPwd(Document $document, Request $request)
+    {
+        $request->validate([
+            'doc_key'=>'required'
+        ], [
+            'doc_key'=>'Please fill password'
+        ]);
+
+        $document->update([
+            'doc_key'=> bcrypt($request->doc_key)
+        ]);
     }
 }

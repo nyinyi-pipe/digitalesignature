@@ -39,8 +39,6 @@ class SendController extends Controller
     {
         $documents = $document->with(['sends','sends.recipient','sends.requester'])->get();
         $doc = $documents->find($document->id);
-
-
         $data = DocumentResult::where('document_id', $document->id)->get();
         $signatures = $this->signments($data, "signature");
         $texts = $this->signments($data, "text");

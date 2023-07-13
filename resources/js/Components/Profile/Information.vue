@@ -118,6 +118,8 @@
 import { useForm } from "@inertiajs/vue3";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
+import Swal from "sweetalert2";
+
 import { onMounted } from "vue";
 const { auth } = defineProps({
   auth: Object,
@@ -129,6 +131,25 @@ const form = useForm({
 });
 
 const changeInformation = () => {
-  form.put(route("information.update"));
+  form.put(route("information.update"), {
+    onSuccess: () => {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+
+      Toast.fire({
+        icon: "success",
+        title: "Information updated.",
+      });
+    },
+  });
 };
 </script>

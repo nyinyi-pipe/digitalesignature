@@ -13,7 +13,10 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -49,9 +52,71 @@ class DocumentResultController extends Controller
         return ($datas);
     }
 
-    public function edit(Document $document, $recipient) : Response
+    public function editLogin(Document $document, $recipient)
     {
+        if(Session::get($document->id."/".$recipient)) {
+            return to_route('doc.edit.verify', [$document->id,$recipient]);
+        }
+        return Inertia::render('Documents/Login', [
+            'document'=>$document,
+            'recipient'=>$recipient
+        ]);
+    }
 
+    public function editLoginAttempt(Document $document, $recipient, Request $request)
+    {
+        if(Hash::check($request->password, $document->doc_key)) {
+            Session::push($document->id."/".$recipient, 1);
+            return to_route('doc.edit.verify', [$document->id,$recipient]);
+        }
+
+    }
+
+    public function editDoc(Document $document, $recipient)
+    {
+        if(!Session::get($document->id."/".$recipient)) {
+            return to_route('doc.password', [$document->id,$recipient]);
+        }
+        $data = DocumentResult::where('document_id', $document->id)->where('nonuser_id', $recipient)->get();
+        $datas = DocumentResult::where('document_id', $document->id)->where('nonuser_id', '!=', $recipient)->get();
+        foreach($data as $key) {
+            if($key->view == null) {
+                $view = Carbon::now("Asia/Yangon");
+                $key->update([
+                    'view' => $view->toDateTimeString()
+                ]);
+            }
+        }
+        $signatures = $this->signments($data, "signature");
+        $vsignatures = $this->signments($datas, "signature");
+        $texts = $this->signments($data, "text");
+        $vtexts = $this->signments($datas, "text");
+        $dates = $this->signments($data, "date");
+        $vdates = $this->signments($datas, "date");
+        $initials = $this->signments($data, "initial");
+        $vinitials = $this->signments($datas, "initial");
+        $document['initials'] = $initials;
+        $document['vinitials'] = $vinitials;
+        $document['user'] = $document->user->name;
+        $document['signatures'] = $signatures;
+        $document['vsignatures'] = $vsignatures;
+        $document['texts'] = $texts;
+        $document['vtexts'] = $vtexts;
+        $document['dates'] = $dates;
+        $document['vdates'] = $vdates;
+        $document['doc_res_id'] = $data->first()->id;
+        $document['doc_user_id'] = $data->first()->nonuser_id;
+        $document['status'] = $data->first()->status;
+        return Inertia::render("Recipients/Documents/EditDocument", [
+            'documents'=>$document
+        ]);
+    }
+
+    public function edit(Document $document, $recipient)
+    {
+        if($document->doc_key) {
+            return to_route('doc.password', [$document->id,$recipient]);
+        }
         $data = DocumentResult::where('document_id', $document->id)->where('nonuser_id', $recipient)->get();
         $datas = DocumentResult::where('document_id', $document->id)->where('nonuser_id', '!=', $recipient)->get();
         foreach($data as $key) {
@@ -104,14 +169,17 @@ class DocumentResultController extends Controller
         ]);
         if($initials->count()) {
             foreach ($initials as $initial) {
-                if($document->type == "initial") {
-                    $initial->update([
-                        'result'=>$document->result,
-                        'ip'=>$document->ip,
-                        'city'=>$document->city,
-                        'country'=>$document->country,
-                        'view'=>$document->view,
-                    ]);
+                if($initial->result) {
+                } else {
+                    if($document->type == "initial") {
+                        $initial->update([
+                            'result'=>$document->result,
+                            'ip'=>$document->ip,
+                            'city'=>$document->city,
+                            'country'=>$document->country,
+                            'view'=>$document->view,
+                        ]);
+                    }
                 }
             }
         }
@@ -124,14 +192,8 @@ class DocumentResultController extends Controller
         $documents['signatures'] = $signments;
         $res['name'] = $user->name;
         $res['type'] = $request->type;
-        broadcast(new DocumentEvent($res, $request->user()));
-        // $document['link'] = route('document.view.document', $view);
-        // $document['email'] = $user->email;
-        // $document['name'] = $user->name;
-        // $document['doc_name'] = $doc_name;
-        // Mail::to($requester)->send(new EditDocumentMail($document));
+        broadcast(new DocumentEvent($res, $documents->user_id));
         return redirect()->back();
-        // return to_route('recipient.edit.document', [$request->doc_id,$recipient]);
     }
 
     public function updateStatus(DocumentResult $document, Request $request)
